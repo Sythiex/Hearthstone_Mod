@@ -1,0 +1,8 @@
+# Configuration file
+
+general {
+    # 0 = lapis; 1 = diamonds (default); 2 = ender pearls [range: 0 ~ 2, default: 1]
+    I:"Recipe Difficulty"=1
+}
+
+

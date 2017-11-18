@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid = HearthstoneMod.MODID, name = HearthstoneMod.NAME, version = HearthstoneMod.VERSION, acceptedMinecraftVersions = "[1.10.2]")
+@Mod(modid = HearthstoneMod.MODID, name = HearthstoneMod.NAME, version = HearthstoneMod.VERSION, acceptedMinecraftVersions = "[1.11.2]")
 public class HearthstoneMod
 {
 	@SidedProxy(clientSide = "com.sythiex.hearthstonemod.proxy.ClientProxy", serverSide = "com.sythiex.hearthstonemod.proxy.CommonProxy")
@@ -34,7 +34,7 @@ public class HearthstoneMod
 	
 	public static final String MODID = "hearthstonemod";
 	public static final String NAME = "Hearthstone Mod";
-	public static final String VERSION = "0.4.2";
+	public static final String VERSION = "0.4.3";
 	
 	@Instance(MODID)
 	public static HearthstoneMod instance;
@@ -71,13 +71,13 @@ public class HearthstoneMod
 		hearthstone = new ItemHearthstone();
 		GameRegistry.register(hearthstone);
 		
-		channelSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstonechannel")).setRegistryName("hearthstonechannel");
+		channelSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstonechannel")).setRegistryName("hearthstoneChannel");
 		GameRegistry.register(channelSoundEvent);
 		
-		castSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstonecast")).setRegistryName("hearthstonecast");
+		castSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstonecast")).setRegistryName("hearthstoneCast");
 		GameRegistry.register(castSoundEvent);
 		
-		impactSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstoneimpact")).setRegistryName("hearthstoneimpact");
+		impactSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstoneimpact")).setRegistryName("hearthstoneImpact");
 		GameRegistry.register(impactSoundEvent);
 		
 		proxy.preInit(event);

@@ -1,40 +1,40 @@
-[23:15:22] [Client thread/INFO]: Setting user: Player920
-[23:15:25] [Client thread/WARN]: Skipping bad option: lastServer:
-[23:15:25] [Client thread/INFO]: LWJGL Version: 2.9.4
-[23:15:27] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[23:15:30] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:15:30] [Thread-8/INFO]: Initializing LWJGL OpenAL
-[23:15:30] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:15:30] [Thread-8/INFO]: OpenAL initialized.
-[23:15:31] [Sound Library Loader/INFO]: Sound engine started
-[23:15:34] [Client thread/INFO]: Created: 16x16 textures-atlas
-[23:15:35] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[23:15:37] [Client thread/INFO]: SoundSystem shutting down...
-[23:15:37] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[23:15:37] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:15:38] [Thread-10/INFO]: Initializing LWJGL OpenAL
-[23:15:38] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:15:38] [Thread-10/INFO]: OpenAL initialized.
-[23:15:38] [Sound Library Loader/INFO]: Sound engine started
-[23:15:41] [Client thread/INFO]: Created: 512x512 textures-atlas
-[23:15:41] [Client thread/WARN]: Skipping bad option: lastServer:
-[23:15:42] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[23:15:44] [Server thread/INFO]: Starting integrated minecraft server version 1.10.2
-[23:15:44] [Server thread/INFO]: Generating keypair
-[23:15:44] [Server thread/INFO]: Preparing start region for level 0
-[23:15:45] [Server thread/INFO]: Changing view distance to 12, from 10
-[23:15:46] [Server thread/INFO]: Player920[local:E:7759b1d9] logged in with entity id 112 at (376.85351144955445, 4.0, 2302.4733852053632)
-[23:15:46] [Server thread/INFO]: Player920 joined the game
-[23:15:46] [Server thread/INFO]: Saving and pausing game...
-[23:15:46] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:15:47] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:15:47] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:15:47] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@27e36e18[id=ad8236b9-e26f-349c-902e-7100197cd86d,name=Player920,properties={},legacy=false]
+[23:33:56] [Client thread/INFO]: Setting user: Player88
+[23:33:58] [Client thread/WARN]: Skipping bad option: lastServer:
+[23:33:58] [Client thread/INFO]: LWJGL Version: 2.9.4
+[23:34:01] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:34:04] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:34:04] [Thread-8/INFO]: Initializing LWJGL OpenAL
+[23:34:04] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:34:04] [Thread-8/INFO]: OpenAL initialized.
+[23:34:04] [Sound Library Loader/INFO]: Sound engine started
+[23:34:08] [Client thread/INFO]: Created: 16x16 textures-atlas
+[23:34:08] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:34:11] [Client thread/INFO]: SoundSystem shutting down...
+[23:34:11] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:34:11] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:34:11] [Thread-10/INFO]: Initializing LWJGL OpenAL
+[23:34:11] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:34:11] [Thread-10/INFO]: OpenAL initialized.
+[23:34:11] [Sound Library Loader/INFO]: Sound engine started
+[23:34:15] [Client thread/INFO]: Created: 512x512 textures-atlas
+[23:34:15] [Client thread/WARN]: Skipping bad option: lastServer:
+[23:34:16] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[23:34:48] [Server thread/INFO]: Starting integrated minecraft server version 1.11.2
+[23:34:48] [Server thread/INFO]: Generating keypair
+[23:34:48] [Server thread/INFO]: Preparing start region for level 0
+[23:34:49] [Server thread/INFO]: Changing view distance to 12, from 10
+[23:34:50] [Server thread/INFO]: Player88[local:E:1819d480] logged in with entity id 110 at (-114.00131762611532, 4.0, 1243.9555392776824)
+[23:34:50] [Server thread/INFO]: Player88 joined the game
+[23:34:51] [Server thread/INFO]: Saving and pausing game...
+[23:34:51] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:34:51] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:34:51] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:34:51] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@53a96dbd[id=83a9d3a3-9e1e-31ca-9e08-18626d61aedc,name=Player88,properties={},legacy=false]
 com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:65) ~[YggdrasilAuthenticationService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:175) [YggdrasilMinecraftSessionService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:59) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:56) [YggdrasilMinecraftSessionService$1.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:79) ~[YggdrasilAuthenticationService.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:180) [YggdrasilMinecraftSessionService.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:60) [YggdrasilMinecraftSessionService$1.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:57) [YggdrasilMinecraftSessionService$1.class:?]
 	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3524) [guava-17.0.jar:?]
 	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2317) [guava-17.0.jar:?]
 	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2280) [guava-17.0.jar:?]
@@ -43,27 +43,28 @@ com.mojang.authlib.exceptions.AuthenticationException: The client has sent too m
 	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:3938) [guava-17.0.jar:?]
 	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:4821) [guava-17.0.jar:?]
 	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:4827) [guava-17.0.jar:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:165) [YggdrasilMinecraftSessionService.class:?]
-	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3060) [Minecraft.class:?]
-	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:131) [SkinManager$3.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:170) [YggdrasilMinecraftSessionService.class:?]
+	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3056) [Minecraft.class:?]
+	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:138) [SkinManager$3.class:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.FutureTask.run(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_151]
 	at java.lang.Thread.run(Unknown Source) [?:1.8.0_151]
-[23:15:49] [Server thread/INFO]: Player920 has just earned the achievement [Taking Inventory]
-[23:15:49] [Client thread/INFO]: [CHAT] Player920 has just earned the achievement [Taking Inventory]
-[23:15:53] [Client thread/INFO]: [CHAT] Hearthstone is now linked
-[23:16:04] [Server thread/INFO]: Saving and pausing game...
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:16:04] [Server thread/INFO]: Stopping server
-[23:16:04] [Server thread/INFO]: Saving players
-[23:16:04] [Server thread/INFO]: Saving worlds
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:16:05] [Client thread/INFO]: Stopping!
-[23:16:05] [Client thread/INFO]: SoundSystem shutting down...
-[23:16:05] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:35:03] [Client thread/INFO]: [CHAT] Hearthstone channel canceled!
+[23:35:19] [Server thread/INFO]: Saving and pausing game...
+[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:35:19] [Server thread/INFO]: Stopping server
+[23:35:19] [Server thread/INFO]: Saving players
+[23:35:19] [Server thread/INFO]: Player88 lost connection: TextComponent{text='Disconnected', siblings=[], style=Style{hasParent=false, color=null, bold=null, italic=null, underlined=null, obfuscated=null, clickEvent=null, hoverEvent=null, insertion=null}}
+[23:35:19] [Server thread/INFO]: Player88 left the game
+[23:35:19] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[23:35:19] [Server thread/INFO]: Saving worlds
+[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:35:20] [Client thread/INFO]: Stopping!
+[23:35:20] [Client thread/INFO]: SoundSystem shutting down...
+[23:35:20] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com

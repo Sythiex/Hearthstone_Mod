@@ -1,20 +1,24 @@
 Symbol range map extraction starting
 Processing 6 files
 startProcessing "com\sythiex\hearthstonemod\ChannelPositionedSound.java" md5: 1fefea90b43da3b4b3a8a6cb8515b36e
+Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\ChannelPositionedSound.java"
 
 startProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java" md5: 6a315e72020eb053060d537f10fc0bc8
+Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java"
 
-startProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java" md5: e19148aec238a30baf4494b1642d1256
+startProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java" md5: 3aa1770add32252322bde92ecfec6e14
 endProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java"
 
-startProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java" md5: eab85c32b60d2b79cd08fa4ee1f5f178
+startProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java" md5: b55ab59bdab9e78ebbbd22860e7d84cf
 endProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java"
 
 startProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java" md5: 6444dfa164b5eab7e2c6798cc086a98e
+Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java"
 
 startProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java" md5: 6410191b1ac1d8b116091a916cb4f025
+Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java"
 

@@ -204,32 +204,33 @@ public class ItemHearthstone extends Item
 		}
 		// client side
 		/*
-		 * else if(world.isRemote)
-		 * {
-		 * if(entity instanceof EntityPlayer)
-		 * {
-		 * EntityPlayer player = (EntityPlayer) entity;
-		 * NBTTagCompound tag = itemStack.getTagCompound();
-		 * if(tag != null)
-		 * {
-		 * // if cast has started play channel sound
-		 * if(tag.getInteger("castTime") == 1)
-		 * {
-		 * System.out.println("playing sound");
-		 * // TODO doesnt always trigger on client
-		 * Minecraft.getMinecraft().getSoundHandler().playSound(new ChannelPositionedSound(player));
-		 * }
-		 * }
-		 * }
-		 * }
-		 */
+		else if(world.isRemote)
+		{
+			if(entity instanceof EntityPlayer)
+			{
+				EntityPlayer player = (EntityPlayer) entity;
+				NBTTagCompound tag = itemStack.getTagCompound();
+				if(tag != null)
+				{
+					// if cast has started play channel sound
+					if(tag.getInteger("castTime") == 1)
+					{
+						System.out.println("playing sound");
+						// TODO doesnt always trigger on client
+						Minecraft.getMinecraft().getSoundHandler().playSound(new ChannelPositionedSound(player));
+					}
+				}
+			}
+		}
+		*/
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
 	{
-		if(!world.isRemote)
+		if(!player.worldObj.isRemote)
 		{
+			ItemStack itemStack = player.getHeldItem(hand);
 			NBTTagCompound tagCompound = itemStack.getTagCompound();
 			
 			// if not sneaking
@@ -264,14 +265,15 @@ public class ItemHearthstone extends Item
 			// save tag
 			itemStack.setTagCompound(tagCompound);
 		}
-		return new ActionResult(EnumActionResult.PASS, itemStack);
+		return new ActionResult(EnumActionResult.PASS, player.getHeldItem(hand));
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(ItemStack itemStack, EntityPlayer player, World world, BlockPos blockPos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos blockPos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
 		if(!world.isRemote)
 		{
+			ItemStack itemStack = player.getHeldItem(hand);
 			NBTTagCompound tagCompound = itemStack.getTagCompound();
 			
 			// if sneaking

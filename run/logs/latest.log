@@ -1,35 +1,35 @@
-[23:15:22] [Client thread/INFO]: Setting user: Player920
-[23:15:25] [Client thread/WARN]: Skipping bad option: lastServer:
-[23:15:25] [Client thread/INFO]: LWJGL Version: 2.9.4
-[23:15:27] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[23:15:30] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:15:30] [Thread-8/INFO]: Initializing LWJGL OpenAL
-[23:15:30] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:15:30] [Thread-8/INFO]: OpenAL initialized.
-[23:15:31] [Sound Library Loader/INFO]: Sound engine started
-[23:15:34] [Client thread/INFO]: Created: 16x16 textures-atlas
-[23:15:35] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[23:15:37] [Client thread/INFO]: SoundSystem shutting down...
-[23:15:37] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[23:15:37] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:15:38] [Thread-10/INFO]: Initializing LWJGL OpenAL
-[23:15:38] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:15:38] [Thread-10/INFO]: OpenAL initialized.
-[23:15:38] [Sound Library Loader/INFO]: Sound engine started
-[23:15:41] [Client thread/INFO]: Created: 512x512 textures-atlas
-[23:15:41] [Client thread/WARN]: Skipping bad option: lastServer:
-[23:15:42] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[23:15:44] [Server thread/INFO]: Starting integrated minecraft server version 1.10.2
-[23:15:44] [Server thread/INFO]: Generating keypair
-[23:15:44] [Server thread/INFO]: Preparing start region for level 0
-[23:15:45] [Server thread/INFO]: Changing view distance to 12, from 10
-[23:15:46] [Server thread/INFO]: Player920[local:E:7759b1d9] logged in with entity id 112 at (376.85351144955445, 4.0, 2302.4733852053632)
-[23:15:46] [Server thread/INFO]: Player920 joined the game
-[23:15:46] [Server thread/INFO]: Saving and pausing game...
-[23:15:46] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:15:47] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:15:47] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:15:47] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@27e36e18[id=ad8236b9-e26f-349c-902e-7100197cd86d,name=Player920,properties={},legacy=false]
+[23:47:30] [Client thread/INFO]: Setting user: Player692
+[23:47:33] [Client thread/WARN]: Skipping bad option: lastServer:
+[23:47:33] [Client thread/INFO]: LWJGL Version: 2.9.4
+[23:47:36] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:47:38] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:47:39] [Thread-8/INFO]: Initializing LWJGL OpenAL
+[23:47:39] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:47:39] [Thread-8/INFO]: OpenAL initialized.
+[23:47:39] [Sound Library Loader/INFO]: Sound engine started
+[23:47:42] [Client thread/INFO]: Created: 16x16 textures-atlas
+[23:47:43] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:47:46] [Client thread/INFO]: SoundSystem shutting down...
+[23:47:46] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:47:46] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:47:46] [Thread-10/INFO]: Initializing LWJGL OpenAL
+[23:47:46] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:47:46] [Thread-10/INFO]: OpenAL initialized.
+[23:47:46] [Sound Library Loader/INFO]: Sound engine started
+[23:47:49] [Client thread/INFO]: Created: 512x512 textures-atlas
+[23:47:50] [Client thread/WARN]: Skipping bad option: lastServer:
+[23:47:50] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[23:48:09] [Server thread/INFO]: Starting integrated minecraft server version 1.10.2
+[23:48:09] [Server thread/INFO]: Generating keypair
+[23:48:09] [Server thread/INFO]: Preparing start region for level 0
+[23:48:10] [Server thread/INFO]: Changing view distance to 12, from 10
+[23:48:11] [Server thread/INFO]: Player692[local:E:5b48671e] logged in with entity id 125 at (376.2918592949472, 4.0, 2301.8925240258)
+[23:48:11] [Server thread/INFO]: Player692 joined the game
+[23:48:11] [Server thread/INFO]: Saving and pausing game...
+[23:48:12] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:48:12] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:48:12] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:48:12] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@5850ac56[id=a2831e23-8b0f-3ec4-8539-58e8d4db780a,name=Player692,properties={},legacy=false]
 com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
 	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:65) ~[YggdrasilAuthenticationService.class:?]
 	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:175) [YggdrasilMinecraftSessionService.class:?]
@@ -51,19 +51,59 @@ com.mojang.authlib.exceptions.AuthenticationException: The client has sent too m
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_151]
 	at java.lang.Thread.run(Unknown Source) [?:1.8.0_151]
-[23:15:49] [Server thread/INFO]: Player920 has just earned the achievement [Taking Inventory]
-[23:15:49] [Client thread/INFO]: [CHAT] Player920 has just earned the achievement [Taking Inventory]
-[23:15:53] [Client thread/INFO]: [CHAT] Hearthstone is now linked
-[23:16:04] [Server thread/INFO]: Saving and pausing game...
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:16:04] [Server thread/INFO]: Stopping server
-[23:16:04] [Server thread/INFO]: Saving players
-[23:16:04] [Server thread/INFO]: Saving worlds
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:16:04] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:16:05] [Client thread/INFO]: Stopping!
-[23:16:05] [Client thread/INFO]: SoundSystem shutting down...
-[23:16:05] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:48:14] [Server thread/INFO]: Player692 has just earned the achievement [Taking Inventory]
+[23:48:14] [Client thread/INFO]: [CHAT] Player692 has just earned the achievement [Taking Inventory]
+[23:48:15] [Client thread/INFO]: [CHAT] Hearthstone channel canceled!
+[23:48:18] [Server thread/INFO]: Saving and pausing game...
+[23:48:18] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:48:18] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:48:18] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:48:22] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:48:25] [Client thread/INFO]: SoundSystem shutting down...
+[23:48:25] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:48:25] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:48:25] [Thread-14/INFO]: Initializing LWJGL OpenAL
+[23:48:25] [Thread-14/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:48:25] [Thread-14/INFO]: OpenAL initialized.
+[23:48:25] [Sound Library Loader/INFO]: Sound engine started
+[23:48:28] [Client thread/INFO]: Created: 512x512 textures-atlas
+[23:48:38] [Client thread/INFO]: [CHAT] ????????
+[23:48:40] [Client thread/INFO]: [CHAT] ????????
+[23:48:43] [Client thread/INFO]: [CHAT] ???????
+[23:48:47] [Client thread/INFO]: [CHAT] ????????
+[23:48:50] [Server thread/INFO]: Saving and pausing game...
+[23:48:50] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:48:50] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:48:50] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:48:59] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:49:01] [Client thread/INFO]: SoundSystem shutting down...
+[23:49:01] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:49:01] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:49:02] [Thread-16/INFO]: Initializing LWJGL OpenAL
+[23:49:02] [Thread-16/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:49:02] [Thread-16/INFO]: OpenAL initialized.
+[23:49:02] [Sound Library Loader/INFO]: Sound engine started
+[23:49:05] [Client thread/INFO]: Created: 512x512 textures-atlas
+[23:49:10] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[23:49:12] [Client thread/INFO]: SoundSystem shutting down...
+[23:49:13] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[23:49:13] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[23:49:13] [Thread-18/INFO]: Initializing LWJGL OpenAL
+[23:49:13] [Thread-18/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[23:49:13] [Thread-18/INFO]: OpenAL initialized.
+[23:49:13] [Sound Library Loader/INFO]: Sound engine started
+[23:49:16] [Client thread/INFO]: Created: 512x512 textures-atlas
+[23:49:20] [Client thread/INFO]: [CHAT] Hearthstone channel canceled!
+[23:49:21] [Server thread/INFO]: Saving and pausing game...
+[23:49:21] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:49:21] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:49:21] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:49:22] [Server thread/INFO]: Stopping server
+[23:49:22] [Server thread/INFO]: Saving players
+[23:49:22] [Server thread/INFO]: Saving worlds
+[23:49:22] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:49:22] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:49:22] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:49:23] [Client thread/INFO]: Stopping!
+[23:49:23] [Client thread/INFO]: SoundSystem shutting down...
+[23:49:23] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com

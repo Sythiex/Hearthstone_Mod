@@ -3,9 +3,12 @@ package com.sythiex.hearthstonemod;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -322,7 +325,8 @@ public class ItemHearthstone extends Item
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean par4)
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack itemStack, @Nullable World world, List<String> list, ITooltipFlag advanced)
 	{
 		NBTTagCompound tagCompound = itemStack.getTagCompound();
 		if(tagCompound != null)

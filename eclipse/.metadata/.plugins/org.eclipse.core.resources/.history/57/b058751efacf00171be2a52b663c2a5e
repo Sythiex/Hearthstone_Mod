@@ -1,0 +1,31 @@
+package com.sythiex.hearthstonemod;
+
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+public class RegistryEventHandler
+{
+	/*
+	@SubscribeEvent
+	public void registerItems(RegistryEvent.Register<Item> event)
+	{
+		HearthstoneMod.hearthstone = new ItemHearthstone();
+		event.getRegistry().register(HearthstoneMod.hearthstone);
+	}
+	
+	@SubscribeEvent
+	public void registerSounds(RegistryEvent.Register<SoundEvent> event)
+	{
+		HearthstoneMod.channelSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstonechannel")).setRegistryName("hearthstoneChannel");
+		HearthstoneMod.castSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstonecast")).setRegistryName("hearthstoneCast");
+		HearthstoneMod.impactSoundEvent = new SoundEvent(new ResourceLocation("hearthstonemod", "hearthstoneimpact")).setRegistryName("hearthstoneImpact");
+		
+		event.getRegistry().register(HearthstoneMod.channelSoundEvent);
+		event.getRegistry().register(HearthstoneMod.castSoundEvent);
+		event.getRegistry().register(HearthstoneMod.impactSoundEvent);
+	}
+	*/
+}

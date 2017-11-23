@@ -1,70 +1,71 @@
-[23:33:56] [Client thread/INFO]: Setting user: Player88
-[23:33:58] [Client thread/WARN]: Skipping bad option: lastServer:
-[23:33:58] [Client thread/INFO]: LWJGL Version: 2.9.4
-[23:34:01] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[23:34:04] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:34:04] [Thread-8/INFO]: Initializing LWJGL OpenAL
-[23:34:04] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:34:04] [Thread-8/INFO]: OpenAL initialized.
-[23:34:04] [Sound Library Loader/INFO]: Sound engine started
-[23:34:08] [Client thread/INFO]: Created: 16x16 textures-atlas
-[23:34:08] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[23:34:11] [Client thread/INFO]: SoundSystem shutting down...
-[23:34:11] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[23:34:11] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:34:11] [Thread-10/INFO]: Initializing LWJGL OpenAL
-[23:34:11] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:34:11] [Thread-10/INFO]: OpenAL initialized.
-[23:34:11] [Sound Library Loader/INFO]: Sound engine started
-[23:34:15] [Client thread/INFO]: Created: 512x512 textures-atlas
-[23:34:15] [Client thread/WARN]: Skipping bad option: lastServer:
-[23:34:16] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[23:34:48] [Server thread/INFO]: Starting integrated minecraft server version 1.11.2
-[23:34:48] [Server thread/INFO]: Generating keypair
-[23:34:48] [Server thread/INFO]: Preparing start region for level 0
-[23:34:49] [Server thread/INFO]: Changing view distance to 12, from 10
-[23:34:50] [Server thread/INFO]: Player88[local:E:1819d480] logged in with entity id 110 at (-114.00131762611532, 4.0, 1243.9555392776824)
-[23:34:50] [Server thread/INFO]: Player88 joined the game
-[23:34:51] [Server thread/INFO]: Saving and pausing game...
-[23:34:51] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:34:51] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:34:51] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:34:51] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@53a96dbd[id=83a9d3a3-9e1e-31ca-9e08-18626d61aedc,name=Player88,properties={},legacy=false]
+[22:47:34] [main/INFO]: Setting user: Player880
+[22:47:37] [main/WARN]: Skipping bad option: lastServer:
+[22:47:37] [main/INFO]: LWJGL Version: 2.9.4
+[22:47:40] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[22:47:43] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[22:47:43] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[22:47:43] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[22:47:43] [Thread-5/INFO]: OpenAL initialized.
+[22:47:43] [Sound Library Loader/INFO]: Sound engine started
+[22:47:48] [main/INFO]: Created: 512x512 textures-atlas
+[22:47:49] [main/WARN]: Skipping bad option: lastServer:
+[22:47:49] [main/INFO]: Narrator library for x64 successfully loaded
+[22:47:50] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[22:47:52] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
+[22:47:52] [Server thread/INFO]: Generating keypair
+[22:47:53] [Server thread/INFO]: Loaded 488 advancements
+[22:47:53] [Server thread/INFO]: Preparing start region for level 0
+[22:47:54] [Server thread/INFO]: Changing view distance to 12, from 10
+[22:47:55] [Server thread/INFO]: Player880[local:E:9da5aedf] logged in with entity id 79 at (-490.5521847656073, 5.0, -473.82490463103903)
+[22:47:55] [Server thread/INFO]: Player880 joined the game
+[22:47:55] [Server thread/INFO]: Player880 has made the advancement [Diamonds!]
+[22:47:56] [Server thread/INFO]: Saving and pausing game...
+[22:47:56] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
+[22:47:56] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
+[22:47:56] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
+[22:47:56] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@5320a374[id=1344ba46-6b08-3a2e-813a-3106d9215e61,name=Player880,properties={},legacy=false]
 com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
 	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:79) ~[YggdrasilAuthenticationService.class:?]
 	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:180) [YggdrasilMinecraftSessionService.class:?]
 	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:60) [YggdrasilMinecraftSessionService$1.class:?]
 	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:57) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3524) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2317) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2280) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2195) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache.get(LocalCache.java:3934) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:3938) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:4821) [guava-17.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:4827) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3716) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2424) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2298) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2211) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache.get(LocalCache.java:4154) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:4158) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:5147) [guava-21.0.jar:?]
+	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:5153) [guava-21.0.jar:?]
 	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:170) [YggdrasilMinecraftSessionService.class:?]
-	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3056) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3156) [Minecraft.class:?]
 	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:138) [SkinManager$3.class:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.FutureTask.run(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_151]
 	at java.lang.Thread.run(Unknown Source) [?:1.8.0_151]
-[23:35:03] [Client thread/INFO]: [CHAT] Hearthstone channel canceled!
-[23:35:19] [Server thread/INFO]: Saving and pausing game...
-[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:35:19] [Server thread/INFO]: Stopping server
-[23:35:19] [Server thread/INFO]: Saving players
-[23:35:19] [Server thread/INFO]: Player88 lost connection: TextComponent{text='Disconnected', siblings=[], style=Style{hasParent=false, color=null, bold=null, italic=null, underlined=null, obfuscated=null, clickEvent=null, hoverEvent=null, insertion=null}}
-[23:35:19] [Server thread/INFO]: Player88 left the game
-[23:35:19] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[23:35:19] [Server thread/INFO]: Saving worlds
-[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:35:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:35:20] [Client thread/INFO]: Stopping!
-[23:35:20] [Client thread/INFO]: SoundSystem shutting down...
-[23:35:20] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[22:47:56] [main/INFO]: [CHAT] Player880 has made the advancement [Diamonds!]
+[22:47:56] [main/INFO]: Loaded 32 advancements
+[22:48:01] [main/INFO]: [CHAT] Hearthstone is now linked
+[22:48:06] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[22:48:09] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[22:48:11] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[22:48:11] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[22:48:12] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[22:48:30] [Server thread/INFO]: Saving and pausing game...
+[22:48:30] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
+[22:48:30] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
+[22:48:30] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
+[22:48:31] [Server thread/INFO]: Stopping server
+[22:48:31] [Server thread/INFO]: Saving players
+[22:48:31] [Server thread/INFO]: Player880 lost connection: Disconnected
+[22:48:31] [Server thread/INFO]: Player880 left the game
+[22:48:31] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[22:48:31] [Server thread/INFO]: Saving worlds
+[22:48:31] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
+[22:48:31] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
+[22:48:31] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
+[22:48:32] [main/INFO]: Stopping!
+[22:48:32] [main/INFO]: SoundSystem shutting down...
+[22:48:32] [main/WARN]: Author: Paul Lamb, www.paulscode.com

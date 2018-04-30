@@ -1,71 +1,60 @@
-[22:47:34] [main/INFO]: Setting user: Player880
-[22:47:37] [main/WARN]: Skipping bad option: lastServer:
-[22:47:37] [main/INFO]: LWJGL Version: 2.9.4
-[22:47:40] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[22:47:43] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[22:47:43] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[22:47:43] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[22:47:43] [Thread-5/INFO]: OpenAL initialized.
-[22:47:43] [Sound Library Loader/INFO]: Sound engine started
-[22:47:48] [main/INFO]: Created: 512x512 textures-atlas
-[22:47:49] [main/WARN]: Skipping bad option: lastServer:
-[22:47:49] [main/INFO]: Narrator library for x64 successfully loaded
-[22:47:50] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[22:47:52] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
-[22:47:52] [Server thread/INFO]: Generating keypair
-[22:47:53] [Server thread/INFO]: Loaded 488 advancements
-[22:47:53] [Server thread/INFO]: Preparing start region for level 0
-[22:47:54] [Server thread/INFO]: Changing view distance to 12, from 10
-[22:47:55] [Server thread/INFO]: Player880[local:E:9da5aedf] logged in with entity id 79 at (-490.5521847656073, 5.0, -473.82490463103903)
-[22:47:55] [Server thread/INFO]: Player880 joined the game
-[22:47:55] [Server thread/INFO]: Player880 has made the advancement [Diamonds!]
-[22:47:56] [Server thread/INFO]: Saving and pausing game...
-[22:47:56] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
-[22:47:56] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
-[22:47:56] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
-[22:47:56] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@5320a374[id=1344ba46-6b08-3a2e-813a-3106d9215e61,name=Player880,properties={},legacy=false]
-com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:79) ~[YggdrasilAuthenticationService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:180) [YggdrasilMinecraftSessionService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:60) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:57) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3716) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2424) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2298) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2211) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache.get(LocalCache.java:4154) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:4158) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:5147) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:5153) [guava-21.0.jar:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:170) [YggdrasilMinecraftSessionService.class:?]
-	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3156) [Minecraft.class:?]
-	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:138) [SkinManager$3.class:?]
-	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) [?:1.8.0_151]
-	at java.util.concurrent.FutureTask.run(Unknown Source) [?:1.8.0_151]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_151]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_151]
-	at java.lang.Thread.run(Unknown Source) [?:1.8.0_151]
-[22:47:56] [main/INFO]: [CHAT] Player880 has made the advancement [Diamonds!]
-[22:47:56] [main/INFO]: Loaded 32 advancements
-[22:48:01] [main/INFO]: [CHAT] Hearthstone is now linked
-[22:48:06] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[22:48:09] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[22:48:11] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[22:48:11] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[22:48:12] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[22:48:30] [Server thread/INFO]: Saving and pausing game...
-[22:48:30] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
-[22:48:30] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
-[22:48:30] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
-[22:48:31] [Server thread/INFO]: Stopping server
-[22:48:31] [Server thread/INFO]: Saving players
-[22:48:31] [Server thread/INFO]: Player880 lost connection: Disconnected
-[22:48:31] [Server thread/INFO]: Player880 left the game
-[22:48:31] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[22:48:31] [Server thread/INFO]: Saving worlds
-[22:48:31] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
-[22:48:31] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
-[22:48:31] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
-[22:48:32] [main/INFO]: Stopping!
-[22:48:32] [main/INFO]: SoundSystem shutting down...
-[22:48:32] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[20:20:46] [main/INFO]: Setting user: Player639
+[20:20:49] [main/WARN]: Skipping bad option: lastServer:
+[20:20:49] [main/INFO]: LWJGL Version: 2.9.4
+[20:20:52] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[20:20:55] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[20:20:56] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[20:20:56] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[20:20:56] [Thread-5/INFO]: OpenAL initialized.
+[20:20:56] [Sound Library Loader/INFO]: Sound engine started
+[20:21:00] [main/INFO]: Created: 512x512 textures-atlas
+[20:21:02] [main/WARN]: Skipping bad option: lastServer:
+[20:21:02] [main/INFO]: Narrator library for x64 successfully loaded
+[20:21:02] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[20:21:07] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
+[20:21:07] [Server thread/INFO]: Generating keypair
+[20:21:08] [Server thread/INFO]: Loaded 488 advancements
+[20:21:08] [Server thread/INFO]: Preparing start region for level 0
+[20:21:08] [Server thread/INFO]: Changing view distance to 12, from 10
+[20:21:09] [Server thread/INFO]: Player639[local:E:a34d1e8c] logged in with entity id 79 at (-486.88500390878227, 4.0, -475.2571087274337)
+[20:21:10] [Server thread/INFO]: Player639 joined the game
+[20:21:10] [Server thread/INFO]: Player639 has made the advancement [Diamonds!]
+[20:21:10] [Server thread/INFO]: Saving and pausing game...
+[20:21:10] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
+[20:21:10] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
+[20:21:10] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
+[20:21:10] [main/INFO]: [CHAT] Player639 has made the advancement [Diamonds!]
+[20:21:10] [main/INFO]: Loaded 27 advancements
+[20:21:16] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:21:17] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:22:58] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[20:23:00] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[20:23:02] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[20:23:03] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[20:23:07] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[20:23:12] [main/INFO]: [CHAT] Hearthstone channel canceled!
+[20:23:27] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:29] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:30] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:31] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:32] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:33] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:34] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:34] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:34] [main/INFO]: [CHAT] Hearthstone is now linked
+[20:23:45] [Server thread/INFO]: Saving and pausing game...
+[20:23:45] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
+[20:23:45] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
+[20:23:45] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
+[20:23:45] [Server thread/INFO]: Stopping server
+[20:23:45] [Server thread/INFO]: Saving players
+[20:23:45] [Server thread/INFO]: Player639 lost connection: Disconnected
+[20:23:45] [Server thread/INFO]: Player639 left the game
+[20:23:46] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[20:23:46] [Server thread/INFO]: Saving worlds
+[20:23:46] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
+[20:23:46] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
+[20:23:46] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
+[20:23:47] [main/INFO]: Stopping!
+[20:23:47] [main/INFO]: SoundSystem shutting down...
+[20:23:47] [main/WARN]: Author: Paul Lamb, www.paulscode.com

@@ -8,15 +8,17 @@ startProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java" md5: 6
 Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java"
 
-startProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java" md5: 76251b33559115f3c31d818cc1ed1d0f
+startProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java" md5: 191c674363eb66e9969b7cd25073edc5
 endProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java"
 
-startProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java" md5: 8e9290b6b46aeaa30bc2eef0d6a6f26d
+startProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java" md5: 149553f498af92e2fdfc415ee05334df
 endProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java"
 
 startProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java" md5: e61ba5ee95864a0565aa32d14cca6c67
+Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java"
 
 startProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java" md5: a8773a1d2fd5536b95dc5fbce8da8f64
+Cache Hit!
 endProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java"
 

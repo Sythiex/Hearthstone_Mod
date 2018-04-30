@@ -207,25 +207,25 @@ public class ItemHearthstone extends Item
 		}
 		// client side
 		/*
-		else if(world.isRemote)
-		{
-			if(entity instanceof EntityPlayer)
-			{
-				EntityPlayer player = (EntityPlayer) entity;
-				NBTTagCompound tag = itemStack.getTagCompound();
-				if(tag != null)
-				{
-					// if cast has started play channel sound
-					if(tag.getInteger("castTime") == 1)
-					{
-						System.out.println("playing sound");
-						// TODO doesnt always trigger on client
-						Minecraft.getMinecraft().getSoundHandler().playSound(new ChannelPositionedSound(player));
-					}
-				}
-			}
-		}
-		*/
+		 * else if(world.isRemote)
+		 * {
+		 * if(entity instanceof EntityPlayer)
+		 * {
+		 * EntityPlayer player = (EntityPlayer) entity;
+		 * NBTTagCompound tag = itemStack.getTagCompound();
+		 * if(tag != null)
+		 * {
+		 * // if cast has started play channel sound
+		 * if(tag.getInteger("castTime") == 1)
+		 * {
+		 * System.out.println("playing sound");
+		 * // TODO doesnt always trigger on client
+		 * Minecraft.getMinecraft().getSoundHandler().playSound(new ChannelPositionedSound(player));
+		 * }
+		 * }
+		 * }
+		 * }
+		 */
 	}
 	
 	@Override
@@ -300,6 +300,22 @@ public class ItemHearthstone extends Item
 			}
 		}
 		return EnumActionResult.FAIL;
+	}
+	
+	@Override
+	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
+	{
+		if(oldStack.getItem() == newStack.getItem())
+		{
+			NBTTagCompound oldTag = oldStack.getTagCompound();
+			NBTTagCompound newTag = newStack.getTagCompound();
+			if(oldTag.getInteger("bedX") == newTag.getInteger("bedX") && oldTag.getInteger("bedY") == newTag.getInteger("bedY") && oldTag.getInteger("bedZ") == newTag.getInteger("bedZ"))
+			{
+				if(oldTag.getInteger("cooldown") < (newTag.getInteger("cooldown") + 20) && oldTag.getInteger("cooldown") > (newTag.getInteger("cooldown") - 20))
+					return false;
+			}
+		}
+		return true;
 	}
 	
 	@Override

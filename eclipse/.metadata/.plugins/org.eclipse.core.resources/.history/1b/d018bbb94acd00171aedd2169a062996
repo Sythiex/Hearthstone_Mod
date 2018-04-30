@@ -1,9 +1,0 @@
-package com.sythiex.hearthstonemod;
-
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-
-public class RegistryEventHandler
-{
-	
-}

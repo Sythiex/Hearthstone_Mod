@@ -34,9 +34,9 @@ public class LayerEndermanEyes implements LayerRenderer<EntityEnderman>
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 61680.0F, 0.0F);
         GlStateManager.enableLighting();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+        Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
         this.endermanRenderer.getMainModel().render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-        Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
+        Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
         this.endermanRenderer.setLightmap(entitylivingbaseIn);
         GlStateManager.depthMask(true);
         GlStateManager.disableBlend();

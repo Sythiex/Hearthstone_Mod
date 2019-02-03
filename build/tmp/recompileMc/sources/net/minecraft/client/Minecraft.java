@@ -226,7 +226,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation LOCATION_MOJANG_PNG = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean IS_RUNNING_ON_MAC = Util.getOSType() == Util.EnumOS.OSX;
-    /** A 10MiB preallocation to ensure the heap is reasonably sized. */
+    /**
+     * A 10MiB preallocation to ensure the heap is reasonably sized. {@linkplain #freeMemory() Freed} when the game runs
+     * out of memory.
+     *  
+     * @see #freeMemory()
+     */
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> MAC_DISPLAY_MODES = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));
     private final File fileResourcepacks;
@@ -236,8 +241,8 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private ServerData currentServerData;
     /** The RenderEngine instance used by Minecraft */
     public TextureManager renderEngine;
-    /** Set to 'this' in Minecraft constructor; used by some settings get methods */
-    private static Minecraft theMinecraft;
+    /** The instance of the Minecraft Client, set in the constructor. */
+    private static Minecraft instance;
     private final DataFixer dataFixer;
     public PlayerControllerMP playerController;
     private boolean fullscreen;
@@ -252,22 +257,27 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private final Timer timer = new Timer(20.0F);
     /** Instance of PlayerUsageSnooper. */
     private final Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
-    public WorldClient theWorld;
+    public WorldClient world;
     public RenderGlobal renderGlobal;
     private RenderManager renderManager;
     private RenderItem renderItem;
     private ItemRenderer itemRenderer;
-    public EntityPlayerSP thePlayer;
+    public EntityPlayerSP player;
     @Nullable
     private Entity renderViewEntity;
     public Entity pointedEntity;
     public ParticleManager effectRenderer;
-    private SearchTreeManager field_193995_ae = new SearchTreeManager();
+    /** Manages all search trees */
+    private SearchTreeManager searchTreeManager = new SearchTreeManager();
     private final Session session;
     private boolean isGamePaused;
-    private float field_193996_ah;
+    /**
+     * Time passed since the last update in ticks. Used instead of this.timer.renderPartialTicks when paused in
+     * singleplayer.
+     */
+    private float renderPartialTicksPaused;
     /** The font renderer used for displaying and measuring text */
-    public FontRenderer fontRendererObj;
+    public FontRenderer fontRenderer;
     public FontRenderer standardGalacticFontRenderer;
     /** The GuiScreen that's being displayed at the moment. */
     @Nullable
@@ -283,7 +293,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private final int tempDisplayHeight;
     /** Instance of IntegratedServer. */
     @Nullable
-    private IntegratedServer theIntegratedServer;
+    private IntegratedServer integratedServer;
     public GuiIngame ingameGUI;
     /** Skip render world */
     public boolean skipRenderWorld;
@@ -291,7 +301,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     public RayTraceResult objectMouseOver;
     /** The game settings that currently hold effect. */
     public GameSettings gameSettings;
-    public CreativeSettings field_191950_u;
+    public CreativeSettings creativeSettings;
     /** Mouse helper instance. */
     public MouseHelper mouseHelper;
     public final File mcDataDir;
@@ -347,7 +357,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private ModelManager modelManager;
     /** The BlockRenderDispatcher instance that will be used based off gamesettings */
     private BlockRendererDispatcher blockRenderDispatcher;
-    private final GuiToast field_193034_aS;
+    private final GuiToast toastGui;
     /** Set to true to keep the game loop running. Set to false by shutdown() to allow the game loop to exit cleanly. */
     volatile boolean running = true;
     /** String that shows the debug information */
@@ -358,14 +368,15 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     /** holds the current fps */
     private int fpsCounter;
     private boolean actionKeyF3;
-    private final Tutorial field_193035_aW;
+    private final Tutorial tutorial;
     long prevFrameTime = -1L;
     /** Profiler currently displayed in the debug screen pie chart */
     private String debugProfilerName = "root";
 
     public Minecraft(GameConfiguration gameConfig)
     {
-        theMinecraft = this;
+        instance = this;
+        net.minecraftforge.client.ForgeHooksClient.invalidateLog4jThreadCache();
         this.mcDataDir = gameConfig.folderInfo.mcDataDir;
         this.fileAssets = gameConfig.folderInfo.assetsDir;
         this.fileResourcepacks = gameConfig.folderInfo.resourcePacksDir;
@@ -385,7 +396,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.tempDisplayHeight = gameConfig.displayInfo.height;
         this.fullscreen = gameConfig.displayInfo.fullscreen;
         this.jvm64bit = isJvm64bit();
-        this.theIntegratedServer = null;
+        this.integratedServer = null;
 
         if (gameConfig.serverInfo.serverName != null)
         {
@@ -396,10 +407,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         ImageIO.setUseCache(false);
         Locale.setDefault(Locale.ROOT);
         Bootstrap.register();
-        TextComponentKeybind.field_193637_b = KeyBinding::func_193626_b;
+        TextComponentKeybind.displaySupplierFunction = KeyBinding::getDisplayString;
         this.dataFixer = DataFixesManager.createFixer();
-        this.field_193034_aS = new GuiToast(this);
-        this.field_193035_aW = new Tutorial(this);
+        this.toastGui = new GuiToast(this);
+        this.tutorial = new Tutorial(this);
     }
 
     public void run()
@@ -408,7 +419,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         try
         {
-            this.startGame();
+            this.init();
         }
         catch (Throwable throwable)
         {
@@ -475,10 +486,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     /**
      * Starts the game: initializes the canvas, the title, the settings, etcetera.
      */
-    private void startGame() throws LWJGLException, IOException
+    private void init() throws LWJGLException, IOException
     {
         this.gameSettings = new GameSettings(this, this.mcDataDir);
-        this.field_191950_u = new CreativeSettings(this, this.mcDataDir);
+        this.creativeSettings = new CreativeSettings(this, this.mcDataDir);
         this.defaultResourcePacks.add(this.mcDefaultResourcePack);
         this.startTimerHackThread();
 
@@ -509,16 +520,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.mcSoundHandler = new SoundHandler(this.mcResourceManager, this.gameSettings);
         this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
         this.mcMusicTicker = new MusicTicker(this);
-        this.fontRendererObj = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii.png"), this.renderEngine, false);
+        this.fontRenderer = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii.png"), this.renderEngine, false);
 
         if (this.gameSettings.language != null)
         {
-            this.fontRendererObj.setUnicodeFlag(this.isUnicode());
-            this.fontRendererObj.setBidiFlag(this.mcLanguageManager.isCurrentLanguageBidirectional());
+            this.fontRenderer.setUnicodeFlag(this.isUnicode());
+            this.fontRenderer.setBidiFlag(this.mcLanguageManager.isCurrentLanguageBidirectional());
         }
 
         this.standardGalacticFontRenderer = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii_sga.png"), this.renderEngine, false);
-        this.mcResourceManager.registerReloadListener(this.fontRendererObj);
+        this.mcResourceManager.registerReloadListener(this.fontRenderer);
         this.mcResourceManager.registerReloadListener(this.standardGalacticFontRenderer);
         this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
         this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
@@ -562,10 +573,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.mcResourceManager.registerReloadListener(this.blockRenderDispatcher);
         this.renderGlobal = new RenderGlobal(this);
         this.mcResourceManager.registerReloadListener(this.renderGlobal);
-        this.func_193986_ar();
-        this.mcResourceManager.registerReloadListener(this.field_193995_ae);
+        this.populateSearchTreeManager();
+        this.mcResourceManager.registerReloadListener(this.searchTreeManager);
         GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
-        this.effectRenderer = new ParticleManager(this.theWorld, this.renderEngine);
+        this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
         net.minecraftforge.fml.client.SplashProgress.resume();
         net.minecraftforge.fml.common.ProgressManager.pop(bar);
         net.minecraftforge.fml.client.FMLClientHandler.instance().finishMinecraftLoading();
@@ -605,7 +616,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.renderGlobal.makeEntityOutlineShader();
     }
 
-    public void func_193986_ar()
+    /**
+     * Fills {@link #searchTreeManager} with the current item and recipe registry contents.
+     */
+    public void populateSearchTreeManager()
     {
         SearchTree<ItemStack> searchtree = new SearchTree<ItemStack>((p_193988_0_) ->
         {
@@ -616,30 +630,30 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             return Collections.singleton(Item.REGISTRY.getNameForObject(p_193985_0_.getItem()));
         });
-        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191196_a();
+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>create();
 
         for (Item item : Item.REGISTRY)
         {
             item.getSubItems(CreativeTabs.SEARCH, nonnulllist);
         }
 
-        nonnulllist.forEach(searchtree::func_194043_a);
+        nonnulllist.forEach(searchtree::add);
         SearchTree<RecipeList> searchtree1 = new SearchTree<RecipeList>((p_193990_0_) ->
         {
-            return (List)p_193990_0_.func_192711_b().stream().flatMap((p_193993_0_) -> {
+            return (List)p_193990_0_.getRecipes().stream().flatMap((p_193993_0_) -> {
                 return p_193993_0_.getRecipeOutput().getTooltip((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream();
             }).map(TextFormatting::getTextWithoutFormattingCodes).map(String::trim).filter((p_193994_0_) -> {
                 return !p_193994_0_.isEmpty();
             }).collect(Collectors.toList());
         }, (p_193991_0_) ->
         {
-            return (List)p_193991_0_.func_192711_b().stream().map((p_193992_0_) -> {
+            return (List)p_193991_0_.getRecipes().stream().map((p_193992_0_) -> {
                 return Item.REGISTRY.getNameForObject(p_193992_0_.getRecipeOutput().getItem());
             }).collect(Collectors.toList());
         });
-        RecipeBookClient.field_194087_f.forEach(searchtree1::func_194043_a);
-        this.field_193995_ae.func_194009_a(SearchTreeManager.field_194011_a, searchtree);
-        this.field_193995_ae.func_194009_a(SearchTreeManager.field_194012_b, searchtree1);
+        RecipeBookClient.ALL_RECIPES.forEach(searchtree1::add);
+        this.searchTreeManager.register(SearchTreeManager.ITEMS, searchtree);
+        this.searchTreeManager.register(SearchTreeManager.RECIPES, searchtree1);
     }
 
     private void registerMetadataSerializers()
@@ -750,11 +764,19 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.framebufferMc;
     }
 
+    /**
+     * Gets the version that Minecraft was launched under (the name of a version JSON). Specified via the <code>--
+     * version</code> flag.
+     */
     public String getVersion()
     {
         return this.launchedVersion;
     }
 
+    /**
+     * Gets the type of version that Minecraft was launched under (as specified in the version JSON). Specified via the
+     * <code>--versionType</code> flag.
+     */
     public String getVersionType()
     {
         return this.versionType;
@@ -822,13 +844,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.mcLanguageManager.isCurrentLocaleUnicode() || this.gameSettings.forceUnicodeFont;
     }
 
+    @Deprecated // Forge: Use selective refreshResources method in FMLClientHandler
     public void refreshResources()
     {
         List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
 
-        if (this.theIntegratedServer != null)
+        if (this.integratedServer != null)
         {
-            this.theIntegratedServer.func_193031_aM();
+            this.integratedServer.reload();
         }
 
         for (ResourcePackRepository.Entry resourcepackrepository$entry : this.mcResourcePackRepository.getRepositoryEntries())
@@ -836,9 +859,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             list.add(resourcepackrepository$entry.getResourcePack());
         }
 
-        if (this.mcResourcePackRepository.getResourcePackInstance() != null)
+        if (this.mcResourcePackRepository.getServerResourcePack() != null)
         {
-            list.add(this.mcResourcePackRepository.getResourcePackInstance());
+            list.add(this.mcResourcePackRepository.getServerResourcePack());
         }
 
         try
@@ -1013,14 +1036,24 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     /**
      * Sets the argument GuiScreen as the main (topmost visible) screen.
+     *  
+     * <p><strong>WARNING</strong>: This method is not thread-safe. Opening GUIs from a thread other than the main
+     * thread may cause many different issues, including the GUI being rendered before it has initialized (leading to
+     * unusual crashes). If on a thread other than the main thread, use {@link #addScheduledTask}:
+     *  
+     * <pre>
+     * minecraft.addScheduledTask(() -> minecraft.displayGuiScreen(gui));
+     * </pre>
+     *  
+     * @param guiScreenIn The {@link GuiScreen} to display. If it is {@code null}, any open GUI will be closed.
      */
     public void displayGuiScreen(@Nullable GuiScreen guiScreenIn)
     {
-        if (guiScreenIn == null && this.theWorld == null)
+        if (guiScreenIn == null && this.world == null)
         {
             guiScreenIn = new GuiMainMenu();
         }
-        else if (guiScreenIn == null && this.thePlayer.getHealth() <= 0.0F)
+        else if (guiScreenIn == null && this.player.getHealth() <= 0.0F)
         {
             guiScreenIn = new GuiGameOver((ITextComponent)null);
         }
@@ -1159,7 +1192,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         long i1 = System.nanoTime() - l;
         this.checkGLError("Pre render");
         this.mcProfiler.endStartSection("sound");
-        this.mcSoundHandler.setListener(this.thePlayer, this.timer.field_194147_b);
+        this.mcSoundHandler.setListener(this.getRenderViewEntity(), this.timer.renderPartialTicks); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
         this.mcProfiler.endSection();
         this.mcProfiler.startSection("render");
         GlStateManager.pushMatrix();
@@ -1171,13 +1204,13 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         if (!this.skipRenderWorld)
         {
-            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickStart(this.timer.field_194147_b);
+            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
             this.mcProfiler.endStartSection("gameRenderer");
-            this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.field_193996_ah : this.timer.field_194147_b, i);
+            this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);
             this.mcProfiler.endStartSection("toasts");
-            this.field_193034_aS.func_191783_a(new ScaledResolution(this));
+            this.toastGui.drawToast(new ScaledResolution(this));
             this.mcProfiler.endSection();
-            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickEnd(this.timer.field_194147_b);
+            net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
         }
 
         this.mcProfiler.endSection();
@@ -1204,24 +1237,24 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.framebufferMc.framebufferRender(this.displayWidth, this.displayHeight);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        this.entityRenderer.renderStreamIndicator(this.timer.field_194147_b);
+        this.entityRenderer.renderStreamIndicator(this.timer.renderPartialTicks);
         GlStateManager.popMatrix();
         this.mcProfiler.startSection("root");
         this.updateDisplay();
         Thread.yield();
         this.checkGLError("Post render");
         ++this.fpsCounter;
-        boolean flag = this.isSingleplayer() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame() && !this.theIntegratedServer.getPublic();
+        boolean flag = this.isSingleplayer() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame() && !this.integratedServer.getPublic();
 
         if (this.isGamePaused != flag)
         {
             if (this.isGamePaused)
             {
-                this.field_193996_ah = this.timer.field_194147_b;
+                this.renderPartialTicksPaused = this.timer.renderPartialTicks;
             }
             else
             {
-                this.timer.field_194147_b = this.field_193996_ah;
+                this.timer.renderPartialTicks = this.renderPartialTicksPaused;
             }
 
             this.isGamePaused = flag;
@@ -1292,7 +1325,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     public int getLimitFramerate()
     {
-        return this.theWorld == null && this.currentScreen != null ? 30 : this.gameSettings.limitFramerate;
+        return this.world == null && this.currentScreen != null ? 30 : this.gameSettings.limitFramerate;
     }
 
     public boolean isFramerateLimitBelowMax()
@@ -1300,6 +1333,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return (float)this.getLimitFramerate() < GameSettings.Options.FRAMERATE_LIMIT.getValueMax();
     }
 
+    /**
+     * Attempts to free as much memory as possible, including leaving the world and running the garbage collector.
+     */
     public void freeMemory()
     {
         try
@@ -1402,7 +1438,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             for (int l = 0; l < list.size(); ++l)
             {
                 Profiler.Result profiler$result1 = list.get(l);
-                int i1 = MathHelper.floor_double(profiler$result1.usePercentage / 4.0D) + 1;
+                int i1 = MathHelper.floor(profiler$result1.usePercentage / 4.0D) + 1;
                 bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
                 int j1 = profiler$result1.getColor();
                 int k1 = j1 >> 16 & 255;
@@ -1453,9 +1489,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             }
 
             int l2 = 16777215;
-            this.fontRendererObj.drawStringWithShadow(s, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+            this.fontRenderer.drawStringWithShadow(s, (float)(j - 160), (float)(k - 80 - 16), 16777215);
             s = decimalformat.format(profiler$result.totalUsePercentage) + "%";
-            this.fontRendererObj.drawStringWithShadow(s, (float)(j + 160 - this.fontRendererObj.getStringWidth(s)), (float)(k - 80 - 16), 16777215);
+            this.fontRenderer.drawStringWithShadow(s, (float)(j + 160 - this.fontRenderer.getStringWidth(s)), (float)(k - 80 - 16), 16777215);
 
             for (int k2 = 0; k2 < list.size(); ++k2)
             {
@@ -1472,11 +1508,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 }
 
                 String s1 = stringbuilder.append(profiler$result2.profilerName).toString();
-                this.fontRendererObj.drawStringWithShadow(s1, (float)(j - 160), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                this.fontRenderer.drawStringWithShadow(s1, (float)(j - 160), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
                 s1 = decimalformat.format(profiler$result2.usePercentage) + "%";
-                this.fontRendererObj.drawStringWithShadow(s1, (float)(j + 160 - 50 - this.fontRendererObj.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                this.fontRenderer.drawStringWithShadow(s1, (float)(j + 160 - 50 - this.fontRenderer.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
                 s1 = decimalformat.format(profiler$result2.totalUsePercentage) + "%";
-                this.fontRendererObj.drawStringWithShadow(s1, (float)(j + 160 - this.fontRendererObj.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                this.fontRenderer.drawStringWithShadow(s1, (float)(j + 160 - this.fontRenderer.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
             }
         }
     }
@@ -1533,7 +1569,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             this.displayGuiScreen(new GuiIngameMenu());
 
-            if (this.isSingleplayer() && !this.theIntegratedServer.getPublic())
+            if (this.isSingleplayer() && !this.integratedServer.getPublic())
             {
                 this.mcSoundHandler.pauseSounds();
             }
@@ -1547,16 +1583,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             this.leftClickCounter = 0;
         }
 
-        if (this.leftClickCounter <= 0 && !this.thePlayer.isHandActive())
+        if (this.leftClickCounter <= 0 && !this.player.isHandActive())
         {
             if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
             {
                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
-                if (!this.theWorld.isAirBlock(blockpos) && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit))
+                if (!this.world.isAirBlock(blockpos) && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit))
                 {
                     this.effectRenderer.addBlockHitEffects(blockpos, this.objectMouseOver);
-                    this.thePlayer.swingArm(EnumHand.MAIN_HAND);
+                    this.player.swingArm(EnumHand.MAIN_HAND);
                 }
             }
             else
@@ -1579,17 +1615,17 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                     this.leftClickCounter = 10;
                 }
             }
-            else if (!this.thePlayer.isRowingBoat())
+            else if (!this.player.isRowingBoat())
             {
                 switch (this.objectMouseOver.typeOfHit)
                 {
                     case ENTITY:
-                        this.playerController.attackEntity(this.thePlayer, this.objectMouseOver.entityHit);
+                        this.playerController.attackEntity(this.player, this.objectMouseOver.entityHit);
                         break;
                     case BLOCK:
                         BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
-                        if (!this.theWorld.isAirBlock(blockpos))
+                        if (!this.world.isAirBlock(blockpos))
                         {
                             this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                             break;
@@ -1602,11 +1638,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                             this.leftClickCounter = 10;
                         }
 
-                        this.thePlayer.resetCooldown();
-                        net.minecraftforge.common.ForgeHooks.onEmptyLeftClick(this.thePlayer);
+                        this.player.resetCooldown();
+                        net.minecraftforge.common.ForgeHooks.onEmptyLeftClick(this.player);
                 }
 
-                this.thePlayer.swingArm(EnumHand.MAIN_HAND);
+                this.player.swingArm(EnumHand.MAIN_HAND);
             }
         }
     }
@@ -1621,7 +1657,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             this.rightClickDelayTimer = 4;
 
-            if (!this.thePlayer.isRowingBoat())
+            if (!this.player.isRowingBoat())
             {
                 if (this.objectMouseOver == null)
                 {
@@ -1630,7 +1666,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
                 for (EnumHand enumhand : EnumHand.values())
                 {
-                    ItemStack itemstack = this.thePlayer.getHeldItem(enumhand);
+                    ItemStack itemstack = this.player.getHeldItem(enumhand);
 
                     if (this.objectMouseOver != null)
                     {
@@ -1638,12 +1674,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                         {
                             case ENTITY:
 
-                                if (this.playerController.interactWithEntity(this.thePlayer, this.objectMouseOver.entityHit, this.objectMouseOver, enumhand) == EnumActionResult.SUCCESS)
+                                if (this.playerController.interactWithEntity(this.player, this.objectMouseOver.entityHit, this.objectMouseOver, enumhand) == EnumActionResult.SUCCESS)
                                 {
                                     return;
                                 }
 
-                                if (this.playerController.interactWithEntity(this.thePlayer, this.objectMouseOver.entityHit, enumhand) == EnumActionResult.SUCCESS)
+                                if (this.playerController.interactWithEntity(this.player, this.objectMouseOver.entityHit, enumhand) == EnumActionResult.SUCCESS)
                                 {
                                     return;
                                 }
@@ -1652,16 +1688,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                             case BLOCK:
                                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
-                                if (this.theWorld.getBlockState(blockpos).getMaterial() != Material.AIR)
+                                if (this.world.getBlockState(blockpos).getMaterial() != Material.AIR)
                                 {
-                                    int i = itemstack.func_190916_E();
-                                    EnumActionResult enumactionresult = this.playerController.processRightClickBlock(this.thePlayer, this.theWorld, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec, enumhand);
+                                    int i = itemstack.getCount();
+                                    EnumActionResult enumactionresult = this.playerController.processRightClickBlock(this.player, this.world, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec, enumhand);
 
                                     if (enumactionresult == EnumActionResult.SUCCESS)
                                     {
-                                        this.thePlayer.swingArm(enumhand);
+                                        this.player.swingArm(enumhand);
 
-                                        if (!itemstack.func_190926_b() && (itemstack.func_190916_E() != i || this.playerController.isInCreativeMode()))
+                                        if (!itemstack.isEmpty() && (itemstack.getCount() != i || this.playerController.isInCreativeMode()))
                                         {
                                             this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
                                         }
@@ -1672,8 +1708,8 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                         }
                     }
 
-                    if (itemstack.func_190926_b() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) net.minecraftforge.common.ForgeHooks.onEmptyClick(this.thePlayer, enumhand);
-                    if (!itemstack.func_190926_b() && this.playerController.processRightClick(this.thePlayer, this.theWorld, enumhand) == EnumActionResult.SUCCESS)
+                    if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
+                    if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS)
                     {
                         this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
                         return;
@@ -1807,33 +1843,33 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         this.mcProfiler.endSection();
         this.entityRenderer.getMouseOver(1.0F);
-        this.field_193035_aW.func_193297_a(this.theWorld, this.objectMouseOver);
+        this.tutorial.onMouseHover(this.world, this.objectMouseOver);
         this.mcProfiler.startSection("gameMode");
 
-        if (!this.isGamePaused && this.theWorld != null)
+        if (!this.isGamePaused && this.world != null)
         {
             this.playerController.updateController();
         }
 
         this.mcProfiler.endStartSection("textures");
 
-        if (this.theWorld != null)
+        if (this.world != null)
         {
             this.renderEngine.tick();
         }
 
-        if (this.currentScreen == null && this.thePlayer != null)
+        if (this.currentScreen == null && this.player != null)
         {
-            if (this.thePlayer.getHealth() <= 0.0F && !(this.currentScreen instanceof GuiGameOver))
+            if (this.player.getHealth() <= 0.0F && !(this.currentScreen instanceof GuiGameOver))
             {
                 this.displayGuiScreen((GuiScreen)null);
             }
-            else if (this.thePlayer.isPlayerSleeping() && this.theWorld != null)
+            else if (this.player.isPlayerSleeping() && this.world != null)
             {
                 this.displayGuiScreen(new GuiSleepMP());
             }
         }
-        else if (this.currentScreen != null && this.currentScreen instanceof GuiSleepMP && !this.thePlayer.isPlayerSleeping())
+        else if (this.currentScreen != null && this.currentScreen instanceof GuiSleepMP && !this.player.isPlayerSleeping())
         {
             this.displayGuiScreen((GuiScreen)null);
         }
@@ -1853,7 +1889,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable1, "Updating screen events");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Affected screen");
-                crashreportcategory.setDetail("Screen name", new ICrashReportDetail<String>()
+                crashreportcategory.addDetail("Screen name", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
@@ -1873,7 +1909,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 {
                     CrashReport crashreport1 = CrashReport.makeCrashReport(throwable, "Ticking screen");
                     CrashReportCategory crashreportcategory1 = crashreport1.makeCategory("Affected screen");
-                    crashreportcategory1.setDetail("Screen name", new ICrashReportDetail<String>()
+                    crashreportcategory1.addDetail("Screen name", new ICrashReportDetail<String>()
                     {
                         public String call() throws Exception
                         {
@@ -1899,16 +1935,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             this.runTickKeyboard();
         }
 
-        if (this.theWorld != null)
+        if (this.world != null)
         {
-            if (this.thePlayer != null)
+            if (this.player != null)
             {
                 ++this.joinPlayerCounter;
 
                 if (this.joinPlayerCounter == 30)
                 {
                     this.joinPlayerCounter = 0;
-                    this.theWorld.joinEntityInSurroundings(this.thePlayer);
+                    this.world.joinEntityInSurroundings(this.player);
                 }
             }
 
@@ -1930,12 +1966,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
             if (!this.isGamePaused)
             {
-                if (this.theWorld.getLastLightningBolt() > 0)
+                if (this.world.getLastLightningBolt() > 0)
                 {
-                    this.theWorld.setLastLightningBolt(this.theWorld.getLastLightningBolt() - 1);
+                    this.world.setLastLightningBolt(this.world.getLastLightningBolt() - 1);
                 }
 
-                this.theWorld.updateEntities();
+                this.world.updateEntities();
             }
         }
         else if (this.entityRenderer.isShaderActive())
@@ -1949,29 +1985,29 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             this.mcSoundHandler.update();
         }
 
-        if (this.theWorld != null)
+        if (this.world != null)
         {
             if (!this.isGamePaused)
             {
-                this.theWorld.setAllowedSpawnTypes(this.theWorld.getDifficulty() != EnumDifficulty.PEACEFUL, true);
-                this.field_193035_aW.func_193303_d();
+                this.world.setAllowedSpawnTypes(this.world.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+                this.tutorial.update();
 
                 try
                 {
-                    this.theWorld.tick();
+                    this.world.tick();
                 }
                 catch (Throwable throwable2)
                 {
                     CrashReport crashreport2 = CrashReport.makeCrashReport(throwable2, "Exception in world tick");
 
-                    if (this.theWorld == null)
+                    if (this.world == null)
                     {
                         CrashReportCategory crashreportcategory2 = crashreport2.makeCategory("Affected level");
                         crashreportcategory2.addCrashSection("Problem", "Level is null!");
                     }
                     else
                     {
-                        this.theWorld.addWorldInfoToCrashReport(crashreport2);
+                        this.world.addWorldInfoToCrashReport(crashreport2);
                     }
 
                     throw new ReportedException(crashreport2);
@@ -1980,9 +2016,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
             this.mcProfiler.endStartSection("animateTick");
 
-            if (!this.isGamePaused && this.theWorld != null)
+            if (!this.isGamePaused && this.world != null)
             {
-                this.theWorld.doVoidFogParticles(MathHelper.floor_double(this.thePlayer.posX), MathHelper.floor_double(this.thePlayer.posY), MathHelper.floor_double(this.thePlayer.posZ));
+                this.world.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
             }
 
             this.mcProfiler.endStartSection("particles");
@@ -2111,22 +2147,22 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.processKeyBinds();
     }
 
-    private boolean processKeyF3(int p_184122_1_)
+    private boolean processKeyF3(int auxKey)
     {
-        if (p_184122_1_ == 30)
+        if (auxKey == 30)
         {
             this.renderGlobal.loadRenderers();
-            this.func_190521_a("debug.reload_chunks.message");
+            this.debugFeedbackTranslated("debug.reload_chunks.message");
             return true;
         }
-        else if (p_184122_1_ == 48)
+        else if (auxKey == 48)
         {
             boolean flag1 = !this.renderManager.isDebugBoundingBox();
             this.renderManager.setDebugBoundingBox(flag1);
-            this.func_190521_a(flag1 ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
+            this.debugFeedbackTranslated(flag1 ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
             return true;
         }
-        else if (p_184122_1_ == 32)
+        else if (auxKey == 32)
         {
             if (this.ingameGUI != null)
             {
@@ -2135,52 +2171,52 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
             return true;
         }
-        else if (p_184122_1_ == 33)
+        else if (auxKey == 33)
         {
             this.gameSettings.setOptionValue(GameSettings.Options.RENDER_DISTANCE, GuiScreen.isShiftKeyDown() ? -1 : 1);
-            this.func_190521_a("debug.cycle_renderdistance.message", this.gameSettings.renderDistanceChunks);
+            this.debugFeedbackTranslated("debug.cycle_renderdistance.message", this.gameSettings.renderDistanceChunks);
             return true;
         }
-        else if (p_184122_1_ == 34)
+        else if (auxKey == 34)
         {
-            boolean flag = this.debugRenderer.toggleDebugScreen();
-            this.func_190521_a(flag ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
+            boolean flag = this.debugRenderer.toggleChunkBorders();
+            this.debugFeedbackTranslated(flag ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
             return true;
         }
-        else if (p_184122_1_ == 35)
+        else if (auxKey == 35)
         {
             this.gameSettings.advancedItemTooltips = !this.gameSettings.advancedItemTooltips;
-            this.func_190521_a(this.gameSettings.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
+            this.debugFeedbackTranslated(this.gameSettings.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
             this.gameSettings.saveOptions();
             return true;
         }
-        else if (p_184122_1_ == 49)
+        else if (auxKey == 49)
         {
-            if (!this.thePlayer.canCommandSenderUseCommand(2, ""))
+            if (!this.player.canUseCommand(2, ""))
             {
-                this.func_190521_a("debug.creative_spectator.error");
+                this.debugFeedbackTranslated("debug.creative_spectator.error");
             }
-            else if (this.thePlayer.isCreative())
+            else if (this.player.isCreative())
             {
-                this.thePlayer.sendChatMessage("/gamemode spectator");
+                this.player.sendChatMessage("/gamemode spectator");
             }
-            else if (this.thePlayer.isSpectator())
+            else if (this.player.isSpectator())
             {
-                this.thePlayer.sendChatMessage("/gamemode creative");
+                this.player.sendChatMessage("/gamemode creative");
             }
 
             return true;
         }
-        else if (p_184122_1_ == 25)
+        else if (auxKey == 25)
         {
             this.gameSettings.pauseOnLostFocus = !this.gameSettings.pauseOnLostFocus;
             this.gameSettings.saveOptions();
-            this.func_190521_a(this.gameSettings.pauseOnLostFocus ? "debug.pause_focus.on" : "debug.pause_focus.off");
+            this.debugFeedbackTranslated(this.gameSettings.pauseOnLostFocus ? "debug.pause_focus.on" : "debug.pause_focus.off");
             return true;
         }
-        else if (p_184122_1_ == 16)
+        else if (auxKey == 16)
         {
-            this.func_190521_a("debug.help.message");
+            this.debugFeedbackTranslated("debug.help.message");
             GuiNewChat guinewchat = this.ingameGUI.getChatGUI();
             guinewchat.printChatMessage(new TextComponentTranslation("debug.reload_chunks.help", new Object[0]));
             guinewchat.printChatMessage(new TextComponentTranslation("debug.show_hitboxes.help", new Object[0]));
@@ -2194,9 +2230,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             guinewchat.printChatMessage(new TextComponentTranslation("debug.reload_resourcepacks.help", new Object[0]));
             return true;
         }
-        else if (p_184122_1_ == 20)
+        else if (auxKey == 20)
         {
-            this.func_190521_a("debug.reload_resourcepacks.message");
+            this.debugFeedbackTranslated("debug.reload_resourcepacks.message");
             this.refreshResources();
             return true;
         }
@@ -2234,22 +2270,22 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         for (int i = 0; i < 9; ++i)
         {
-            boolean flag = this.gameSettings.field_193629_ap.isKeyDown();
-            boolean flag1 = this.gameSettings.field_193630_aq.isKeyDown();
+            boolean flag = this.gameSettings.keyBindSaveToolbar.isKeyDown();
+            boolean flag1 = this.gameSettings.keyBindLoadToolbar.isKeyDown();
 
             if (this.gameSettings.keyBindsHotbar[i].isPressed())
             {
-                if (this.thePlayer.isSpectator())
+                if (this.player.isSpectator())
                 {
                     this.ingameGUI.getSpectatorGui().onHotbarSelected(i);
                 }
-                else if (!this.thePlayer.isCreative() || this.currentScreen != null || !flag1 && !flag)
+                else if (!this.player.isCreative() || this.currentScreen != null || !flag1 && !flag)
                 {
-                    this.thePlayer.inventory.currentItem = i;
+                    this.player.inventory.currentItem = i;
                 }
                 else
                 {
-                    GuiContainerCreative.func_192044_a(this, i, flag1, flag);
+                    GuiContainerCreative.handleHotbarSnapshots(this, i, flag1, flag);
                 }
             }
         }
@@ -2258,23 +2294,23 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             if (this.playerController.isRidingHorse())
             {
-                this.thePlayer.sendHorseInventory();
+                this.player.sendHorseInventory();
             }
             else
             {
-                this.field_193035_aW.func_193296_a();
-                this.displayGuiScreen(new GuiInventory(this.thePlayer));
+                this.tutorial.openInventory();
+                this.displayGuiScreen(new GuiInventory(this.player));
             }
         }
 
-        while (this.gameSettings.field_194146_ao.isPressed())
+        while (this.gameSettings.keyBindAdvancements.isPressed())
         {
-            this.displayGuiScreen(new GuiScreenAdvancements(this.thePlayer.connection.func_191982_f()));
+            this.displayGuiScreen(new GuiScreenAdvancements(this.player.connection.getAdvancementManager()));
         }
 
         while (this.gameSettings.keyBindSwapHands.isPressed())
         {
-            if (!this.thePlayer.isSpectator())
+            if (!this.player.isSpectator())
             {
                 this.getConnection().sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, EnumFacing.DOWN));
             }
@@ -2282,9 +2318,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         while (this.gameSettings.keyBindDrop.isPressed())
         {
-            if (!this.thePlayer.isSpectator())
+            if (!this.player.isSpectator())
             {
-                this.thePlayer.dropItem(GuiScreen.isCtrlKeyDown());
+                this.player.dropItem(GuiScreen.isCtrlKeyDown());
             }
         }
 
@@ -2303,11 +2339,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             }
         }
 
-        if (this.thePlayer.isHandActive())
+        if (this.player.isHandActive())
         {
             if (!this.gameSettings.keyBindUseItem.isKeyDown())
             {
-                this.playerController.onStoppedUsingItem(this.thePlayer);
+                this.playerController.onStoppedUsingItem(this.player);
             }
 
             label109:
@@ -2351,7 +2387,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             }
         }
 
-        if (this.gameSettings.keyBindUseItem.isKeyDown() && this.rightClickDelayTimer == 0 && !this.thePlayer.isHandActive())
+        if (this.gameSettings.keyBindUseItem.isKeyDown() && this.rightClickDelayTimer == 0 && !this.player.isHandActive())
         {
             this.rightClickMouse();
         }
@@ -2370,7 +2406,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
             if (Mouse.getEventButtonState())
             {
-                if (this.thePlayer.isSpectator() && i == 2)
+                if (this.player.isSpectator() && i == 2)
                 {
                     this.ingameGUI.getSpectatorGui().onMiddleClick();
                 }
@@ -2388,7 +2424,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
                 if (k != 0)
                 {
-                    if (this.thePlayer.isSpectator())
+                    if (this.player.isSpectator())
                     {
                         k = k < 0 ? -1 : 1;
 
@@ -2398,13 +2434,13 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                         }
                         else
                         {
-                            float f = MathHelper.clamp_float(this.thePlayer.capabilities.getFlySpeed() + (float)k * 0.005F, 0.0F, 0.2F);
-                            this.thePlayer.capabilities.setFlySpeed(f);
+                            float f = MathHelper.clamp(this.player.capabilities.getFlySpeed() + (float)k * 0.005F, 0.0F, 0.2F);
+                            this.player.capabilities.setFlySpeed(f);
                         }
                     }
                     else
                     {
-                        this.thePlayer.inventory.changeCurrentItem(k);
+                        this.player.inventory.changeCurrentItem(k);
                     }
                 }
 
@@ -2424,9 +2460,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
     }
 
-    private void func_190521_a(String p_190521_1_, Object... p_190521_2_)
+    private void debugFeedbackTranslated(String untranslatedTemplate, Object... objs)
     {
-        this.ingameGUI.getChatGUI().printChatMessage((new TextComponentString("")).appendSibling((new TextComponentTranslation("debug.prefix", new Object[0])).setStyle((new Style()).setColor(TextFormatting.YELLOW).setBold(Boolean.valueOf(true)))).appendText(" ").appendSibling(new TextComponentTranslation(p_190521_1_, p_190521_2_)));
+        this.ingameGUI.getChatGUI().printChatMessage((new TextComponentString("")).appendSibling((new TextComponentTranslation("debug.prefix", new Object[0])).setStyle((new Style()).setColor(TextFormatting.YELLOW).setBold(Boolean.valueOf(true)))).appendText(" ").appendSibling(new TextComponentTranslation(untranslatedTemplate, objs)));
     }
 
     /**
@@ -2460,8 +2496,8 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             TileEntitySkull.setProfileCache(playerprofilecache);
             TileEntitySkull.setSessionService(minecraftsessionservice);
             PlayerProfileCache.setOnlineMode(false);
-            this.theIntegratedServer = new IntegratedServer(this, folderName, worldName, worldSettingsIn, yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
-            this.theIntegratedServer.startServerThread();
+            this.integratedServer = new IntegratedServer(this, folderName, worldName, worldSettingsIn, yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
+            this.integratedServer.startServerThread();
             this.integratedServerIsRunning = true;
         }
         catch (Throwable throwable)
@@ -2475,15 +2511,15 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
 
-        while (!this.theIntegratedServer.serverIsInRunLoop())
+        while (!this.integratedServer.serverIsInRunLoop())
         {
-            if (!net.minecraftforge.fml.common.StartupQuery.check())
+            if (!net.minecraftforge.fml.common.StartupQuery.check() || this.integratedServer.isServerStopped())
             {
                 loadWorld(null);
                 displayGuiScreen(null);
                 return;
             }
-            String s = this.theIntegratedServer.getUserMessage();
+            String s = this.integratedServer.getUserMessage();
 
             if (s != null)
             {
@@ -2505,7 +2541,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
 
         this.displayGuiScreen(new GuiScreenWorking());
-        SocketAddress socketaddress = this.theIntegratedServer.getNetworkSystem().addLocalEndpoint();
+        SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
         NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
         networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
         networkmanager.sendPacket(new C00Handshake(socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
@@ -2532,7 +2568,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage)
     {
-        if (theWorld != null) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(theWorld));
+        if (world != null) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
 
         if (worldClientIn == null)
         {
@@ -2543,14 +2579,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 nethandlerplayclient.cleanup();
             }
 
-            if (this.theIntegratedServer != null && this.theIntegratedServer.isAnvilFileSet())
+            if (this.integratedServer != null && this.integratedServer.isAnvilFileSet())
             {
-                this.theIntegratedServer.initiateShutdown();
+                this.integratedServer.initiateShutdown();
                 if (loadingScreen != null && this.running)
                 {
                     this.loadingScreen.displayLoadingString(I18n.format("forge.client.shutdown.internal"));
                 }
-                while (!theIntegratedServer.isServerStopped())
+                while (!integratedServer.isServerStopped())
                 {
                     try
                     {
@@ -2560,10 +2596,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 }
             }
 
-            this.theIntegratedServer = null;
-            this.entityRenderer.func_190564_k();
+            this.integratedServer = null;
+            this.entityRenderer.resetData();
             this.playerController = null;
-            NarratorChatListener.field_193643_a.func_193642_b();
+            NarratorChatListener.INSTANCE.clear();
         }
 
         this.renderViewEntity = null;
@@ -2575,17 +2611,17 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             this.loadingScreen.displayLoadingString("");
         }
 
-        if (worldClientIn == null && this.theWorld != null)
+        if (worldClientIn == null && this.world != null)
         {
             this.mcResourcePackRepository.clearResourcePack();
             this.ingameGUI.resetPlayersOverlayFooterHeader();
             this.setServerData((ServerData)null);
             this.integratedServerIsRunning = false;
-            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.theWorld);
+            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.world);
         }
 
         this.mcSoundHandler.stopSounds();
-        this.theWorld = worldClientIn;
+        this.world = worldClientIn;
 
         if (this.renderGlobal != null)
         {
@@ -2598,6 +2634,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
 
         TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
+        net.minecraftforge.client.MinecraftForgeClient.clearRenderCache();
 
         if (worldClientIn != null)
         {
@@ -2612,22 +2649,22 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 PlayerProfileCache.setOnlineMode(false);
             }
 
-            if (this.thePlayer == null)
+            if (this.player == null)
             {
-                this.thePlayer = this.playerController.func_192830_a(worldClientIn, new StatisticsManager(), new RecipeBookClient());
-                this.playerController.flipPlayer(this.thePlayer);
+                this.player = this.playerController.createPlayer(worldClientIn, new StatisticsManager(), new RecipeBookClient());
+                this.playerController.flipPlayer(this.player);
             }
 
-            this.thePlayer.preparePlayerToSpawn();
-            worldClientIn.spawnEntityInWorld(this.thePlayer);
-            this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
-            this.playerController.setPlayerCapabilities(this.thePlayer);
-            this.renderViewEntity = this.thePlayer;
+            this.player.preparePlayerToSpawn();
+            worldClientIn.spawnEntity(this.player);
+            this.player.movementInput = new MovementInputFromOptions(this.gameSettings);
+            this.playerController.setPlayerCapabilities(this.player);
+            this.renderViewEntity = this.player;
         }
         else
         {
             this.saveLoader.flushCache();
-            this.thePlayer = null;
+            this.player = null;
         }
 
         System.gc();
@@ -2636,43 +2673,33 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     public void setDimensionAndSpawnPlayer(int dimension)
     {
-        this.theWorld.setInitialSpawnLocation();
-        this.theWorld.removeAllEntities();
+        this.world.setInitialSpawnLocation();
+        this.world.removeAllEntities();
         int i = 0;
         String s = null;
 
-        if (this.thePlayer != null)
+        if (this.player != null)
         {
-            i = this.thePlayer.getEntityId();
-            this.theWorld.removeEntity(this.thePlayer);
-            s = this.thePlayer.getServerBrand();
+            i = this.player.getEntityId();
+            this.world.removeEntity(this.player);
+            s = this.player.getServerBrand();
         }
 
         this.renderViewEntity = null;
-        EntityPlayerSP entityplayersp = this.thePlayer;
-        this.thePlayer = this.playerController.func_192830_a(this.theWorld, this.thePlayer == null ? new StatisticsManager() : this.thePlayer.getStatFileWriter(), this.thePlayer == null ? new RecipeBook() : this.thePlayer.func_192035_E());
-        this.thePlayer.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
-        // Forge - Fix MC-88179 attributes not being copied to new player
-        for (net.minecraft.entity.ai.attributes.IAttributeInstance oldInst : entityplayersp.getAttributeMap().getAllAttributes())
-        {
-            net.minecraft.entity.ai.attributes.IAttribute attrib = oldInst.getAttribute();
-            net.minecraft.entity.ai.attributes.IAttributeInstance newInst = thePlayer.getAttributeMap().getAttributeInstance(attrib);
-            newInst.setBaseValue(oldInst.getBaseValue());
-            for (net.minecraft.entity.ai.attributes.AttributeModifier modifier : oldInst.getModifiers())
-            {
-                newInst.applyModifier(modifier);
-            }
-        }
-        this.thePlayer.dimension = dimension;
-        this.renderViewEntity = this.thePlayer;
-        this.thePlayer.preparePlayerToSpawn();
-        this.thePlayer.setServerBrand(s);
-        this.theWorld.spawnEntityInWorld(this.thePlayer);
-        this.playerController.flipPlayer(this.thePlayer);
-        this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
-        this.thePlayer.setEntityId(i);
-        this.playerController.setPlayerCapabilities(this.thePlayer);
-        this.thePlayer.setReducedDebug(entityplayersp.hasReducedDebug());
+        EntityPlayerSP entityplayersp = this.player;
+        this.player = this.playerController.createPlayer(this.world, this.player == null ? new StatisticsManager() : this.player.getStatFileWriter(), this.player == null ? new RecipeBook() : this.player.getRecipeBook());
+        this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
+        this.player.updateSyncFields(entityplayersp); // Forge: fix MC-10657
+        this.player.dimension = dimension;
+        this.renderViewEntity = this.player;
+        this.player.preparePlayerToSpawn();
+        this.player.setServerBrand(s);
+        this.world.spawnEntity(this.player);
+        this.playerController.flipPlayer(this.player);
+        this.player.movementInput = new MovementInputFromOptions(this.gameSettings);
+        this.player.setEntityId(i);
+        this.playerController.setPlayerCapabilities(this.player);
+        this.player.setReducedDebug(entityplayersp.hasReducedDebug());
 
         if (this.currentScreen instanceof GuiGameOver)
         {
@@ -2691,18 +2718,17 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     @Nullable
     public NetHandlerPlayClient getConnection()
     {
-        return this.thePlayer == null ? null : this.thePlayer.connection;
+        return this.player == null ? null : this.player.connection;
     }
 
     public static boolean isGuiEnabled()
     {
-        /** Set to 'this' in Minecraft constructor; used by some settings get methods */
-        return theMinecraft == null || !theMinecraft.gameSettings.hideGUI;
+        return instance == null || !instance.gameSettings.hideGUI;
     }
 
     public static boolean isFancyGraphicsEnabled()
     {
-        return theMinecraft != null && theMinecraft.gameSettings.fancyGraphics;
+        return instance != null && instance.gameSettings.fancyGraphics;
     }
 
     /**
@@ -2710,7 +2736,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public static boolean isAmbientOcclusionEnabled()
     {
-        return theMinecraft != null && theMinecraft.gameSettings.ambientOcclusion != 0;
+        return instance != null && instance.gameSettings.ambientOcclusion != 0;
     }
 
     /**
@@ -2720,7 +2746,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     {
         if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS)
         {
-            net.minecraftforge.common.ForgeHooks.onPickBlock(this.objectMouseOver, this.thePlayer, this.theWorld);
+            net.minecraftforge.common.ForgeHooks.onPickBlock(this.objectMouseOver, this.player, this.world);
             // We delete this code wholly instead of commenting it out, to make sure we detect changes in it between MC versions
         }
     }
@@ -2754,42 +2780,42 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash)
     {
-        theCrash.getCategory().setDetail("Launched Version", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Launched Version", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return Minecraft.this.launchedVersion;
             }
         });
-        theCrash.getCategory().setDetail("LWJGL", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("LWJGL", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return Sys.getVersion();
             }
         });
-        theCrash.getCategory().setDetail("OpenGL", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("OpenGL", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return GlStateManager.glGetString(7937) + " GL version " + GlStateManager.glGetString(7938) + ", " + GlStateManager.glGetString(7936);
             }
         });
-        theCrash.getCategory().setDetail("GL Caps", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return OpenGlHelper.getLogText();
             }
         });
-        theCrash.getCategory().setDetail("Using VBOs", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Using VBOs", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return Minecraft.this.gameSettings.useVbo ? "Yes" : "No";
             }
         });
-        theCrash.getCategory().setDetail("Is Modded", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Is Modded", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -2805,14 +2831,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 }
             }
         });
-        theCrash.getCategory().setDetail("Type", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Type", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return "Client (map_client.txt)";
             }
         });
-        theCrash.getCategory().setDetail("Resource Packs", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Resource Packs", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -2836,21 +2862,21 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 return stringbuilder.toString();
             }
         });
-        theCrash.getCategory().setDetail("Current Language", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Current Language", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return Minecraft.this.mcLanguageManager.getCurrentLanguage().toString();
             }
         });
-        theCrash.getCategory().setDetail("Profiler Position", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("Profiler Position", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return Minecraft.this.mcProfiler.profilingEnabled ? Minecraft.this.mcProfiler.getNameOfLastSection() : "N/A (disabled)";
             }
         });
-        theCrash.getCategory().setDetail("CPU", new ICrashReportDetail<String>()
+        theCrash.getCategory().addDetail("CPU", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -2858,9 +2884,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             }
         });
 
-        if (this.theWorld != null)
+        if (this.world != null)
         {
-            this.theWorld.addWorldInfoToCrashReport(theCrash);
+            this.world.addWorldInfoToCrashReport(theCrash);
         }
 
         return theCrash;
@@ -2871,10 +2897,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public static Minecraft getMinecraft()
     {
-        /** Set to 'this' in Minecraft constructor; used by some settings get methods */
-        return theMinecraft;
+        return instance;
     }
 
+    @Deprecated // Forge: Use selective scheduleResourceRefresh method in FMLClientHandler
     public ListenableFuture<Object> scheduleResourcesRefresh()
     {
         return this.addScheduledTask(new Runnable()
@@ -2907,9 +2933,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             playerSnooper.addClientStat("resource_pack[" + i++ + "]", resourcepackrepository$entry.getResourcePackName());
         }
 
-        if (this.theIntegratedServer != null && this.theIntegratedServer.getPlayerUsageSnooper() != null)
+        if (this.integratedServer != null && this.integratedServer.getPlayerUsageSnooper() != null)
         {
-            playerSnooper.addClientStat("snooper_partner", this.theIntegratedServer.getPlayerUsageSnooper().getUniqueID());
+            playerSnooper.addClientStat("snooper_partner", this.integratedServer.getPlayerUsageSnooper().getUniqueID());
         }
     }
 
@@ -2918,9 +2944,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     private String getCurrentAction()
     {
-        if (this.theIntegratedServer != null)
+        if (this.integratedServer != null)
         {
-            return this.theIntegratedServer.getPublic() ? "hosting_lan" : "singleplayer";
+            return this.integratedServer.getPublic() ? "hosting_lan" : "singleplayer";
         }
         else if (this.currentServerData != null)
         {
@@ -3092,7 +3118,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public boolean isSingleplayer()
     {
-        return this.integratedServerIsRunning && this.theIntegratedServer != null;
+        return this.integratedServerIsRunning && this.integratedServer != null;
     }
 
     /**
@@ -3101,14 +3127,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     @Nullable
     public IntegratedServer getIntegratedServer()
     {
-        return this.theIntegratedServer;
+        return this.integratedServer;
     }
 
     public static void stopIntegratedServer()
     {
-        if (theMinecraft != null)
+        if (instance != null)
         {
-            IntegratedServer integratedserver = theMinecraft.getIntegratedServer();
+            IntegratedServer integratedserver = instance.getIntegratedServer();
 
             if (integratedserver != null)
             {
@@ -3211,19 +3237,22 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             return MusicTicker.MusicType.CREDITS;
         }
-        else if (this.thePlayer != null)
+        else if (this.player != null)
         {
-            if (this.thePlayer.worldObj.provider instanceof WorldProviderHell)
+            MusicTicker.MusicType type = this.world.provider.getMusicType();
+            if (type != null) return type;
+
+            if (this.player.world.provider instanceof WorldProviderHell)
             {
                 return MusicTicker.MusicType.NETHER;
             }
-            else if (this.thePlayer.worldObj.provider instanceof WorldProviderEnd)
+            else if (this.player.world.provider instanceof WorldProviderEnd)
             {
                 return this.ingameGUI.getBossOverlay().shouldPlayEndBossMusic() ? MusicTicker.MusicType.END_BOSS : MusicTicker.MusicType.END;
             }
             else
             {
-                return this.thePlayer.capabilities.isCreativeMode && this.thePlayer.capabilities.allowFlying ? MusicTicker.MusicType.CREATIVE : MusicTicker.MusicType.GAME;
+                return this.player.capabilities.isCreativeMode && this.player.capabilities.allowFlying ? MusicTicker.MusicType.CREATIVE : MusicTicker.MusicType.GAME;
             }
         }
         else
@@ -3250,13 +3279,13 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                     {
                         this.ingameGUI.getChatGUI().printChatMessage(ScreenShotHelper.saveScreenshot(this.mcDataDir, this.displayWidth, this.displayHeight, this.framebufferMc));
                     }
-                    else if (i == 48 && GuiScreen.isCtrlKeyDown() && (this.currentScreen == null || this.currentScreen != null && !this.currentScreen.func_193976_p()))
+                    else if (i == 48 && GuiScreen.isCtrlKeyDown() && (this.currentScreen == null || this.currentScreen != null && !this.currentScreen.isFocused()))
                     {
                         this.gameSettings.setOptionValue(GameSettings.Options.NARRATOR, 1);
 
                         if (this.currentScreen instanceof ScreenChatOptions)
                         {
-                            ((ScreenChatOptions)this.currentScreen).func_193024_a();
+                            ((ScreenChatOptions)this.currentScreen).updateNarratorButton();
                         }
                     }
                 }
@@ -3345,17 +3374,18 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.itemRenderer;
     }
 
-    public <T> ISearchTree<T> func_193987_a(SearchTreeManager.Key<T> p_193987_1_)
+    /**
+     * Gets the {@link ISearchTree} for the given search tree key, returning null if no such tree exists.
+     *  
+     * @param key "The search tree's key"
+     */
+    public <T> ISearchTree<T> getSearchTree(SearchTreeManager.Key<T> key)
     {
-        return this.field_193995_ae.<T>func_194010_a(p_193987_1_);
+        return this.searchTreeManager.<T>get(key);
     }
 
     public static int getDebugFPS()
     {
-        /**
-         * This is set to fpsCounter every debug screen update, and is shown on the debug screen. It's also sent as part
-         * of the usage snooping.
-         */
         return debugFPS;
     }
 
@@ -3390,12 +3420,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     public float getRenderPartialTicks()
     {
-        return this.timer.field_194147_b;
+        return this.timer.renderPartialTicks;
     }
 
-    public float func_193989_ak()
+    public float getTickLength()
     {
-        return this.timer.field_194148_c;
+        return this.timer.elapsedPartialTicks;
     }
 
     public BlockColors getBlockColors()
@@ -3414,21 +3444,21 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public boolean isReducedDebug()
     {
-        return this.thePlayer != null && this.thePlayer.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
+        return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
     }
 
-    public GuiToast func_193033_an()
+    public GuiToast getToastGui()
     {
-        return this.field_193034_aS;
+        return this.toastGui;
     }
 
-    public Tutorial func_193032_ao()
+    public Tutorial getTutorial()
     {
-        return this.field_193035_aW;
+        return this.tutorial;
     }
 
     public SearchTreeManager getSearchTreeManager()
     {
-        return this.field_193995_ae;
+        return this.searchTreeManager;
     }
 }

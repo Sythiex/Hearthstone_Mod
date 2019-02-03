@@ -43,7 +43,7 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
                     Vec3d vec3d = this.getPosition(entitylivingbase, (double)entitylivingbase.height * 0.5D, 1.0F);
                     Vec3d vec3d1 = this.getPosition(livingEntity, (double)livingEntity.getEyeHeight(), 1.0F);
 
-                    if (camera.isBoundingBoxInFrustum(new AxisAlignedBB(vec3d1.xCoord, vec3d1.yCoord, vec3d1.zCoord, vec3d.xCoord, vec3d.yCoord, vec3d.zCoord)))
+                    if (camera.isBoundingBoxInFrustum(new AxisAlignedBB(vec3d1.x, vec3d1.y, vec3d1.z, vec3d.x, vec3d.y, vec3d.z)))
                     {
                         return true;
                     }
@@ -85,7 +85,7 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
             float f1 = 240.0F;
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            float f2 = (float)entity.worldObj.getTotalWorldTime() + partialTicks;
+            float f2 = (float)entity.world.getTotalWorldTime() + partialTicks;
             float f3 = f2 * 0.5F % 1.0F;
             float f4 = entity.getEyeHeight();
             GlStateManager.pushMatrix();
@@ -95,8 +95,8 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
             Vec3d vec3d2 = vec3d.subtract(vec3d1);
             double d0 = vec3d2.lengthVector() + 1.0D;
             vec3d2 = vec3d2.normalize();
-            float f5 = (float)Math.acos(vec3d2.yCoord);
-            float f6 = (float)Math.atan2(vec3d2.zCoord, vec3d2.xCoord);
+            float f5 = (float)Math.acos(vec3d2.y);
+            float f6 = (float)Math.atan2(vec3d2.z, vec3d2.x);
             GlStateManager.rotate((((float)Math.PI / 2F) + -f6) * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate(f5 * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
             int i = 1;

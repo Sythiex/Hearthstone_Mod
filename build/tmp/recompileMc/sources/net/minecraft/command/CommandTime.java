@@ -12,7 +12,7 @@ public class CommandTime extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "time";
     }
@@ -28,7 +28,7 @@ public class CommandTime extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.time.usage";
     }
@@ -104,7 +104,7 @@ public class CommandTime extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
         if (args.length == 1)
         {
@@ -122,17 +122,17 @@ public class CommandTime extends CommandBase
 
     protected void setAllWorldTimes(MinecraftServer server, int time)
     {
-        for (int i = 0; i < server.worldServers.length; ++i)
+        for (int i = 0; i < server.worlds.length; ++i)
         {
-            server.worldServers[i].setWorldTime((long)time);
+            server.worlds[i].setWorldTime((long)time);
         }
     }
 
     protected void incrementAllWorldTimes(MinecraftServer server, int amount)
     {
-        for (int i = 0; i < server.worldServers.length; ++i)
+        for (int i = 0; i < server.worlds.length; ++i)
         {
-            WorldServer worldserver = server.worldServers[i];
+            WorldServer worldserver = server.worlds[i];
             worldserver.setWorldTime(worldserver.getWorldTime() + (long)amount);
         }
     }

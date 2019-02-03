@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,7 +56,7 @@ public class AnimationTESR<T extends TileEntity> extends FastTESR<T> implements 
         BlockPos pos = te.getPos();
         IBlockAccess world = MinecraftForgeClient.getRegionRenderCache(te.getWorld(), pos);
         IBlockState state = world.getBlockState(pos);
-        if(state.getPropertyNames().contains(Properties.StaticProperty))
+        if(state.getPropertyKeys().contains(Properties.StaticProperty))
         {
             state = state.withProperty(Properties.StaticProperty, false);
         }

@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class LayeredColorMaskTexture extends AbstractTexture
 {
     /** Access to the Logger, for all your logging needs. */
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** The location of the texture. */
     private final ResourceLocation textureLocation;
     private final List<String> listTextures;
@@ -69,13 +69,11 @@ public class LayeredColorMaskTexture extends AbstractTexture
                     try
                     {
                         String s = this.listTextures.get(j);
-                        int k = ((EnumDyeColor)this.listDyeColors.get(j)).func_193350_e();
+                        int k = ((EnumDyeColor)this.listDyeColors.get(j)).getColorValue();
 
                         if (s != null)
                         {
-                            iresource1 = resourceManager.getResource(new ResourceLocation(s));
-                            BufferedImage bufferedimage2 = TextureUtil.readBufferedImage(iresource1.getInputStream());
-
+                            BufferedImage bufferedimage2 = net.minecraftforge.client.MinecraftForgeClient.getImageLayer(new ResourceLocation(s), resourceManager);
                             if (bufferedimage2.getWidth() == bufferedimage.getWidth() && bufferedimage2.getHeight() == bufferedimage.getHeight() && bufferedimage2.getType() == 6)
                             {
                                 for (int l = 0; l < bufferedimage2.getHeight(); ++l)
@@ -108,7 +106,7 @@ public class LayeredColorMaskTexture extends AbstractTexture
             }
             catch (IOException ioexception)
             {
-                LOG.error("Couldn't load layered image", (Throwable)ioexception);
+                LOGGER.error("Couldn't load layered image", (Throwable)ioexception);
             }
             finally
             {

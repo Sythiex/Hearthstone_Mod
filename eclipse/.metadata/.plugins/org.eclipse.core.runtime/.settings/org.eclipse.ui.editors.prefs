@@ -1,8 +1,5 @@
-AbstractTextEditor.Color.SelectionBackground=33,66,131
 eclipse.preferences.version=1
 lineNumberColor=128,128,128
 lineNumberRuler=true
-occurrenceIndicationColor=0,0,0
 overviewRuler_migration=migrated_3.1
 spacesForTabs=true
-writeOccurrenceIndicationColor=0,0,0

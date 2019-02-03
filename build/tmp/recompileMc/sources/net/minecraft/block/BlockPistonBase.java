@@ -51,9 +51,9 @@ public class BlockPistonBase extends BlockDirectional
         this.setCreativeTab(CreativeTabs.REDSTONE);
     }
 
-    public boolean isVisuallyOpaque(IBlockState p_176214_1_)
+    public boolean causesSuffocation(IBlockState state)
     {
-        return !((Boolean)p_176214_1_.getValue(EXTENDED)).booleanValue();
+        return !((Boolean)state.getValue(EXTENDED)).booleanValue();
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -84,14 +84,14 @@ public class BlockPistonBase extends BlockDirectional
     }
 
     /**
-     * Checks if an IBlockState represents a block that is opaque and a full cube.
+     * Determines if the block is solid enough on the top side to support other blocks, like redstone components.
      */
-    public boolean isFullyOpaque(IBlockState state)
+    public boolean isTopSolid(IBlockState state)
     {
         return !((Boolean)state.getValue(EXTENDED)).booleanValue() || state.getValue(FACING) == EnumFacing.DOWN;
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
     {
         addCollisionBoxToList(pos, entityBox, collidingBoxes, state.getBoundingBox(worldIn, pos));
     }
@@ -109,7 +109,7 @@ public class BlockPistonBase extends BlockDirectional
      */
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.func_190914_a(pos, placer)), 2);
+        worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
 
         if (!worldIn.isRemote)
         {
@@ -122,7 +122,7 @@ public class BlockPistonBase extends BlockDirectional
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!worldIn.isRemote)
         {
@@ -145,9 +145,9 @@ public class BlockPistonBase extends BlockDirectional
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.func_190914_a(pos, placer)).withProperty(EXTENDED, Boolean.valueOf(false));
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)).withProperty(EXTENDED, Boolean.valueOf(false));
     }
 
     private void checkForMove(World worldIn, BlockPos pos, IBlockState state)
@@ -199,10 +199,9 @@ public class BlockPistonBase extends BlockDirectional
     }
 
     /**
-     * Called on both Client and Server when World#addBlockEvent is called. On the Server, this may perform additional
-     * changes to the world, like pistons replacing the block with an extended base. On the client, the update may
-     * involve replacing tile entities, playing sounds, or performing other visual actions to reflect the server side
-     * changes.
+     * Called on server when World#addBlockEvent is called. If server returns true, then also called on the client. On
+     * the Server, this may perform additional changes to the world, like pistons replacing the block with an extended
+     * base. On the client, the update may involve replacing tile entities or effects such as sounds or particles
      */
     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param)
     {
@@ -488,9 +487,18 @@ public class BlockPistonBase extends BlockDirectional
         return !state.getValue(EXTENDED) && super.rotateBlock(world, pos, axis);
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        p_193383_2_ = this.getActualState(p_193383_2_, p_193383_1_, p_193383_3_);
-        return p_193383_2_.getValue(FACING) != p_193383_4_.getOpposite() && ((Boolean)p_193383_2_.getValue(EXTENDED)).booleanValue() ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
+        state = this.getActualState(state, worldIn, pos);
+        return state.getValue(FACING) != face.getOpposite() && ((Boolean)state.getValue(EXTENDED)).booleanValue() ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
     }
 }

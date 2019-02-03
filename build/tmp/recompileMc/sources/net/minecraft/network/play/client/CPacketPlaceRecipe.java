@@ -33,7 +33,7 @@ public class CPacketPlaceRecipe implements Packet<INetHandlerPlayServer>
     public void readPacketData(PacketBuffer buf) throws IOException
     {
         this.field_194320_a = buf.readByte();
-        this.field_194321_b = CraftingManager.func_193374_a(buf.readVarIntFromBuffer());
+        this.field_194321_b = CraftingManager.getRecipeById(buf.readVarInt());
         this.field_194322_c = buf.readBoolean();
     }
 
@@ -43,7 +43,7 @@ public class CPacketPlaceRecipe implements Packet<INetHandlerPlayServer>
     public void writePacketData(PacketBuffer buf) throws IOException
     {
         buf.writeByte(this.field_194320_a);
-        buf.writeVarIntToBuffer(CraftingManager.func_193375_a(this.field_194321_b));
+        buf.writeVarInt(CraftingManager.getIDForRecipe(this.field_194321_b));
         buf.writeBoolean(this.field_194322_c);
     }
 

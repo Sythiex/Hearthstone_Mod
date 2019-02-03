@@ -19,11 +19,11 @@ public class ItemWritableBook extends Item
     /**
      * Called when the equipped item is right clicked.
      */
-    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        ItemStack itemstack = worldIn.getHeldItem(playerIn);
-        worldIn.openBook(itemstack, playerIn);
-        worldIn.addStat(StatList.getObjectUseStats(this));
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        playerIn.openBook(itemstack, handIn);
+        playerIn.addStat(StatList.getObjectUseStats(this));
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
     }
 

@@ -24,24 +24,24 @@ import org.apache.logging.log4j.Logger;
 public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> field_190562_f = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
+    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> REGISTRY = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
     /** the instance of the world the tile entity is in. */
-    protected World worldObj;
+    protected World world;
     protected BlockPos pos = BlockPos.ORIGIN;
     protected boolean tileEntityInvalid;
     private int blockMetadata = -1;
     /** the Block type that this TileEntity is contained within */
     protected Block blockType;
 
-    public static void func_190560_a(String p_190560_0_, Class <? extends TileEntity > p_190560_1_)
+    public static void register(String id, Class <? extends TileEntity > clazz)
     {
-        field_190562_f.putObject(new ResourceLocation(p_190560_0_), p_190560_1_);
+        REGISTRY.putObject(new ResourceLocation(id), clazz);
     }
 
     @Nullable
-    public static ResourceLocation func_190559_a(Class <? extends TileEntity > p_190559_0_)
+    public static ResourceLocation getKey(Class <? extends TileEntity > clazz)
     {
-        return field_190562_f.getNameForObject(p_190559_0_);
+        return REGISTRY.getNameForObject(clazz);
     }
 
     /**
@@ -49,23 +49,23 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      */
     public World getWorld()
     {
-        return this.worldObj;
+        return this.world;
     }
 
     /**
      * Sets the worldObj for this tileEntity.
      */
-    public void setWorldObj(World worldIn)
+    public void setWorld(World worldIn)
     {
-        this.worldObj = worldIn;
+        this.world = worldIn;
     }
 
     /**
      * Returns true if the worldObj isn't null.
      */
-    public boolean hasWorldObj()
+    public boolean hasWorld()
     {
-        return this.worldObj != null;
+        return this.world != null;
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -82,7 +82,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     private NBTTagCompound writeInternal(NBTTagCompound compound)
     {
-        ResourceLocation resourcelocation = field_190562_f.getNameForObject(this.getClass());
+        ResourceLocation resourcelocation = REGISTRY.getNameForObject(this.getClass());
 
         if (resourcelocation == null)
         {
@@ -109,7 +109,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
         try
         {
-            oclass = (Class)field_190562_f.getObject(new ResourceLocation(s));
+            oclass = (Class)REGISTRY.getObject(new ResourceLocation(s));
 
             if (oclass != null)
             {
@@ -154,7 +154,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     {
         if (this.blockMetadata == -1)
         {
-            IBlockState iblockstate = this.worldObj.getBlockState(this.pos);
+            IBlockState iblockstate = this.world.getBlockState(this.pos);
             this.blockMetadata = iblockstate.getBlock().getMetaFromState(iblockstate);
         }
 
@@ -167,15 +167,15 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      */
     public void markDirty()
     {
-        if (this.worldObj != null)
+        if (this.world != null)
         {
-            IBlockState iblockstate = this.worldObj.getBlockState(this.pos);
+            IBlockState iblockstate = this.world.getBlockState(this.pos);
             this.blockMetadata = iblockstate.getBlock().getMetaFromState(iblockstate);
-            this.worldObj.markChunkDirty(this.pos, this);
+            this.world.markChunkDirty(this.pos, this);
 
             if (this.getBlockType() != Blocks.AIR)
             {
-                this.worldObj.updateComparatorOutputLevel(this.pos, this.getBlockType());
+                this.world.updateComparatorOutputLevel(this.pos, this.getBlockType());
             }
         }
     }
@@ -207,9 +207,9 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      */
     public Block getBlockType()
     {
-        if (this.blockType == null && this.worldObj != null)
+        if (this.blockType == null && this.world != null)
         {
-            this.blockType = this.worldObj.getBlockState(this.pos).getBlock();
+            this.blockType = this.world.getBlockState(this.pos).getBlock();
         }
 
         return this.blockType;
@@ -260,26 +260,26 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     public void addInfoToCrashReport(CrashReportCategory reportCategory)
     {
-        reportCategory.setDetail("Name", new ICrashReportDetail<String>()
+        reportCategory.addDetail("Name", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
-                return TileEntity.field_190562_f.getNameForObject(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
+                return TileEntity.REGISTRY.getNameForObject(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
             }
         });
 
-        if (this.worldObj != null)
+        if (this.world != null)
         {
             CrashReportCategory.addBlockInfo(reportCategory, this.pos, this.getBlockType(), this.getBlockMetadata());
-            reportCategory.setDetail("Actual block type", new ICrashReportDetail<String>()
+            reportCategory.addDetail("Actual block type", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
-                    int i = Block.getIdFromBlock(TileEntity.this.worldObj.getBlockState(TileEntity.this.pos).getBlock());
+                    int i = Block.getIdFromBlock(TileEntity.this.world.getBlockState(TileEntity.this.pos).getBlock());
 
                     try
                     {
-                        return String.format("ID #%d (%s // %s)", i, Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getCanonicalName());
+                        return String.format("ID #%d (%s // %s // %s)", i, Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getName(), Block.getBlockById(i).getRegistryName());
                     }
                     catch (Throwable var3)
                     {
@@ -287,11 +287,11 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
                     }
                 }
             });
-            reportCategory.setDetail("Actual block data value", new ICrashReportDetail<String>()
+            reportCategory.addDetail("Actual block data value", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
-                    IBlockState iblockstate = TileEntity.this.worldObj.getBlockState(TileEntity.this.pos);
+                    IBlockState iblockstate = TileEntity.this.world.getBlockState(TileEntity.this.pos);
                     int i = iblockstate.getBlock().getMetaFromState(iblockstate);
 
                     if (i < 0)
@@ -327,11 +327,11 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         return null;
     }
 
-    public void rotate(Rotation p_189667_1_)
+    public void rotate(Rotation rotationIn)
     {
     }
 
-    public void mirror(Mirror p_189668_1_)
+    public void mirror(Mirror mirrorIn)
     {
     }
 
@@ -423,7 +423,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
             net.minecraft.util.math.AxisAlignedBB cbb = null;
             try
             {
-                cbb = worldObj.getBlockState(getPos()).getCollisionBoundingBox(worldObj, pos).offset(pos);
+                cbb = world.getBlockState(getPos()).getCollisionBoundingBox(world, pos).offset(pos);
             }
             catch (Exception e)
             {
@@ -535,30 +535,30 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     static
     {
-        func_190560_a("furnace", TileEntityFurnace.class);
-        func_190560_a("chest", TileEntityChest.class);
-        func_190560_a("ender_chest", TileEntityEnderChest.class);
-        func_190560_a("jukebox", BlockJukebox.TileEntityJukebox.class);
-        func_190560_a("dispenser", TileEntityDispenser.class);
-        func_190560_a("dropper", TileEntityDropper.class);
-        func_190560_a("sign", TileEntitySign.class);
-        func_190560_a("mob_spawner", TileEntityMobSpawner.class);
-        func_190560_a("noteblock", TileEntityNote.class);
-        func_190560_a("piston", TileEntityPiston.class);
-        func_190560_a("brewing_stand", TileEntityBrewingStand.class);
-        func_190560_a("enchanting_table", TileEntityEnchantmentTable.class);
-        func_190560_a("end_portal", TileEntityEndPortal.class);
-        func_190560_a("beacon", TileEntityBeacon.class);
-        func_190560_a("skull", TileEntitySkull.class);
-        func_190560_a("daylight_detector", TileEntityDaylightDetector.class);
-        func_190560_a("hopper", TileEntityHopper.class);
-        func_190560_a("comparator", TileEntityComparator.class);
-        func_190560_a("flower_pot", TileEntityFlowerPot.class);
-        func_190560_a("banner", TileEntityBanner.class);
-        func_190560_a("structure_block", TileEntityStructure.class);
-        func_190560_a("end_gateway", TileEntityEndGateway.class);
-        func_190560_a("command_block", TileEntityCommandBlock.class);
-        func_190560_a("shulker_box", TileEntityShulkerBox.class);
-        func_190560_a("bed", TileEntityBed.class);
+        register("furnace", TileEntityFurnace.class);
+        register("chest", TileEntityChest.class);
+        register("ender_chest", TileEntityEnderChest.class);
+        register("jukebox", BlockJukebox.TileEntityJukebox.class);
+        register("dispenser", TileEntityDispenser.class);
+        register("dropper", TileEntityDropper.class);
+        register("sign", TileEntitySign.class);
+        register("mob_spawner", TileEntityMobSpawner.class);
+        register("noteblock", TileEntityNote.class);
+        register("piston", TileEntityPiston.class);
+        register("brewing_stand", TileEntityBrewingStand.class);
+        register("enchanting_table", TileEntityEnchantmentTable.class);
+        register("end_portal", TileEntityEndPortal.class);
+        register("beacon", TileEntityBeacon.class);
+        register("skull", TileEntitySkull.class);
+        register("daylight_detector", TileEntityDaylightDetector.class);
+        register("hopper", TileEntityHopper.class);
+        register("comparator", TileEntityComparator.class);
+        register("flower_pot", TileEntityFlowerPot.class);
+        register("banner", TileEntityBanner.class);
+        register("structure_block", TileEntityStructure.class);
+        register("end_gateway", TileEntityEndGateway.class);
+        register("command_block", TileEntityCommandBlock.class);
+        register("shulker_box", TileEntityShulkerBox.class);
+        register("bed", TileEntityBed.class);
     }
 }

@@ -73,9 +73,9 @@ public abstract class GuiSlot
         this.right = widthIn;
     }
 
-    public void func_193651_b(boolean p_193651_1_)
+    public void setShowSelectionBox(boolean showSelectionBoxIn)
     {
-        this.showSelectionBox = p_193651_1_;
+        this.showSelectionBox = showSelectionBoxIn;
     }
 
     /**
@@ -115,11 +115,11 @@ public abstract class GuiSlot
 
     protected abstract void drawBackground();
 
-    protected void func_192639_a(int p_192639_1_, int p_192639_2_, int p_192639_3_, float p_192639_4_)
+    protected void updateItemPos(int entryID, int insideLeft, int yPos, float partialTicks)
     {
     }
 
-    protected abstract void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_);
+    protected abstract void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks);
 
     /**
      * Handles drawing a list's header row.
@@ -159,7 +159,7 @@ public abstract class GuiSlot
      */
     protected void bindAmountScrolled()
     {
-        this.amountScrolled = MathHelper.clamp_float(this.amountScrolled, 0.0F, (float)this.getMaxScroll());
+        this.amountScrolled = MathHelper.clamp(this.amountScrolled, 0.0F, (float)this.getMaxScroll());
     }
 
     public int getMaxScroll()
@@ -233,7 +233,7 @@ public abstract class GuiSlot
                 this.drawListHeader(k, l, tessellator);
             }
 
-            this.func_192638_a(k, l, mouseXIn, mouseYIn, partialTicks);
+            this.drawSelectionBox(k, l, mouseXIn, mouseYIn, partialTicks);
             GlStateManager.disableDepth();
             this.overlayBackground(0, this.top, 255, 255);
             this.overlayBackground(this.bottom, this.height, 255, 255);
@@ -260,7 +260,7 @@ public abstract class GuiSlot
             if (j1 > 0)
             {
                 int k1 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
-                k1 = MathHelper.clamp_int(k1, 32, this.bottom - this.top - 8);
+                k1 = MathHelper.clamp(k1, 32, this.bottom - this.top - 8);
                 int l1 = (int)this.amountScrolled * (this.bottom - this.top - k1) / j1 + this.top;
 
                 if (l1 < this.top)
@@ -358,7 +358,7 @@ public abstract class GuiSlot
                             }
 
                             int l1 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getContentHeight());
-                            l1 = MathHelper.clamp_int(l1, 32, this.bottom - this.top - 8);
+                            l1 = MathHelper.clamp(l1, 32, this.bottom - this.top - 8);
                             this.scrollMultiplier /= (float)(this.bottom - this.top - l1) / (float)k1;
                         }
                         else
@@ -427,7 +427,10 @@ public abstract class GuiSlot
         return 220;
     }
 
-    protected void func_192638_a(int p_192638_1_, int p_192638_2_, int p_192638_3_, int p_192638_4_, float p_192638_5_)
+    /**
+     * Draws the selection box around the selected slot element.
+     */
+    protected void drawSelectionBox(int insideLeft, int insideTop, int mouseXIn, int mouseYIn, float partialTicks)
     {
         int i = this.getSize();
         Tessellator tessellator = Tessellator.getInstance();
@@ -435,12 +438,12 @@ public abstract class GuiSlot
 
         for (int j = 0; j < i; ++j)
         {
-            int k = p_192638_2_ + j * this.slotHeight + this.headerPadding;
+            int k = insideTop + j * this.slotHeight + this.headerPadding;
             int l = this.slotHeight - 4;
 
             if (k > this.bottom || k + l < this.top)
             {
-                this.func_192639_a(j, p_192638_1_, k, p_192638_5_);
+                this.updateItemPos(j, insideLeft, k, partialTicks);
             }
 
             if (this.showSelectionBox && this.isSelected(j))
@@ -462,7 +465,7 @@ public abstract class GuiSlot
                 GlStateManager.enableTexture2D();
             }
 
-            this.func_192637_a(j, p_192638_1_, k, l, p_192638_3_, p_192638_4_, p_192638_5_);
+            this.drawSlot(j, insideLeft, k, l, mouseXIn, mouseYIn, partialTicks);
         }
     }
 

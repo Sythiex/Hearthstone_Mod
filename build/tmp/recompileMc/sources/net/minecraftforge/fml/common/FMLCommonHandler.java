@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.thread.SidedThreadGroup;
 import net.minecraftforge.fml.relauncher.CoreModManager;
@@ -214,7 +216,7 @@ public class FMLCommonHandler
      */
     public void raiseException(Throwable exception, String message, boolean stopGame)
     {
-        FMLLog.log.error("Something raised an exception. The message was '{}'. 'stopGame' is {}", stopGame, exception);
+        FMLLog.log.error("Something raised an exception. The message was '{}'. 'stopGame' is {}", message, stopGame, exception);
         if (stopGame)
         {
             getSidedDelegate().haltGame(message,exception);
@@ -377,7 +379,7 @@ public class FMLCommonHandler
     {
         for (ICrashCallable call: crashCallables)
         {
-            category.setDetail(call.getLabel(), call);
+            category.addDetail(call.getLabel(), call);
         }
     }
 
@@ -505,7 +507,7 @@ public class FMLCommonHandler
         MinecraftServer server = getMinecraftServerInstance();
         Loader.instance().serverStopped();
         // FORCE the internal server to stop: hello optifine workaround!
-        if (server!=null) ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, false, "field_71316"+"_v", "u", "serverStopped");
+        if (server!=null) ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, false, "field_71316"+"_v");
 
         // allow any pending exit to continue, clear exitLatch
         CountDownLatch latch = exitLatch;
@@ -583,9 +585,9 @@ public class FMLCommonHandler
         bus().post(new PlayerEvent.PlayerRespawnEvent(player, endConquered));
     }
 
-    public void firePlayerItemPickupEvent(EntityPlayer player, EntityItem item)
+    public void firePlayerItemPickupEvent(EntityPlayer player, EntityItem item, ItemStack clone)
     {
-        bus().post(new PlayerEvent.ItemPickupEvent(player, item));
+        bus().post(new PlayerEvent.ItemPickupEvent(player, item, clone));
     }
 
     public void firePlayerCraftingEvent(EntityPlayer player, ItemStack crafted, IInventory craftMatrix)
@@ -613,6 +615,11 @@ public class FMLCommonHandler
         return sidedDelegate.shouldAllowPlayerLogins();
     }
 
+    public void fireServerConnectionEvent(NetworkManager manager)
+    {
+        bus().post(new FMLNetworkEvent.ServerConnectionFromClientEvent(manager));
+    }
+
     /**
      * Process initial Handshake packet, kicks players from the server if they are connecting while we are starting up.
      * Also verifies the client has the FML marker.
@@ -635,8 +642,9 @@ public class FMLCommonHandler
         if (packet.getRequestedState() == EnumConnectionState.LOGIN && (!NetworkRegistry.INSTANCE.isVanillaAccepted(Side.CLIENT) && !packet.hasFMLMarker()))
         {
             manager.setConnectionState(EnumConnectionState.LOGIN);
-            TextComponentString text = new TextComponentString("This server requires FML/Forge to be installed. Contact your server admin for more details.");
-            FMLLog.log.info("Disconnecting Player: {}", text.getUnformattedText());
+            TextComponentString text = new TextComponentString("This server has mods that require FML/Forge to be installed on the client. Contact your server admin for more details.");
+            Collection<String> modNames = NetworkRegistry.INSTANCE.getRequiredMods(Side.CLIENT);
+            FMLLog.log.info("Disconnecting Player: This server has mods that require FML/Forge to be installed on the client: {}", modNames);
             manager.sendPacket(new SPacketDisconnect(text));
             manager.closeChannel(text);
             return false;
@@ -661,18 +669,17 @@ public class FMLCommonHandler
      */
     public void exitJava(int exitCode, boolean hardExit)
     {
-        FMLLog.log.info("Java has been asked to exit (code {}) by {}.", exitCode, Thread.currentThread().getStackTrace()[1]);
+        FMLLog.log.warn("Java has been asked to exit (code {})", exitCode);
         if (hardExit)
         {
-            FMLLog.log.info("This is an abortive exit and could cause world corruption or other things");
+            FMLLog.log.warn("This is an abortive exit and could cause world corruption or other things");
         }
-        if (Boolean.parseBoolean(System.getProperty("fml.debugExit", "false")))
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        FMLLog.log.warn("Exit trace:");
+        //The first 2 elements are Thread#getStackTrace and FMLCommonHandler#exitJava and aren't relevant
+        for (int i = 2; i < stack.length; i++)
         {
-            FMLLog.log.info("Exit trace", new Throwable());
-        }
-        else
-        {
-            FMLLog.log.info("If this was an unexpected exit, use -Dfml.debugExit=true as a JVM argument to find out where it was called");
+            FMLLog.log.warn("\t{}", stack[i]);
         }
         if (hardExit)
         {
@@ -769,5 +776,10 @@ public class FMLCommonHandler
 
     public void reloadSearchTrees() {
         this.sidedDelegate.reloadSearchTrees();
+    }
+
+    public void reloadCreativeSettings()
+    {
+        this.sidedDelegate.reloadCreativeSettings();
     }
 }

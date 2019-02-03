@@ -34,6 +34,9 @@ public class EntityEgg extends EntityThrowable
         EntityThrowable.registerFixesThrowable(fixer, "ThrownEgg");
     }
 
+    /**
+     * Handler for {@link World#setEntityState}
+     */
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {
@@ -43,7 +46,7 @@ public class EntityEgg extends EntityThrowable
 
             for (int i = 0; i < 8; ++i)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, this.posX, this.posY, this.posZ, ((double)this.rand.nextFloat() - 0.5D) * 0.08D, ((double)this.rand.nextFloat() - 0.5D) * 0.08D, ((double)this.rand.nextFloat() - 0.5D) * 0.08D, Item.getIdFromItem(Items.EGG));
+                this.world.spawnParticle(EnumParticleTypes.ITEM_CRACK, this.posX, this.posY, this.posZ, ((double)this.rand.nextFloat() - 0.5D) * 0.08D, ((double)this.rand.nextFloat() - 0.5D) * 0.08D, ((double)this.rand.nextFloat() - 0.5D) * 0.08D, Item.getIdFromItem(Items.EGG));
             }
         }
     }
@@ -58,7 +61,7 @@ public class EntityEgg extends EntityThrowable
             result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
         }
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
             if (this.rand.nextInt(8) == 0)
             {
@@ -71,14 +74,14 @@ public class EntityEgg extends EntityThrowable
 
                 for (int j = 0; j < i; ++j)
                 {
-                    EntityChicken entitychicken = new EntityChicken(this.worldObj);
+                    EntityChicken entitychicken = new EntityChicken(this.world);
                     entitychicken.setGrowingAge(-24000);
                     entitychicken.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
-                    this.worldObj.spawnEntityInWorld(entitychicken);
+                    this.world.spawnEntity(entitychicken);
                 }
             }
 
-            this.worldObj.setEntityState(this, (byte)3);
+            this.world.setEntityState(this, (byte)3);
             this.setDead();
         }
     }

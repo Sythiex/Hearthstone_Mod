@@ -42,6 +42,11 @@ public class ActiveRenderInfo
      */
     public static void updateRenderInfo(EntityPlayer entityplayerIn, boolean p_74583_1_)
     {
+        updateRenderInfo((Entity) entityplayerIn, p_74583_1_);
+    }
+
+    public static void updateRenderInfo(Entity entityplayerIn, boolean p_74583_1_)
+    {
         GlStateManager.getFloat(2982, MODELVIEW);
         GlStateManager.getFloat(2983, PROJECTION);
         GlStateManager.glGetInteger(2978, VIEWPORT);
@@ -64,9 +69,9 @@ public class ActiveRenderInfo
         double d0 = entityIn.prevPosX + (entityIn.posX - entityIn.prevPosX) * p_178806_1_;
         double d1 = entityIn.prevPosY + (entityIn.posY - entityIn.prevPosY) * p_178806_1_;
         double d2 = entityIn.prevPosZ + (entityIn.posZ - entityIn.prevPosZ) * p_178806_1_;
-        double d3 = d0 + position.xCoord;
-        double d4 = d1 + position.yCoord;
-        double d5 = d2 + position.zCoord;
+        double d3 = d0 + position.x;
+        double d4 = d1 + position.y;
+        double d5 = d2 + position.z;
         return new Vec3d(d3, d4, d5);
     }
 
@@ -87,42 +92,47 @@ public class ActiveRenderInfo
 
             float f1 = (float)(blockpos.getY() + 1) - f;
 
-            if (vec3d.yCoord >= (double)f1)
+            if (vec3d.y >= (double)f1)
             {
                 iblockstate = worldIn.getBlockState(blockpos.up());
             }
         }
 
-        return iblockstate;
+        return iblockstate.getBlock().getStateAtViewpoint(iblockstate, worldIn, blockpos, vec3d);
     }
 
     public static float getRotationX()
     {
-        /** The X component of the entity's yaw rotation */
         return rotationX;
     }
 
     public static float getRotationXZ()
     {
-        /** The combined X and Z components of the entity's pitch rotation */
         return rotationXZ;
     }
 
     public static float getRotationZ()
     {
-        /** The Z component of the entity's yaw rotation */
         return rotationZ;
     }
 
     public static float getRotationYZ()
     {
-        /** The Y component (scaled along the Z axis) of the entity's pitch rotation */
         return rotationYZ;
     }
 
     public static float getRotationXY()
     {
-        /** The Y component (scaled along the X axis) of the entity's pitch rotation */
         return rotationXY;
+    }
+
+    /* ======================================== FORGE START =====================================*/
+
+    /**
+     * Vector from render view entity position (corrected for partialTickTime) to the middle of screen
+     */
+    public static Vec3d getCameraPosition()
+    {
+        return position;
     }
 }

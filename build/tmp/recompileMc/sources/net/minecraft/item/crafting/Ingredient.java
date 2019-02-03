@@ -8,22 +8,22 @@ import javax.annotation.Nullable;
 import net.minecraft.client.util.RecipeItemHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Ingredient implements Predicate<ItemStack>
 {
     //Because Mojang caches things... we need to invalidate them.. so... here we go..
     private static final java.util.Set<Ingredient> INSTANCES = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<Ingredient, Boolean>());
-    public static final Ingredient field_193370_a = new Ingredient(new ItemStack[0])
+    public static final Ingredient EMPTY = new Ingredient(new ItemStack[0])
     {
         public boolean apply(@Nullable ItemStack p_apply_1_)
         {
-            return p_apply_1_.func_190926_b();
+            return p_apply_1_.isEmpty();
         }
     };
-    private final ItemStack[] field_193371_b;
-    private IntList field_194140_c;
+    private final ItemStack[] matchingStacks;
+    private final ItemStack[] matchingStacksExploded;
+    private IntList matchingStacksPacked;
+    private final boolean isSimple;
 
     protected Ingredient(int size)
     {
@@ -32,13 +32,28 @@ public class Ingredient implements Predicate<ItemStack>
 
     protected Ingredient(ItemStack... p_i47503_1_)
     {
-        this.field_193371_b = p_i47503_1_;
+        boolean simple = true;
+        this.matchingStacks = p_i47503_1_;
+        net.minecraft.util.NonNullList<ItemStack> lst = net.minecraft.util.NonNullList.create();
+        for (ItemStack s : p_i47503_1_)
+        {
+            if (s.isEmpty())
+                continue;
+            if (s.getItem().isDamageable())
+                simple = false;
+            if (s.getMetadata() == net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE)
+                s.getItem().getSubItems(net.minecraft.creativetab.CreativeTabs.SEARCH, lst);
+            else
+                lst.add(s);
+        }
+        this.matchingStacksExploded = lst.toArray(new ItemStack[lst.size()]);
+        this.isSimple = simple && this.matchingStacksExploded.length > 0;
         Ingredient.INSTANCES.add(this);
     }
 
-    public ItemStack[] func_193365_a()
+    public ItemStack[] getMatchingStacks()
     {
-        return this.field_193371_b;
+        return this.matchingStacksExploded;
     }
 
     public boolean apply(@Nullable ItemStack p_apply_1_)
@@ -49,7 +64,7 @@ public class Ingredient implements Predicate<ItemStack>
         }
         else
         {
-            for (ItemStack itemstack : this.field_193371_b)
+            for (ItemStack itemstack : this.matchingStacks)
             {
                 if (itemstack.getItem() == p_apply_1_.getItem())
                 {
@@ -66,21 +81,21 @@ public class Ingredient implements Predicate<ItemStack>
         }
     }
 
-    public IntList func_194139_b()
+    public IntList getValidItemStacksPacked()
     {
-        if (this.field_194140_c == null)
+        if (this.matchingStacksPacked == null)
         {
-            this.field_194140_c = new IntArrayList(this.field_193371_b.length);
+            this.matchingStacksPacked = new IntArrayList(this.matchingStacksExploded.length);
 
-            for (ItemStack itemstack : this.field_193371_b)
+            for (ItemStack itemstack : this.matchingStacksExploded)
             {
-                this.field_194140_c.add(RecipeItemHelper.func_194113_b(itemstack));
+                this.matchingStacksPacked.add(RecipeItemHelper.pack(itemstack));
             }
 
-            this.field_194140_c.sort(IntComparators.NATURAL_COMPARATOR);
+            this.matchingStacksPacked.sort(IntComparators.NATURAL_COMPARATOR);
         }
 
-        return this.field_194140_c;
+        return this.matchingStacksPacked;
     }
 
     public static void invalidateAll()
@@ -92,39 +107,57 @@ public class Ingredient implements Predicate<ItemStack>
 
     protected void invalidate()
     {
-        this.field_194140_c = null;
+        this.matchingStacksPacked = null;
     }
 
-    public static Ingredient func_193367_a(Item p_193367_0_)
+    public static Ingredient fromItem(Item p_193367_0_)
     {
-        return func_193369_a(new ItemStack(p_193367_0_, 1, 32767));
+        return fromStacks(new ItemStack(p_193367_0_, 1, 32767));
     }
 
-    public static Ingredient func_193368_a(Item... p_193368_0_)
+    public static Ingredient fromItems(Item... items)
     {
-        ItemStack[] aitemstack = new ItemStack[p_193368_0_.length];
+        ItemStack[] aitemstack = new ItemStack[items.length];
 
-        for (int i = 0; i < p_193368_0_.length; ++i)
+        for (int i = 0; i < items.length; ++i)
         {
-            aitemstack[i] = new ItemStack(p_193368_0_[i]);
+            aitemstack[i] = new ItemStack(items[i]);
         }
 
-        return func_193369_a(aitemstack);
+        return fromStacks(aitemstack);
     }
 
-    public static Ingredient func_193369_a(ItemStack... p_193369_0_)
+    public static Ingredient fromStacks(ItemStack... stacks)
     {
-        if (p_193369_0_.length > 0)
+        if (stacks.length > 0)
         {
-            for (ItemStack itemstack : p_193369_0_)
+            for (ItemStack itemstack : stacks)
             {
-                if (!itemstack.func_190926_b())
+                if (!itemstack.isEmpty())
                 {
-                    return new Ingredient(p_193369_0_);
+                    return new Ingredient(stacks);
                 }
             }
         }
 
-        return field_193370_a;
+        return EMPTY;
+    }
+
+    // Merges several vanilla Ingredients together. As a qwerk of how the json is structured, we can't tell if its a single Ingredient type or multiple so we split per item and remerge here.
+    //Only public for internal use, so we can access a private field in here.
+    public static Ingredient merge(java.util.Collection<Ingredient> parts)
+    {
+        net.minecraft.util.NonNullList<ItemStack> lst = net.minecraft.util.NonNullList.create();
+        for (Ingredient part : parts)
+        {
+            for (ItemStack stack : part.matchingStacks)
+                lst.add(stack);
+        }
+        return new Ingredient(lst.toArray(new ItemStack[lst.size()]));
+    }
+
+    public boolean isSimple()
+    {
+        return isSimple || this == EMPTY;
     }
 }

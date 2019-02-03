@@ -14,17 +14,17 @@ public abstract class NodeProcessor
     protected int entitySizeY;
     protected int entitySizeZ;
     protected boolean canEnterDoors;
-    protected boolean canBreakDoors;
+    protected boolean canOpenDoors;
     protected boolean canSwim;
 
-    public void initProcessor(IBlockAccess sourceIn, EntityLiving mob)
+    public void init(IBlockAccess sourceIn, EntityLiving mob)
     {
         this.blockaccess = sourceIn;
         this.entity = mob;
         this.pointMap.clearMap();
-        this.entitySizeX = MathHelper.floor_float(mob.width + 1.0F);
-        this.entitySizeY = MathHelper.floor_float(mob.height + 1.0F);
-        this.entitySizeZ = MathHelper.floor_float(mob.width + 1.0F);
+        this.entitySizeX = MathHelper.floor(mob.width + 1.0F);
+        this.entitySizeY = MathHelper.floor(mob.height + 1.0F);
+        this.entitySizeZ = MathHelper.floor(mob.width + 1.0F);
     }
 
     /**
@@ -73,9 +73,9 @@ public abstract class NodeProcessor
         this.canEnterDoors = canEnterDoorsIn;
     }
 
-    public void setCanBreakDoors(boolean canBreakDoorsIn)
+    public void setCanOpenDoors(boolean canOpenDoorsIn)
     {
-        this.canBreakDoors = canBreakDoorsIn;
+        this.canOpenDoors = canOpenDoorsIn;
     }
 
     public void setCanSwim(boolean canSwimIn)
@@ -88,9 +88,9 @@ public abstract class NodeProcessor
         return this.canEnterDoors;
     }
 
-    public boolean getCanBreakDoors()
+    public boolean getCanOpenDoors()
     {
-        return this.canBreakDoors;
+        return this.canOpenDoors;
     }
 
     public boolean getCanSwim()

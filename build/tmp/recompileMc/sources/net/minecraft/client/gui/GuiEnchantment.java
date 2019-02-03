@@ -45,7 +45,7 @@ public class GuiEnchantment extends GuiContainer
     public float flipA;
     public float open;
     public float oOpen;
-    private ItemStack last = ItemStack.field_190927_a;
+    private ItemStack last = ItemStack.EMPTY;
     private final IWorldNameable nameable;
 
     public GuiEnchantment(InventoryPlayer inventory, World worldIn, IWorldNameable nameable)
@@ -61,8 +61,8 @@ public class GuiEnchantment extends GuiContainer
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRendererObj.drawString(this.nameable.getDisplayName().getUnformattedText(), 12, 5, 4210752);
-        this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+        this.fontRenderer.drawString(this.nameable.getDisplayName().getUnformattedText(), 12, 5, 4210752);
+        this.fontRenderer.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
 
     /**
@@ -88,7 +88,7 @@ public class GuiEnchantment extends GuiContainer
             int l = mouseX - (i + 60);
             int i1 = mouseY - (j + 14 + 19 * k);
 
-            if (l >= 0 && i1 >= 0 && l < 108 && i1 < 19 && this.container.enchantItem(this.mc.thePlayer, k))
+            if (l >= 0 && i1 >= 0 && l < 108 && i1 < 19 && this.container.enchantItem(this.mc.player, k))
             {
                 this.mc.playerController.sendEnchantPacket(this.container.windowId, k);
             }
@@ -130,8 +130,8 @@ public class GuiEnchantment extends GuiContainer
         GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
         float f3 = this.oFlip + (this.flip - this.oFlip) * partialTicks + 0.25F;
         float f4 = this.oFlip + (this.flip - this.oFlip) * partialTicks + 0.75F;
-        f3 = (f3 - (float)MathHelper.truncateDoubleToInt((double)f3)) * 1.6F - 0.3F;
-        f4 = (f4 - (float)MathHelper.truncateDoubleToInt((double)f4)) * 1.6F - 0.3F;
+        f3 = (f3 - (float)MathHelper.fastFloor((double)f3)) * 1.6F - 0.3F;
+        f4 = (f4 - (float)MathHelper.fastFloor((double)f4)) * 1.6F - 0.3F;
 
         if (f3 < 0.0F)
         {
@@ -183,12 +183,12 @@ public class GuiEnchantment extends GuiContainer
             else
             {
                 String s = "" + k1;
-                int l1 = 86 - this.fontRendererObj.getStringWidth(s);
-                String s1 = EnchantmentNameParts.getInstance().generateNewRandomName(this.fontRendererObj, l1);
+                int l1 = 86 - this.fontRenderer.getStringWidth(s);
+                String s1 = EnchantmentNameParts.getInstance().generateNewRandomName(this.fontRenderer, l1);
                 FontRenderer fontrenderer = this.mc.standardGalacticFontRenderer;
                 int i2 = 6839882;
 
-                if (((k < l + 1 || this.mc.thePlayer.experienceLevel < k1) && !this.mc.thePlayer.capabilities.isCreativeMode) || this.container.enchantClue[l] == -1) // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
+                if (((k < l + 1 || this.mc.player.experienceLevel < k1) && !this.mc.player.capabilities.isCreativeMode) || this.container.enchantClue[l] == -1) // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
                 {
                     this.drawTexturedModalRect(i1, j + 14 + 19 * l, 0, 185, 108, 19);
                     this.drawTexturedModalRect(i1 + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
@@ -215,7 +215,7 @@ public class GuiEnchantment extends GuiContainer
                     i2 = 8453920;
                 }
 
-                fontrenderer = this.mc.fontRendererObj;
+                fontrenderer = this.mc.fontRenderer;
                 fontrenderer.drawStringWithShadow(s, (float)(j1 + 86 - fontrenderer.getStringWidth(s)), (float)(j + 16 + 19 * l + 7), i2);
             }
         }
@@ -226,11 +226,11 @@ public class GuiEnchantment extends GuiContainer
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        partialTicks = this.mc.func_193989_ak();
+        partialTicks = this.mc.getTickLength();
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        this.func_191948_b(mouseX, mouseY);
-        boolean flag = this.mc.thePlayer.capabilities.isCreativeMode;
+        this.renderHoveredToolTip(mouseX, mouseY);
+        boolean flag = this.mc.player.capabilities.isCreativeMode;
         int i = this.container.getLapisAmount();
 
         for (int j = 0; j < 3; ++j)
@@ -250,7 +250,7 @@ public class GuiEnchantment extends GuiContainer
                 {
                     list.add("");
 
-                    if (this.mc.thePlayer.experienceLevel < k)
+                    if (this.mc.player.experienceLevel < k)
                     {
                         list.add(TextFormatting.RED + I18n.format("container.enchant.level.requirement", this.container.enchantLevels[j]));
                     }
@@ -330,10 +330,10 @@ public class GuiEnchantment extends GuiContainer
             this.open -= 0.2F;
         }
 
-        this.open = MathHelper.clamp_float(this.open, 0.0F, 1.0F);
+        this.open = MathHelper.clamp(this.open, 0.0F, 1.0F);
         float f1 = (this.flipT - this.flip) * 0.4F;
         float f = 0.2F;
-        f1 = MathHelper.clamp_float(f1, -0.2F, 0.2F);
+        f1 = MathHelper.clamp(f1, -0.2F, 0.2F);
         this.flipA += (f1 - this.flipA) * 0.9F;
         this.flip += this.flipA;
     }

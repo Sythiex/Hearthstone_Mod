@@ -17,7 +17,8 @@ public class KeyBinding implements Comparable<KeyBinding>
     private static final Map<String, KeyBinding> KEYBIND_ARRAY = Maps.<String, KeyBinding>newHashMap();
     private static final net.minecraftforge.client.settings.KeyBindingMap HASH = new net.minecraftforge.client.settings.KeyBindingMap();
     private static final Set<String> KEYBIND_SET = Sets.<String>newHashSet();
-    private static final Map<String, Integer> field_193627_d = Maps.<String, Integer>newHashMap();
+    /** A map that assigns priorities to all categories, for ordering purposes. */
+    private static final Map<String, Integer> CATEGORY_ORDER = Maps.<String, Integer>newHashMap();
     private final String keyDescription;
     private final int keyCodeDefault;
     private final String keyCategory;
@@ -52,6 +53,9 @@ public class KeyBinding implements Comparable<KeyBinding>
         }
     }
 
+    /**
+     * Completely recalculates whether any keybinds are held, from scratch.
+     */
     public static void updateKeyBindState()
     {
         for (KeyBinding keybinding : KEYBIND_ARRAY.values())
@@ -160,8 +164,8 @@ public class KeyBinding implements Comparable<KeyBinding>
     public int compareTo(KeyBinding p_compareTo_1_)
     {
         if (this.keyCategory.equals(p_compareTo_1_.keyCategory)) return I18n.format(this.keyDescription).compareTo(I18n.format(p_compareTo_1_.keyDescription));
-        Integer tCat = field_193627_d.get(this.keyCategory);
-        Integer oCat = field_193627_d.get(p_compareTo_1_.keyCategory);
+        Integer tCat = CATEGORY_ORDER.get(this.keyCategory);
+        Integer oCat = CATEGORY_ORDER.get(p_compareTo_1_.keyCategory);
         if (tCat == null && oCat != null) return 1;
         if (tCat != null && oCat == null) return -1;
         if (tCat == null && oCat == null) return I18n.format(this.keyCategory).compareTo(I18n.format(p_compareTo_1_.keyCategory));
@@ -299,12 +303,19 @@ public class KeyBinding implements Comparable<KeyBinding>
     }
     /****************** Forge End *****************************/
 
-    public static Supplier<String> func_193626_b(String p_193626_0_)
+    /**
+     * Returns a supplier which gets a keybind's current binding (eg, <code>key.forward</code> returns <samp>W</samp> by
+     * default), or the keybind's name if no such keybind exists (eg, <code>key.invalid</code> returns
+     * <samp>key.invalid</samp>)
+     *  
+     * @param key The description of the key (eg, <code>key.forward</code>).
+     */
+    public static Supplier<String> getDisplayString(String key)
     {
-        KeyBinding keybinding = KEYBIND_ARRAY.get(p_193626_0_);
+        KeyBinding keybinding = KEYBIND_ARRAY.get(key);
         return keybinding == null ? () ->
         {
-            return p_193626_0_;
+            return key;
         } : () ->
         {
             return keybinding.getDisplayName();
@@ -313,12 +324,12 @@ public class KeyBinding implements Comparable<KeyBinding>
 
     static
     {
-        field_193627_d.put("key.categories.movement", Integer.valueOf(1));
-        field_193627_d.put("key.categories.gameplay", Integer.valueOf(2));
-        field_193627_d.put("key.categories.inventory", Integer.valueOf(3));
-        field_193627_d.put("key.categories.creative", Integer.valueOf(4));
-        field_193627_d.put("key.categories.multiplayer", Integer.valueOf(5));
-        field_193627_d.put("key.categories.ui", Integer.valueOf(6));
-        field_193627_d.put("key.categories.misc", Integer.valueOf(7));
+        CATEGORY_ORDER.put("key.categories.movement", Integer.valueOf(1));
+        CATEGORY_ORDER.put("key.categories.gameplay", Integer.valueOf(2));
+        CATEGORY_ORDER.put("key.categories.inventory", Integer.valueOf(3));
+        CATEGORY_ORDER.put("key.categories.creative", Integer.valueOf(4));
+        CATEGORY_ORDER.put("key.categories.multiplayer", Integer.valueOf(5));
+        CATEGORY_ORDER.put("key.categories.ui", Integer.valueOf(6));
+        CATEGORY_ORDER.put("key.categories.misc", Integer.valueOf(7));
     }
 }

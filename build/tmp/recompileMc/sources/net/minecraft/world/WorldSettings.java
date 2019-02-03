@@ -9,7 +9,7 @@ public final class WorldSettings
     /** The seed for the map. */
     private final long seed;
     /** The EnumGameType. */
-    private final GameType theGameType;
+    private final GameType gameType;
     /** Switch for the map features. 'true' for enabled, 'false' for disabled. */
     private final boolean mapFeaturesEnabled;
     /** True if hardcore mode is enabled */
@@ -25,7 +25,7 @@ public final class WorldSettings
     {
         this.generatorOptions = "";
         this.seed = seedIn;
-        this.theGameType = gameType;
+        this.gameType = gameType;
         this.mapFeaturesEnabled = enableMapFeatures;
         this.hardcoreEnabled = hardcoreMode;
         this.terrainType = worldTypeIn;
@@ -82,7 +82,7 @@ public final class WorldSettings
      */
     public GameType getGameType()
     {
-        return this.theGameType;
+        return this.gameType;
     }
 
     /**

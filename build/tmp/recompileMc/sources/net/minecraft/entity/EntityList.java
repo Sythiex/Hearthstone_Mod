@@ -104,28 +104,39 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityList
 {
-    public static final ResourceLocation field_191307_a = new ResourceLocation("lightning_bolt");
-    private static final ResourceLocation field_191310_e = new ResourceLocation("player");
+    public static final ResourceLocation LIGHTNING_BOLT = new ResourceLocation("lightning_bolt");
+    private static final ResourceLocation PLAYER = new ResourceLocation("player");
     private static final Logger LOGGER = LogManager.getLogger();
     /** This is a HashMap of the Creative Entity Eggs/Spawners. */
     public static final Map<ResourceLocation, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.<ResourceLocation, EntityList.EntityEggInfo>newLinkedHashMap();
     private static final Set<ResourceLocation> EXTRA_NAMES = Sets.newHashSet();
 
+    /**
+     * Gets the {@link ResourceLocation} that identifies the given entity's type.
+     */
     @Nullable
-    public static ResourceLocation func_191301_a(Entity p_191301_0_)
+    public static ResourceLocation getKey(Entity entityIn)
     {
-        return func_191306_a(p_191301_0_.getClass());
+        return getKey(entityIn.getClass());
     }
 
+    /**
+     * Gets the {@link ResourceLocation} that identifies the given entity's type.
+     *  
+     * @return The resource location, or null if the {@link #REGISTRY} does not contain a mapping for that class.
+     */
     @Nullable
-    public static ResourceLocation func_191306_a(Class <? extends Entity > p_191306_0_)
+    public static ResourceLocation getKey(Class <? extends Entity > entityIn)
     {
-        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_191306_0_);
+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(entityIn);
         return entry == null ? null : entry.getRegistryName();
     }
 
     /**
-     * Gets the string representation of a specific entity.
+     * Gets the original name for the entity, used in versions prior to 1.11. This name is also used for translation
+     * strings.
+     *  
+     * @return The entity's original name, or null if the given entity's type is not known.
      */
     @Nullable
     public static String getEntityString(Entity entityIn)
@@ -134,10 +145,20 @@ public class EntityList
         return entry == null ? null : entry.getName();
     }
 
+    /**
+     * Gets the original name for the given entity type, used in versions prior to 1.11. Note that even entities added
+     * after 1.11 have old names as returned by this method.
+     * <p>
+     * This name is also used for translation strings; translate <code>"entity.$oldid.name"</code> (with
+     * <var>$oldid</var> being the result of this method) to get those names. Note that the name is upper-case in most
+     * situations.
+     *  
+     * @return The original entity name, or null if there is no known entity for that type.
+     */
     @Nullable
-    public static String func_191302_a(@Nullable ResourceLocation p_191302_0_)
+    public static String getTranslationName(@Nullable ResourceLocation entityType)
     {
-        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(p_191302_0_);
+        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(entityType);
         return entry == null ? null : entry.getName();
     }
 
@@ -151,7 +172,7 @@ public class EntityList
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public static Class <? extends Entity > func_192839_a(String p_192839_0_)
+    public static Class <? extends Entity > getClassFromName(String p_192839_0_)
     {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(new ResourceLocation(p_192839_0_));
         return entry == null ? null : entry.getEntityClass();
@@ -163,16 +184,22 @@ public class EntityList
         return entry == null ? -1 : net.minecraftforge.registries.GameData.getEntityRegistry().getID(entry);
     }
 
+    @Nullable
     public static Class<? extends Entity> getClass(ResourceLocation key)
     {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(key);
         return entry == null ? null : entry.getEntityClass();
     }
 
+    /**
+     * Creates a new entity of the given type in the given world.
+     *  
+     * @return The newly created entity, or null if creation failed
+     */
     @Nullable
-    public static Entity func_191304_a(@Nullable Class <? extends Entity > p_191304_0_, World p_191304_1_)
+    public static Entity newEntity(@Nullable Class <? extends Entity > clazz, World worldIn)
     {
-        if (p_191304_0_ == null)
+        if (clazz == null)
         {
             return null;
         }
@@ -180,9 +207,9 @@ public class EntityList
         {
             try
             {
-                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_191304_0_);
-                if (entry != null) return entry.newInstance(p_191304_1_);
-                return p_191304_0_.getConstructor(World.class).newInstance(p_191304_1_);
+                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(clazz);
+                if (entry != null) return entry.newInstance(worldIn);
+                return clazz.getConstructor(World.class).newInstance(worldIn);
             }
             catch (Exception exception)
             {
@@ -193,7 +220,9 @@ public class EntityList
     }
 
     /**
-     * Create a new instance of an entity in the world by using an entity ID.
+     * Creates a new entity with the given numeric networked entity type ID in the given world.
+     *  
+     * @return The newly created entity, or null if creation failed
      */
     @Nullable
     @SideOnly(Side.CLIENT)
@@ -203,6 +232,11 @@ public class EntityList
         return entry == null ? null : entry.newInstance(worldIn);
     }
 
+    /**
+     * Creates a new entity of the given type in the given world.
+     *  
+     * @return The newly created entity, or null if creation failed
+     */
     @Nullable
     public static Entity createEntityByIDFromName(ResourceLocation name, World worldIn)
     {
@@ -211,7 +245,11 @@ public class EntityList
     }
 
     /**
-     * create a new instance of an entity from NBT store
+     * Creates a new entity from the given NBT data in the given world.
+     * <p>
+     * If the entity fails to create, null will be returned and a warning will be logged.
+     *  
+     * @return The newly created entity, or null
      */
     @Nullable
     public static Entity createEntityFromNBT(NBTTagCompound nbt, World worldIn)
@@ -240,14 +278,25 @@ public class EntityList
         return entity;
     }
 
+    /**
+     * Gets a collection of all known entity types.
+     *  
+     * @return A collection of all known entity types. Do not modify this collection.
+     */
     public static Set<ResourceLocation> getEntityNameList()
     {
         return Sets.union(net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getKeys(), EXTRA_NAMES);
     }
 
-    public static boolean isStringEntityName(Entity entityIn, ResourceLocation entityName)
+    /**
+     * Checks if the given entity type matches the type of that entity, correctly handling behavior of players and
+     * lightning bolts.
+     *  
+     * @return true if the type matches
+     */
+    public static boolean isMatchingName(Entity entityIn, ResourceLocation entityName)
     {
-        ResourceLocation resourcelocation = func_191306_a(entityIn.getClass());
+        ResourceLocation resourcelocation = getKey(entityIn.getClass());
 
         if (resourcelocation != null)
         {
@@ -255,20 +304,26 @@ public class EntityList
         }
         else if (entityIn instanceof EntityPlayer)
         {
-            return field_191310_e.equals(entityName);
+            return PLAYER.equals(entityName);
         }
         else
         {
-            return entityIn instanceof EntityLightningBolt ? field_191307_a.equals(entityName) : false;
+            return entityIn instanceof EntityLightningBolt ? LIGHTNING_BOLT.equals(entityName) : false;
         }
     }
 
-    public static boolean isStringValidEntityName(ResourceLocation entityName)
+    /**
+     * Checks if the given resource location matches a registered entity type, correctly handling behavior of players
+     * and lightning bols.
+     *  
+     * @return true if the type is an entity.
+     */
+    public static boolean isRegistered(ResourceLocation entityName)
     {
-        return field_191310_e.equals(entityName) || getEntityNameList().contains(entityName);
+        return PLAYER.equals(entityName) || getEntityNameList().contains(entityName);
     }
 
-    public static String func_192840_b()
+    public static String getValidTypeNames()
     {
         StringBuilder stringbuilder = new StringBuilder();
 
@@ -277,167 +332,167 @@ public class EntityList
             stringbuilder.append((Object)resourcelocation).append(", ");
         }
 
-        stringbuilder.append((Object)field_191310_e);
+        stringbuilder.append((Object)PLAYER);
         return stringbuilder.toString();
     }
 
     public static void init()
     {
-        func_191303_a(1, "item", EntityItem.class, "Item");
-        func_191303_a(2, "xp_orb", EntityXPOrb.class, "XPOrb");
-        func_191303_a(3, "area_effect_cloud", EntityAreaEffectCloud.class, "AreaEffectCloud");
-        func_191303_a(4, "elder_guardian", EntityElderGuardian.class, "ElderGuardian");
-        func_191303_a(5, "wither_skeleton", EntityWitherSkeleton.class, "WitherSkeleton");
-        func_191303_a(6, "stray", EntityStray.class, "Stray");
-        func_191303_a(7, "egg", EntityEgg.class, "ThrownEgg");
-        func_191303_a(8, "leash_knot", EntityLeashKnot.class, "LeashKnot");
-        func_191303_a(9, "painting", EntityPainting.class, "Painting");
-        func_191303_a(10, "arrow", EntityTippedArrow.class, "Arrow");
-        func_191303_a(11, "snowball", EntitySnowball.class, "Snowball");
-        func_191303_a(12, "fireball", EntityLargeFireball.class, "Fireball");
-        func_191303_a(13, "small_fireball", EntitySmallFireball.class, "SmallFireball");
-        func_191303_a(14, "ender_pearl", EntityEnderPearl.class, "ThrownEnderpearl");
-        func_191303_a(15, "eye_of_ender_signal", EntityEnderEye.class, "EyeOfEnderSignal");
-        func_191303_a(16, "potion", EntityPotion.class, "ThrownPotion");
-        func_191303_a(17, "xp_bottle", EntityExpBottle.class, "ThrownExpBottle");
-        func_191303_a(18, "item_frame", EntityItemFrame.class, "ItemFrame");
-        func_191303_a(19, "wither_skull", EntityWitherSkull.class, "WitherSkull");
-        func_191303_a(20, "tnt", EntityTNTPrimed.class, "PrimedTnt");
-        func_191303_a(21, "falling_block", EntityFallingBlock.class, "FallingSand");
-        func_191303_a(22, "fireworks_rocket", EntityFireworkRocket.class, "FireworksRocketEntity");
-        func_191303_a(23, "husk", EntityHusk.class, "Husk");
-        func_191303_a(24, "spectral_arrow", EntitySpectralArrow.class, "SpectralArrow");
-        func_191303_a(25, "shulker_bullet", EntityShulkerBullet.class, "ShulkerBullet");
-        func_191303_a(26, "dragon_fireball", EntityDragonFireball.class, "DragonFireball");
-        func_191303_a(27, "zombie_villager", EntityZombieVillager.class, "ZombieVillager");
-        func_191303_a(28, "skeleton_horse", EntitySkeletonHorse.class, "SkeletonHorse");
-        func_191303_a(29, "zombie_horse", EntityZombieHorse.class, "ZombieHorse");
-        func_191303_a(30, "armor_stand", EntityArmorStand.class, "ArmorStand");
-        func_191303_a(31, "donkey", EntityDonkey.class, "Donkey");
-        func_191303_a(32, "mule", EntityMule.class, "Mule");
-        func_191303_a(33, "evocation_fangs", EntityEvokerFangs.class, "EvocationFangs");
-        func_191303_a(34, "evocation_illager", EntityEvoker.class, "EvocationIllager");
-        func_191303_a(35, "vex", EntityVex.class, "Vex");
-        func_191303_a(36, "vindication_illager", EntityVindicator.class, "VindicationIllager");
-        func_191303_a(37, "illusion_illager", EntityIllusionIllager.class, "IllusionIllager");
-        func_191303_a(40, "commandblock_minecart", EntityMinecartCommandBlock.class, EntityMinecart.Type.COMMAND_BLOCK.getName());
-        func_191303_a(41, "boat", EntityBoat.class, "Boat");
-        func_191303_a(42, "minecart", EntityMinecartEmpty.class, EntityMinecart.Type.RIDEABLE.getName());
-        func_191303_a(43, "chest_minecart", EntityMinecartChest.class, EntityMinecart.Type.CHEST.getName());
-        func_191303_a(44, "furnace_minecart", EntityMinecartFurnace.class, EntityMinecart.Type.FURNACE.getName());
-        func_191303_a(45, "tnt_minecart", EntityMinecartTNT.class, EntityMinecart.Type.TNT.getName());
-        func_191303_a(46, "hopper_minecart", EntityMinecartHopper.class, EntityMinecart.Type.HOPPER.getName());
-        func_191303_a(47, "spawner_minecart", EntityMinecartMobSpawner.class, EntityMinecart.Type.SPAWNER.getName());
-        func_191303_a(50, "creeper", EntityCreeper.class, "Creeper");
-        func_191303_a(51, "skeleton", EntitySkeleton.class, "Skeleton");
-        func_191303_a(52, "spider", EntitySpider.class, "Spider");
-        func_191303_a(53, "giant", EntityGiantZombie.class, "Giant");
-        func_191303_a(54, "zombie", EntityZombie.class, "Zombie");
-        func_191303_a(55, "slime", EntitySlime.class, "Slime");
-        func_191303_a(56, "ghast", EntityGhast.class, "Ghast");
-        func_191303_a(57, "zombie_pigman", EntityPigZombie.class, "PigZombie");
-        func_191303_a(58, "enderman", EntityEnderman.class, "Enderman");
-        func_191303_a(59, "cave_spider", EntityCaveSpider.class, "CaveSpider");
-        func_191303_a(60, "silverfish", EntitySilverfish.class, "Silverfish");
-        func_191303_a(61, "blaze", EntityBlaze.class, "Blaze");
-        func_191303_a(62, "magma_cube", EntityMagmaCube.class, "LavaSlime");
-        func_191303_a(63, "ender_dragon", EntityDragon.class, "EnderDragon");
-        func_191303_a(64, "wither", EntityWither.class, "WitherBoss");
-        func_191303_a(65, "bat", EntityBat.class, "Bat");
-        func_191303_a(66, "witch", EntityWitch.class, "Witch");
-        func_191303_a(67, "endermite", EntityEndermite.class, "Endermite");
-        func_191303_a(68, "guardian", EntityGuardian.class, "Guardian");
-        func_191303_a(69, "shulker", EntityShulker.class, "Shulker");
-        func_191303_a(90, "pig", EntityPig.class, "Pig");
-        func_191303_a(91, "sheep", EntitySheep.class, "Sheep");
-        func_191303_a(92, "cow", EntityCow.class, "Cow");
-        func_191303_a(93, "chicken", EntityChicken.class, "Chicken");
-        func_191303_a(94, "squid", EntitySquid.class, "Squid");
-        func_191303_a(95, "wolf", EntityWolf.class, "Wolf");
-        func_191303_a(96, "mooshroom", EntityMooshroom.class, "MushroomCow");
-        func_191303_a(97, "snowman", EntitySnowman.class, "SnowMan");
-        func_191303_a(98, "ocelot", EntityOcelot.class, "Ozelot");
-        func_191303_a(99, "villager_golem", EntityIronGolem.class, "VillagerGolem");
-        func_191303_a(100, "horse", EntityHorse.class, "Horse");
-        func_191303_a(101, "rabbit", EntityRabbit.class, "Rabbit");
-        func_191303_a(102, "polar_bear", EntityPolarBear.class, "PolarBear");
-        func_191303_a(103, "llama", EntityLlama.class, "Llama");
-        func_191303_a(104, "llama_spit", EntityLlamaSpit.class, "LlamaSpit");
-        func_191303_a(105, "parrot", EntityParrot.class, "Parrot");
-        func_191303_a(120, "villager", EntityVillager.class, "Villager");
-        func_191303_a(200, "ender_crystal", EntityEnderCrystal.class, "EnderCrystal");
-        func_191305_a("bat", 4996656, 986895);
-        func_191305_a("blaze", 16167425, 16775294);
-        func_191305_a("cave_spider", 803406, 11013646);
-        func_191305_a("chicken", 10592673, 16711680);
-        func_191305_a("cow", 4470310, 10592673);
-        func_191305_a("creeper", 894731, 0);
-        func_191305_a("donkey", 5457209, 8811878);
-        func_191305_a("elder_guardian", 13552826, 7632531);
-        func_191305_a("enderman", 1447446, 0);
-        func_191305_a("endermite", 1447446, 7237230);
-        func_191305_a("evocation_illager", 9804699, 1973274);
-        func_191305_a("ghast", 16382457, 12369084);
-        func_191305_a("guardian", 5931634, 15826224);
-        func_191305_a("horse", 12623485, 15656192);
-        func_191305_a("husk", 7958625, 15125652);
-        func_191305_a("llama", 12623485, 10051392);
-        func_191305_a("magma_cube", 3407872, 16579584);
-        func_191305_a("mooshroom", 10489616, 12040119);
-        func_191305_a("mule", 1769984, 5321501);
-        func_191305_a("ocelot", 15720061, 5653556);
-        func_191305_a("parrot", 894731, 16711680);
-        func_191305_a("pig", 15771042, 14377823);
-        func_191305_a("polar_bear", 15921906, 9803152);
-        func_191305_a("rabbit", 10051392, 7555121);
-        func_191305_a("sheep", 15198183, 16758197);
-        func_191305_a("shulker", 9725844, 5060690);
-        func_191305_a("silverfish", 7237230, 3158064);
-        func_191305_a("skeleton", 12698049, 4802889);
-        func_191305_a("skeleton_horse", 6842447, 15066584);
-        func_191305_a("slime", 5349438, 8306542);
-        func_191305_a("spider", 3419431, 11013646);
-        func_191305_a("squid", 2243405, 7375001);
-        func_191305_a("stray", 6387319, 14543594);
-        func_191305_a("vex", 8032420, 15265265);
-        func_191305_a("villager", 5651507, 12422002);
-        func_191305_a("vindication_illager", 9804699, 2580065);
-        func_191305_a("witch", 3407872, 5349438);
-        func_191305_a("wither_skeleton", 1315860, 4672845);
-        func_191305_a("wolf", 14144467, 13545366);
-        func_191305_a("zombie", 44975, 7969893);
-        func_191305_a("zombie_horse", 3232308, 9945732);
-        func_191305_a("zombie_pigman", 15373203, 5009705);
-        func_191305_a("zombie_villager", 5651507, 7969893);
-        EXTRA_NAMES.add(field_191307_a);
+        register(1, "item", EntityItem.class, "Item");
+        register(2, "xp_orb", EntityXPOrb.class, "XPOrb");
+        register(3, "area_effect_cloud", EntityAreaEffectCloud.class, "AreaEffectCloud");
+        register(4, "elder_guardian", EntityElderGuardian.class, "ElderGuardian");
+        register(5, "wither_skeleton", EntityWitherSkeleton.class, "WitherSkeleton");
+        register(6, "stray", EntityStray.class, "Stray");
+        register(7, "egg", EntityEgg.class, "ThrownEgg");
+        register(8, "leash_knot", EntityLeashKnot.class, "LeashKnot");
+        register(9, "painting", EntityPainting.class, "Painting");
+        register(10, "arrow", EntityTippedArrow.class, "Arrow");
+        register(11, "snowball", EntitySnowball.class, "Snowball");
+        register(12, "fireball", EntityLargeFireball.class, "Fireball");
+        register(13, "small_fireball", EntitySmallFireball.class, "SmallFireball");
+        register(14, "ender_pearl", EntityEnderPearl.class, "ThrownEnderpearl");
+        register(15, "eye_of_ender_signal", EntityEnderEye.class, "EyeOfEnderSignal");
+        register(16, "potion", EntityPotion.class, "ThrownPotion");
+        register(17, "xp_bottle", EntityExpBottle.class, "ThrownExpBottle");
+        register(18, "item_frame", EntityItemFrame.class, "ItemFrame");
+        register(19, "wither_skull", EntityWitherSkull.class, "WitherSkull");
+        register(20, "tnt", EntityTNTPrimed.class, "PrimedTnt");
+        register(21, "falling_block", EntityFallingBlock.class, "FallingSand");
+        register(22, "fireworks_rocket", EntityFireworkRocket.class, "FireworksRocketEntity");
+        register(23, "husk", EntityHusk.class, "Husk");
+        register(24, "spectral_arrow", EntitySpectralArrow.class, "SpectralArrow");
+        register(25, "shulker_bullet", EntityShulkerBullet.class, "ShulkerBullet");
+        register(26, "dragon_fireball", EntityDragonFireball.class, "DragonFireball");
+        register(27, "zombie_villager", EntityZombieVillager.class, "ZombieVillager");
+        register(28, "skeleton_horse", EntitySkeletonHorse.class, "SkeletonHorse");
+        register(29, "zombie_horse", EntityZombieHorse.class, "ZombieHorse");
+        register(30, "armor_stand", EntityArmorStand.class, "ArmorStand");
+        register(31, "donkey", EntityDonkey.class, "Donkey");
+        register(32, "mule", EntityMule.class, "Mule");
+        register(33, "evocation_fangs", EntityEvokerFangs.class, "EvocationFangs");
+        register(34, "evocation_illager", EntityEvoker.class, "EvocationIllager");
+        register(35, "vex", EntityVex.class, "Vex");
+        register(36, "vindication_illager", EntityVindicator.class, "VindicationIllager");
+        register(37, "illusion_illager", EntityIllusionIllager.class, "IllusionIllager");
+        register(40, "commandblock_minecart", EntityMinecartCommandBlock.class, EntityMinecart.Type.COMMAND_BLOCK.getName());
+        register(41, "boat", EntityBoat.class, "Boat");
+        register(42, "minecart", EntityMinecartEmpty.class, EntityMinecart.Type.RIDEABLE.getName());
+        register(43, "chest_minecart", EntityMinecartChest.class, EntityMinecart.Type.CHEST.getName());
+        register(44, "furnace_minecart", EntityMinecartFurnace.class, EntityMinecart.Type.FURNACE.getName());
+        register(45, "tnt_minecart", EntityMinecartTNT.class, EntityMinecart.Type.TNT.getName());
+        register(46, "hopper_minecart", EntityMinecartHopper.class, EntityMinecart.Type.HOPPER.getName());
+        register(47, "spawner_minecart", EntityMinecartMobSpawner.class, EntityMinecart.Type.SPAWNER.getName());
+        register(50, "creeper", EntityCreeper.class, "Creeper");
+        register(51, "skeleton", EntitySkeleton.class, "Skeleton");
+        register(52, "spider", EntitySpider.class, "Spider");
+        register(53, "giant", EntityGiantZombie.class, "Giant");
+        register(54, "zombie", EntityZombie.class, "Zombie");
+        register(55, "slime", EntitySlime.class, "Slime");
+        register(56, "ghast", EntityGhast.class, "Ghast");
+        register(57, "zombie_pigman", EntityPigZombie.class, "PigZombie");
+        register(58, "enderman", EntityEnderman.class, "Enderman");
+        register(59, "cave_spider", EntityCaveSpider.class, "CaveSpider");
+        register(60, "silverfish", EntitySilverfish.class, "Silverfish");
+        register(61, "blaze", EntityBlaze.class, "Blaze");
+        register(62, "magma_cube", EntityMagmaCube.class, "LavaSlime");
+        register(63, "ender_dragon", EntityDragon.class, "EnderDragon");
+        register(64, "wither", EntityWither.class, "WitherBoss");
+        register(65, "bat", EntityBat.class, "Bat");
+        register(66, "witch", EntityWitch.class, "Witch");
+        register(67, "endermite", EntityEndermite.class, "Endermite");
+        register(68, "guardian", EntityGuardian.class, "Guardian");
+        register(69, "shulker", EntityShulker.class, "Shulker");
+        register(90, "pig", EntityPig.class, "Pig");
+        register(91, "sheep", EntitySheep.class, "Sheep");
+        register(92, "cow", EntityCow.class, "Cow");
+        register(93, "chicken", EntityChicken.class, "Chicken");
+        register(94, "squid", EntitySquid.class, "Squid");
+        register(95, "wolf", EntityWolf.class, "Wolf");
+        register(96, "mooshroom", EntityMooshroom.class, "MushroomCow");
+        register(97, "snowman", EntitySnowman.class, "SnowMan");
+        register(98, "ocelot", EntityOcelot.class, "Ozelot");
+        register(99, "villager_golem", EntityIronGolem.class, "VillagerGolem");
+        register(100, "horse", EntityHorse.class, "Horse");
+        register(101, "rabbit", EntityRabbit.class, "Rabbit");
+        register(102, "polar_bear", EntityPolarBear.class, "PolarBear");
+        register(103, "llama", EntityLlama.class, "Llama");
+        register(104, "llama_spit", EntityLlamaSpit.class, "LlamaSpit");
+        register(105, "parrot", EntityParrot.class, "Parrot");
+        register(120, "villager", EntityVillager.class, "Villager");
+        register(200, "ender_crystal", EntityEnderCrystal.class, "EnderCrystal");
+        addSpawnInfo("bat", 4996656, 986895);
+        addSpawnInfo("blaze", 16167425, 16775294);
+        addSpawnInfo("cave_spider", 803406, 11013646);
+        addSpawnInfo("chicken", 10592673, 16711680);
+        addSpawnInfo("cow", 4470310, 10592673);
+        addSpawnInfo("creeper", 894731, 0);
+        addSpawnInfo("donkey", 5457209, 8811878);
+        addSpawnInfo("elder_guardian", 13552826, 7632531);
+        addSpawnInfo("enderman", 1447446, 0);
+        addSpawnInfo("endermite", 1447446, 7237230);
+        addSpawnInfo("evocation_illager", 9804699, 1973274);
+        addSpawnInfo("ghast", 16382457, 12369084);
+        addSpawnInfo("guardian", 5931634, 15826224);
+        addSpawnInfo("horse", 12623485, 15656192);
+        addSpawnInfo("husk", 7958625, 15125652);
+        addSpawnInfo("llama", 12623485, 10051392);
+        addSpawnInfo("magma_cube", 3407872, 16579584);
+        addSpawnInfo("mooshroom", 10489616, 12040119);
+        addSpawnInfo("mule", 1769984, 5321501);
+        addSpawnInfo("ocelot", 15720061, 5653556);
+        addSpawnInfo("parrot", 894731, 16711680);
+        addSpawnInfo("pig", 15771042, 14377823);
+        addSpawnInfo("polar_bear", 15921906, 9803152);
+        addSpawnInfo("rabbit", 10051392, 7555121);
+        addSpawnInfo("sheep", 15198183, 16758197);
+        addSpawnInfo("shulker", 9725844, 5060690);
+        addSpawnInfo("silverfish", 7237230, 3158064);
+        addSpawnInfo("skeleton", 12698049, 4802889);
+        addSpawnInfo("skeleton_horse", 6842447, 15066584);
+        addSpawnInfo("slime", 5349438, 8306542);
+        addSpawnInfo("spider", 3419431, 11013646);
+        addSpawnInfo("squid", 2243405, 7375001);
+        addSpawnInfo("stray", 6387319, 14543594);
+        addSpawnInfo("vex", 8032420, 15265265);
+        addSpawnInfo("villager", 5651507, 12422002);
+        addSpawnInfo("vindication_illager", 9804699, 2580065);
+        addSpawnInfo("witch", 3407872, 5349438);
+        addSpawnInfo("wither_skeleton", 1315860, 4672845);
+        addSpawnInfo("wolf", 14144467, 13545366);
+        addSpawnInfo("zombie", 44975, 7969893);
+        addSpawnInfo("zombie_horse", 3232308, 9945732);
+        addSpawnInfo("zombie_pigman", 15373203, 5009705);
+        addSpawnInfo("zombie_villager", 5651507, 7969893);
+        EXTRA_NAMES.add(LIGHTNING_BOLT);
     }
 
-    private static void func_191303_a(int p_191303_0_, String p_191303_1_, Class <? extends Entity > p_191303_2_, String p_191303_3_)
+    private static void register(int id, String name, Class <? extends Entity > clazz, String oldName)
     {
         try
         {
-            p_191303_2_.getConstructor(World.class);
+            clazz.getConstructor(World.class);
         }
         catch (NoSuchMethodException var5)
         {
-            throw new RuntimeException("Invalid class " + p_191303_2_ + " no constructor taking " + World.class.getName());
+            throw new RuntimeException("Invalid class " + clazz + " no constructor taking " + World.class.getName());
         }
 
-        if ((p_191303_2_.getModifiers() & 1024) == 1024)
+        if ((clazz.getModifiers() & 1024) == 1024)
         {
-            throw new RuntimeException("Invalid abstract class " + p_191303_2_);
+            throw new RuntimeException("Invalid abstract class " + clazz);
         }
         else
         {
-            ResourceLocation resourcelocation = new ResourceLocation(p_191303_1_);
-            net.minecraftforge.registries.GameData.registerEntity(p_191303_0_, resourcelocation, p_191303_2_, p_191303_3_);
+            ResourceLocation resourcelocation = new ResourceLocation(name);
+            net.minecraftforge.registries.GameData.registerEntity(id, resourcelocation, clazz, oldName);
         }
     }
 
-    protected static EntityList.EntityEggInfo func_191305_a(String p_191305_0_, int p_191305_1_, int p_191305_2_)
+    protected static EntityList.EntityEggInfo addSpawnInfo(String id, int primaryColor, int secondaryColor)
     {
-        ResourceLocation resourcelocation = new ResourceLocation(p_191305_0_);
-        EntityList.EntityEggInfo egg = new EntityList.EntityEggInfo(resourcelocation, p_191305_1_, p_191305_2_);
+        ResourceLocation resourcelocation = new ResourceLocation(id);
+        EntityList.EntityEggInfo egg = new EntityList.EntityEggInfo(resourcelocation, primaryColor, secondaryColor);
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(resourcelocation);
         if (entry != null) entry.setEgg(egg);
         return (EntityList.EntityEggInfo)ENTITY_EGGS.put(resourcelocation, egg);
@@ -454,13 +509,24 @@ public class EntityList
             public final StatBase killEntityStat;
             public final StatBase entityKilledByStat;
 
-            public EntityEggInfo(ResourceLocation p_i47341_1_, int p_i47341_2_, int p_i47341_3_)
+            public EntityEggInfo(ResourceLocation idIn, int primaryColorIn, int secondaryColorIn)
             {
-                this.spawnedID = p_i47341_1_;
-                this.primaryColor = p_i47341_2_;
-                this.secondaryColor = p_i47341_3_;
+                this.spawnedID = idIn;
+                this.primaryColor = primaryColorIn;
+                this.secondaryColor = secondaryColorIn;
                 this.killEntityStat = StatList.getStatKillEntity(this);
                 this.entityKilledByStat = StatList.getStatEntityKilledBy(this);
             }
+
+            // Forge start
+            public EntityEggInfo(ResourceLocation id, int primaryColor, int secondaryColor, StatBase killEntityStatistic, StatBase entityKilledByStatistic)
+            {
+                this.spawnedID = id;
+                this.primaryColor = primaryColor;
+                this.secondaryColor = secondaryColor;
+                this.killEntityStat = killEntityStatistic;
+                this.entityKilledByStat = entityKilledByStatistic;
+            }
+            // Forge end
         }
 }

@@ -38,7 +38,7 @@ public class EntityLeashKnot extends EntityHanging
      */
     public void setPosition(double x, double y, double z)
     {
-        super.setPosition((double)MathHelper.floor_double(x) + 0.5D, (double)MathHelper.floor_double(y) + 0.5D, (double)MathHelper.floor_double(z) + 0.5D);
+        super.setPosition((double)MathHelper.floor(x) + 0.5D, (double)MathHelper.floor(y) + 0.5D, (double)MathHelper.floor(z) + 0.5D);
     }
 
     /**
@@ -49,6 +49,7 @@ public class EntityLeashKnot extends EntityHanging
         this.posX = (double)this.hangingPosition.getX() + 0.5D;
         this.posY = (double)this.hangingPosition.getY() + 0.5D;
         this.posZ = (double)this.hangingPosition.getZ() + 0.5D;
+        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
     }
 
     /**
@@ -92,8 +93,8 @@ public class EntityLeashKnot extends EntityHanging
 
     /**
      * Either write this entity to the NBT tag given and return true, or return false without doing anything. If this
-     * returns false the entity is not saved on disk. Ridden entities return false here as they are saved with their
-     * rider.
+     * returns false the entity is not saved on disk. Riding entities return false here as they are saved with their
+     * mount.
      */
     public boolean writeToNBTOptional(NBTTagCompound compound)
     {
@@ -114,9 +115,9 @@ public class EntityLeashKnot extends EntityHanging
     {
     }
 
-    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             return true;
         }
@@ -124,13 +125,13 @@ public class EntityLeashKnot extends EntityHanging
         {
             boolean flag = false;
             double d0 = 7.0D;
-            List<EntityLiving> list = this.worldObj.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D));
+            List<EntityLiving> list = this.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D));
 
             for (EntityLiving entityliving : list)
             {
-                if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player)
+                if (entityliving.getLeashed() && entityliving.getLeashHolder() == player)
                 {
-                    entityliving.setLeashedToEntity(this, true);
+                    entityliving.setLeashHolder(this, true);
                     flag = true;
                 }
             }
@@ -143,7 +144,7 @@ public class EntityLeashKnot extends EntityHanging
                 {
                     for (EntityLiving entityliving1 : list)
                     {
-                        if (entityliving1.getLeashed() && entityliving1.getLeashedToEntity() == this)
+                        if (entityliving1.getLeashed() && entityliving1.getLeashHolder() == this)
                         {
                             entityliving1.clearLeashed(true, false);
                         }
@@ -160,13 +161,13 @@ public class EntityLeashKnot extends EntityHanging
      */
     public boolean onValidSurface()
     {
-        return this.worldObj.getBlockState(this.hangingPosition).getBlock() instanceof BlockFence;
+        return this.world.getBlockState(this.hangingPosition).getBlock() instanceof BlockFence;
     }
 
     public static EntityLeashKnot createKnot(World worldIn, BlockPos fence)
     {
         EntityLeashKnot entityleashknot = new EntityLeashKnot(worldIn, fence);
-        worldIn.spawnEntityInWorld(entityleashknot);
+        worldIn.spawnEntity(entityleashknot);
         entityleashknot.playPlaceSound();
         return entityleashknot;
     }

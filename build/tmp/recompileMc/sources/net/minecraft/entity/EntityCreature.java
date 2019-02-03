@@ -99,11 +99,11 @@ public abstract class EntityCreature extends EntityLiving
     {
         super.updateLeashedState();
 
-        if (this.getLeashed() && this.getLeashedToEntity() != null && this.getLeashedToEntity().worldObj == this.worldObj)
+        if (this.getLeashed() && this.getLeashHolder() != null && this.getLeashHolder().world == this.world)
         {
-            Entity entity = this.getLeashedToEntity();
+            Entity entity = this.getLeashHolder();
             this.setHomePosAndDistance(new BlockPos((int)entity.posX, (int)entity.posY, (int)entity.posZ), 5);
-            float f = this.getDistanceToEntity(entity);
+            float f = this.getDistance(entity);
 
             if (this instanceof EntityTameable && ((EntityTameable)this).isSitting())
             {
@@ -136,12 +136,12 @@ public abstract class EntityCreature extends EntityLiving
                 this.tasks.enableControlFlag(1);
                 float f1 = 2.0F;
                 Vec3d vec3d = (new Vec3d(entity.posX - this.posX, entity.posY - this.posY, entity.posZ - this.posZ)).normalize().scale((double)Math.max(f - 2.0F, 0.0F));
-                this.getNavigator().tryMoveToXYZ(this.posX + vec3d.xCoord, this.posY + vec3d.yCoord, this.posZ + vec3d.zCoord, this.func_190634_dg());
+                this.getNavigator().tryMoveToXYZ(this.posX + vec3d.x, this.posY + vec3d.y, this.posZ + vec3d.z, this.followLeashSpeed());
             }
         }
     }
 
-    protected double func_190634_dg()
+    protected double followLeashSpeed()
     {
         return 1.0D;
     }

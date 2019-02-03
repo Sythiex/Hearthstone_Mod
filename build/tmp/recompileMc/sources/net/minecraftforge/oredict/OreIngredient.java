@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 package net.minecraftforge.oredict;
 
 import javax.annotation.Nonnull;
@@ -45,11 +46,11 @@ public class OreIngredient extends Ingredient
 
     @Override
     @Nonnull
-    public ItemStack[] func_193365_a()
+    public ItemStack[] getMatchingStacks()
     {
         if (array == null || this.lastSizeA != ores.size())
         {
-            NonNullList<ItemStack> lst = NonNullList.func_191196_a();
+            NonNullList<ItemStack> lst = NonNullList.create();
             for (ItemStack itemstack : this.ores)
             {
                 if (itemstack.getMetadata() == OreDictionary.WILDCARD_VALUE)
@@ -66,7 +67,7 @@ public class OreIngredient extends Ingredient
 
     @Override
     @Nonnull
-    public IntList func_194139_b()
+    public IntList getValidItemStacksPacked()
     {
         if (this.itemIds == null || this.lastSizeL != ores.size())
         {
@@ -76,14 +77,14 @@ public class OreIngredient extends Ingredient
             {
                 if (itemstack.getMetadata() == OreDictionary.WILDCARD_VALUE)
                 {
-                    NonNullList<ItemStack> lst = NonNullList.func_191196_a();
+                    NonNullList<ItemStack> lst = NonNullList.create();
                     itemstack.getItem().getSubItems(CreativeTabs.SEARCH, lst);
                     for (ItemStack item : lst)
-                        this.itemIds.add(RecipeItemHelper.func_194113_b(item));
+                        this.itemIds.add(RecipeItemHelper.pack(item));
                 }
                 else
                 {
-                    this.itemIds.add(RecipeItemHelper.func_194113_b(itemstack));
+                    this.itemIds.add(RecipeItemHelper.pack(itemstack));
                 }
             }
 
@@ -113,5 +114,11 @@ public class OreIngredient extends Ingredient
     {
         this.itemIds = null;
         this.array = null;
+    }
+
+    @Override
+    public boolean isSimple()
+    {
+        return true;
     }
 }

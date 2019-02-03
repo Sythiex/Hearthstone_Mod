@@ -57,9 +57,13 @@ public class PhaseList<T extends IPhase>
         return this.name + " (#" + this.id + ")";
     }
 
-    public static PhaseList<?> getById(int p_188738_0_)
+    /**
+     * Gets a phase by its ID. If the phase is out of bounds (negative or beyond the end of the phase array), returns
+     * {@link #HOLDING_PATTERN}.
+     */
+    public static PhaseList<?> getById(int idIn)
     {
-        return p_188738_0_ >= 0 && p_188738_0_ < phases.length ? phases[p_188738_0_] : HOLDING_PATTERN;
+        return idIn >= 0 && idIn < phases.length ? phases[idIn] : HOLDING_PATTERN;
     }
 
     public static int getTotalPhases()

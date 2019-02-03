@@ -14,7 +14,7 @@ public class ScreenChatOptions extends GuiScreen
     private final GuiScreen parentScreen;
     private final GameSettings game_settings;
     private String chatTitle;
-    private GuiOptionButton field_193025_i;
+    private GuiOptionButton narratorButton;
 
     public ScreenChatOptions(GuiScreen parentScreenIn, GameSettings gameSettingsIn)
     {
@@ -33,19 +33,19 @@ public class ScreenChatOptions extends GuiScreen
 
         for (GameSettings.Options gamesettings$options : CHAT_OPTIONS)
         {
-            if (gamesettings$options.getEnumFloat())
+            if (gamesettings$options.isFloat())
             {
-                this.buttonList.add(new GuiOptionSlider(gamesettings$options.returnEnumOrdinal(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), gamesettings$options));
+                this.buttonList.add(new GuiOptionSlider(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), gamesettings$options));
             }
             else
             {
-                GuiOptionButton guioptionbutton = new GuiOptionButton(gamesettings$options.returnEnumOrdinal(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), gamesettings$options, this.game_settings.getKeyBinding(gamesettings$options));
+                GuiOptionButton guioptionbutton = new GuiOptionButton(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), gamesettings$options, this.game_settings.getKeyBinding(gamesettings$options));
                 this.buttonList.add(guioptionbutton);
 
                 if (gamesettings$options == GameSettings.Options.NARRATOR)
                 {
-                    this.field_193025_i = guioptionbutton;
-                    guioptionbutton.enabled = NarratorChatListener.field_193643_a.func_193640_a();
+                    this.narratorButton = guioptionbutton;
+                    guioptionbutton.enabled = NarratorChatListener.INSTANCE.isActive();
                 }
             }
 
@@ -78,8 +78,8 @@ public class ScreenChatOptions extends GuiScreen
         {
             if (button.id < 100 && button instanceof GuiOptionButton)
             {
-                this.game_settings.setOptionValue(((GuiOptionButton)button).returnEnumOptions(), 1);
-                button.displayString = this.game_settings.getKeyBinding(GameSettings.Options.getEnumOptions(button.id));
+                this.game_settings.setOptionValue(((GuiOptionButton)button).getOption(), 1);
+                button.displayString = this.game_settings.getKeyBinding(GameSettings.Options.byOrdinal(button.id));
             }
 
             if (button.id == 200)
@@ -96,12 +96,12 @@ public class ScreenChatOptions extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRendererObj, this.chatTitle, this.width / 2, 20, 16777215);
+        this.drawCenteredString(this.fontRenderer, this.chatTitle, this.width / 2, 20, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public void func_193024_a()
+    public void updateNarratorButton()
     {
-        this.field_193025_i.displayString = this.game_settings.getKeyBinding(GameSettings.Options.getEnumOptions(this.field_193025_i.id));
+        this.narratorButton.displayString = this.game_settings.getKeyBinding(GameSettings.Options.byOrdinal(this.narratorButton.id));
     }
 }

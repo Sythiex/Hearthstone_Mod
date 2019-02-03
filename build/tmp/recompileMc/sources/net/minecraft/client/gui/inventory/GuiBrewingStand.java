@@ -32,7 +32,7 @@ public class GuiBrewingStand extends GuiContainer
     {
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        this.func_191948_b(mouseX, mouseY);
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     /**
@@ -41,8 +41,8 @@ public class GuiBrewingStand extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         String s = this.tileBrewingStand.getDisplayName().getUnformattedText();
-        this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
-        this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, 4210752);
+        this.fontRenderer.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
 
     /**
@@ -56,7 +56,7 @@ public class GuiBrewingStand extends GuiContainer
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
         int k = this.tileBrewingStand.getField(1);
-        int l = MathHelper.clamp_int((18 * k + 20 - 1) / 20, 0, 18);
+        int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
 
         if (l > 0)
         {

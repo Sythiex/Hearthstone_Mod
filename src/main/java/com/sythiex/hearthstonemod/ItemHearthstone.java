@@ -108,7 +108,7 @@ public class ItemHearthstone extends Item
 					tag.setInteger("castTime", 0);
 					tag.setBoolean("isCasting", false);
 					tag.setBoolean("stopCasting", false);
-					player.addChatMessage(new TextComponentTranslation("msg.hearthstoneCastCanceled.txt"));
+					player.sendMessage(new TextComponentTranslation("msg.hearthstoneCastCanceled.txt"));
 				}
 				else
 				{
@@ -144,17 +144,17 @@ public class ItemHearthstone extends Item
 					if(block.isBed(state, world, bedPos, player))
 					{
 						// find open spaces around bed
-						boolean north = player.worldObj.getBlockState(bedPos.north()).getBlock().canSpawnInBlock();
-						boolean north1 = player.worldObj.getBlockState(bedPos.north().up()).getBlock().canSpawnInBlock();
+						boolean north = player.world.getBlockState(bedPos.north()).getBlock().canSpawnInBlock();
+						boolean north1 = player.world.getBlockState(bedPos.north().up()).getBlock().canSpawnInBlock();
 						
-						boolean east = player.worldObj.getBlockState(bedPos.east()).getBlock().canSpawnInBlock();
-						boolean east1 = player.worldObj.getBlockState(bedPos.east().up()).getBlock().canSpawnInBlock();
+						boolean east = player.world.getBlockState(bedPos.east()).getBlock().canSpawnInBlock();
+						boolean east1 = player.world.getBlockState(bedPos.east().up()).getBlock().canSpawnInBlock();
 						
-						boolean south = player.worldObj.getBlockState(bedPos.south()).getBlock().canSpawnInBlock();
-						boolean south1 = player.worldObj.getBlockState(bedPos.south().up()).getBlock().canSpawnInBlock();
+						boolean south = player.world.getBlockState(bedPos.south()).getBlock().canSpawnInBlock();
+						boolean south1 = player.world.getBlockState(bedPos.south().up()).getBlock().canSpawnInBlock();
 						
-						boolean west = player.worldObj.getBlockState(bedPos.west()).getBlock().canSpawnInBlock();
-						boolean west1 = player.worldObj.getBlockState(bedPos.west().up()).getBlock().canSpawnInBlock();
+						boolean west = player.world.getBlockState(bedPos.west()).getBlock().canSpawnInBlock();
+						boolean west1 = player.world.getBlockState(bedPos.west().up()).getBlock().canSpawnInBlock();
 						
 						// tp player next to bed
 						if(north && north1)
@@ -193,7 +193,7 @@ public class ItemHearthstone extends Item
 						tag.setInteger("cooldown", maxCooldown);
 						tag.setBoolean("locationSet", false);
 						// informs player of broken link
-						player.addChatMessage(new TextComponentTranslation("msg.hearthstoneMissingBed.txt"));
+						player.sendMessage(new TextComponentTranslation("msg.hearthstoneMissingBed.txt"));
 					}
 				}
 			}
@@ -207,31 +207,20 @@ public class ItemHearthstone extends Item
 		}
 		// client side
 		/*
-		 * else if(world.isRemote)
-		 * {
-		 * if(entity instanceof EntityPlayer)
-		 * {
-		 * EntityPlayer player = (EntityPlayer) entity;
-		 * NBTTagCompound tag = itemStack.getTagCompound();
-		 * if(tag != null)
-		 * {
-		 * // if cast has started play channel sound
-		 * if(tag.getInteger("castTime") == 1)
-		 * {
-		 * System.out.println("playing sound");
-		 * // TODO doesnt always trigger on client
-		 * Minecraft.getMinecraft().getSoundHandler().playSound(new ChannelPositionedSound(player));
-		 * }
-		 * }
-		 * }
-		 * }
+		 * else if(world.isRemote) { if(entity instanceof EntityPlayer) { EntityPlayer
+		 * player = (EntityPlayer) entity; NBTTagCompound tag =
+		 * itemStack.getTagCompound(); if(tag != null) { // if cast has started play
+		 * channel sound if(tag.getInteger("castTime") == 1) {
+		 * System.out.println("playing sound"); // TODO doesnt always trigger on client
+		 * Minecraft.getMinecraft().getSoundHandler().playSound(new
+		 * ChannelPositionedSound(player)); } } } }
 		 */
 	}
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
 	{
-		if(!player.worldObj.isRemote)
+		if(!player.world.isRemote)
 		{
 			ItemStack itemStack = player.getHeldItem(hand);
 			NBTTagCompound tagCompound = itemStack.getTagCompound();
@@ -256,13 +245,13 @@ public class ItemHearthstone extends Item
 					// if on cooldown
 					else
 					{
-						player.addChatMessage(new TextComponentTranslation("msg.hearthstoneOnCooldown.txt"));
+						player.sendMessage(new TextComponentTranslation("msg.hearthstoneOnCooldown.txt"));
 					}
 				}
 				// if location is not set
 				else
 				{
-					player.addChatMessage(new TextComponentTranslation("msg.hearthstoneNoBed.txt"));
+					player.sendMessage(new TextComponentTranslation("msg.hearthstoneNoBed.txt"));
 				}
 			}
 			// save tag
@@ -292,7 +281,7 @@ public class ItemHearthstone extends Item
 					tagCompound.setInteger("bedZ", blockPos.getZ());
 					tagCompound.setInteger("bedDimension", player.dimension);
 					tagCompound.setBoolean("locationSet", true);
-					player.addChatMessage(new TextComponentTranslation("msg.hearthstoneLinked.txt"));
+					player.sendMessage(new TextComponentTranslation("msg.hearthstoneLinked.txt"));
 				}
 				// save tag
 				itemStack.setTagCompound(tagCompound);
@@ -309,10 +298,13 @@ public class ItemHearthstone extends Item
 		{
 			NBTTagCompound oldTag = oldStack.getTagCompound();
 			NBTTagCompound newTag = newStack.getTagCompound();
-			if(oldTag.getInteger("bedX") == newTag.getInteger("bedX") && oldTag.getInteger("bedY") == newTag.getInteger("bedY") && oldTag.getInteger("bedZ") == newTag.getInteger("bedZ"))
+			if(oldTag != null && newTag != null)
 			{
-				if(oldTag.getInteger("cooldown") < (newTag.getInteger("cooldown") + 20) && oldTag.getInteger("cooldown") > (newTag.getInteger("cooldown") - 20))
-					return false;
+				if(oldTag.getInteger("bedX") == newTag.getInteger("bedX") && oldTag.getInteger("bedY") == newTag.getInteger("bedY") && oldTag.getInteger("bedZ") == newTag.getInteger("bedZ"))
+				{
+					if(oldTag.getInteger("cooldown") < (newTag.getInteger("cooldown") + 20) && oldTag.getInteger("cooldown") > (newTag.getInteger("cooldown") - 20))
+						return false;
+				}
 			}
 		}
 		return true;

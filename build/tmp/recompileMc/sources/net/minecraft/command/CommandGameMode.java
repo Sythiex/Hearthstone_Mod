@@ -16,7 +16,7 @@ public class CommandGameMode extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "gamemode";
     }
@@ -32,7 +32,7 @@ public class CommandGameMode extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.gamemode.usage";
     }
@@ -55,7 +55,7 @@ public class CommandGameMode extends CommandBase
 
             if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback"))
             {
-                entityplayer.addChatMessage(new TextComponentTranslation("gameMode.changed", new Object[] {itextcomponent}));
+                entityplayer.sendMessage(new TextComponentTranslation("gameMode.changed", new Object[] {itextcomponent}));
             }
 
             if (entityplayer == sender)
@@ -81,7 +81,7 @@ public class CommandGameMode extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
         if (args.length == 1)
         {
@@ -89,7 +89,7 @@ public class CommandGameMode extends CommandBase
         }
         else
         {
-            return args.length == 2 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : Collections.emptyList();
+            return args.length == 2 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Collections.emptyList();
         }
     }
 

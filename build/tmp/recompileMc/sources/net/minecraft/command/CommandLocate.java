@@ -12,7 +12,7 @@ public class CommandLocate extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "locate";
     }
@@ -28,7 +28,7 @@ public class CommandLocate extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.locate.usage";
     }
@@ -45,11 +45,11 @@ public class CommandLocate extends CommandBase
         else
         {
             String s = args[0];
-            BlockPos blockpos = sender.getEntityWorld().func_190528_a(s, sender.getPosition(), false);
+            BlockPos blockpos = sender.getEntityWorld().findNearestStructure(s, sender.getPosition(), false);
 
             if (blockpos != null)
             {
-                sender.addChatMessage(new TextComponentTranslation("commands.locate.success", new Object[] {s, blockpos.getX(), blockpos.getZ()}));
+                sender.sendMessage(new TextComponentTranslation("commands.locate.success", new Object[] {s, blockpos.getX(), blockpos.getZ()}));
             }
             else
             {
@@ -61,7 +61,7 @@ public class CommandLocate extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"Stronghold", "Monument", "Village", "Mansion", "EndCity", "Fortress", "Temple", "Mineshaft"}) : Collections.emptyList();
     }

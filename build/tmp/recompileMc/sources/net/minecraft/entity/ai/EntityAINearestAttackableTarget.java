@@ -25,7 +25,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
     protected final Class<T> targetClass;
     private final int targetChance;
     /** Instance of EntityAINearestAttackableTargetSorter. */
-    protected final EntityAINearestAttackableTarget.Sorter theNearestAttackableTargetSorter;
+    protected final EntityAINearestAttackableTarget.Sorter sorter;
     protected final Predicate <? super T > targetEntitySelector;
     protected T targetEntity;
 
@@ -44,7 +44,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         super(creature, checkSight, onlyNearby);
         this.targetClass = classTarget;
         this.targetChance = chance;
-        this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(creature);
+        this.sorter = new EntityAINearestAttackableTarget.Sorter(creature);
         this.setMutexBits(1);
         this.targetEntitySelector = new Predicate<T>()
         {
@@ -77,7 +77,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         }
         else if (this.targetClass != EntityPlayer.class && this.targetClass != EntityPlayerMP.class)
         {
-            List<T> list = this.taskOwner.worldObj.<T>getEntitiesWithinAABB(this.targetClass, this.getTargetableArea(this.getTargetDistance()), this.targetEntitySelector);
+            List<T> list = this.taskOwner.world.<T>getEntitiesWithinAABB(this.targetClass, this.getTargetableArea(this.getTargetDistance()), this.targetEntitySelector);
 
             if (list.isEmpty())
             {
@@ -85,14 +85,14 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
             }
             else
             {
-                Collections.sort(list, this.theNearestAttackableTargetSorter);
+                Collections.sort(list, this.sorter);
                 this.targetEntity = list.get(0);
                 return true;
             }
         }
         else
         {
-            this.targetEntity = (T)this.taskOwner.worldObj.getNearestAttackablePlayer(this.taskOwner.posX, this.taskOwner.posY + (double)this.taskOwner.getEyeHeight(), this.taskOwner.posZ, this.getTargetDistance(), this.getTargetDistance(), new Function<EntityPlayer, Double>()
+            this.targetEntity = (T)this.taskOwner.world.getNearestAttackablePlayer(this.taskOwner.posX, this.taskOwner.posY + (double)this.taskOwner.getEyeHeight(), this.taskOwner.posZ, this.getTargetDistance(), this.getTargetDistance(), new Function<EntityPlayer, Double>()
             {
                 @Nullable
                 public Double apply(@Nullable EntityPlayer p_apply_1_)
@@ -121,7 +121,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
 
     protected AxisAlignedBB getTargetableArea(double targetDistance)
     {
-        return this.taskOwner.getEntityBoundingBox().expand(targetDistance, 4.0D, targetDistance);
+        return this.taskOwner.getEntityBoundingBox().grow(targetDistance, 4.0D, targetDistance);
     }
 
     /**
@@ -135,17 +135,17 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
 
     public static class Sorter implements Comparator<Entity>
         {
-            private final Entity theEntity;
+            private final Entity entity;
 
-            public Sorter(Entity theEntityIn)
+            public Sorter(Entity entityIn)
             {
-                this.theEntity = theEntityIn;
+                this.entity = entityIn;
             }
 
             public int compare(Entity p_compare_1_, Entity p_compare_2_)
             {
-                double d0 = this.theEntity.getDistanceSqToEntity(p_compare_1_);
-                double d1 = this.theEntity.getDistanceSqToEntity(p_compare_2_);
+                double d0 = this.entity.getDistanceSq(p_compare_1_);
+                double d1 = this.entity.getDistanceSq(p_compare_2_);
 
                 if (d0 < d1)
                 {

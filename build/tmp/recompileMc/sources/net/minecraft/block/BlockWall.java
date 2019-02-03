@@ -50,9 +50,9 @@ public class BlockWall extends Block
         return AABB_BY_INDEX[getAABBIndex(state)];
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
     {
-        if (!p_185477_7_)
+        if (!isActualState)
         {
             state = this.getActualState(state, worldIn, pos);
         }
@@ -107,6 +107,9 @@ public class BlockWall extends Block
         return false;
     }
 
+    /**
+     * Determines if an entity can path through this block
+     */
     public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
     {
         return false;
@@ -124,24 +127,24 @@ public class BlockWall extends Block
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
         Block block = iblockstate.getBlock();
-        BlockFaceShape blockfaceshape = iblockstate.func_193401_d(worldIn, pos, p_176253_3_);
+        BlockFaceShape blockfaceshape = iblockstate.getBlockFaceShape(worldIn, pos, p_176253_3_);
         boolean flag = blockfaceshape == BlockFaceShape.MIDDLE_POLE_THICK || blockfaceshape == BlockFaceShape.MIDDLE_POLE && block instanceof BlockFenceGate;
-        return !func_194143_e(block) && blockfaceshape == BlockFaceShape.SOLID || flag;
+        return !isExcepBlockForAttachWithPiston(block) && blockfaceshape == BlockFaceShape.SOLID || flag;
     }
 
-    protected static boolean func_194143_e(Block p_194143_0_)
+    protected static boolean isExcepBlockForAttachWithPiston(Block p_194143_0_)
     {
-        return Block.func_193382_c(p_194143_0_) || p_194143_0_ == Blocks.BARRIER || p_194143_0_ == Blocks.MELON_BLOCK || p_194143_0_ == Blocks.PUMPKIN || p_194143_0_ == Blocks.LIT_PUMPKIN;
+        return Block.isExceptBlockForAttachWithPiston(p_194143_0_) || p_194143_0_ == Blocks.BARRIER || p_194143_0_ == Blocks.MELON_BLOCK || p_194143_0_ == Blocks.PUMPKIN || p_194143_0_ == Blocks.LIT_PUMPKIN;
     }
 
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
     {
         for (BlockWall.EnumType blockwall$enumtype : BlockWall.EnumType.values())
         {
-            tab.add(new ItemStack(this, 1, blockwall$enumtype.getMetadata()));
+            items.add(new ItemStack(this, 1, blockwall$enumtype.getMetadata()));
         }
     }
 
@@ -195,9 +198,18 @@ public class BlockWall extends Block
         return new BlockStateContainer(this, new IProperty[] {UP, NORTH, EAST, WEST, SOUTH, VARIANT});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        return p_193383_4_ != EnumFacing.UP && p_193383_4_ != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THICK : BlockFaceShape.CENTER_BIG;
+        return face != EnumFacing.UP && face != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THICK : BlockFaceShape.CENTER_BIG;
     }
 
     /* ======================================== FORGE START ======================================== */
@@ -205,8 +217,7 @@ public class BlockWall extends Block
     @Override
     public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
     {
-        Block connector = world.getBlockState(pos.offset(facing)).getBlock();
-        return connector instanceof BlockWall || connector instanceof BlockFenceGate;
+        return canConnectTo(world, pos.offset(facing), facing.getOpposite());
     }
 
     private boolean canWallConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing)

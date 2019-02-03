@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,7 +54,7 @@ public class GuiSelectStringEntries extends GuiListExtended
         this.mc = mc;
         this.configElement = configElement;
         this.selectableValues = selectableValues;
-        this.func_193651_b(true);
+        this.setShowSelectionBox(true);
 
         listEntries = new ArrayList<IGuiSelectStringListEntry>();
 
@@ -65,8 +65,8 @@ public class GuiSelectStringEntries extends GuiListExtended
         for (Entry<Object, String> entry : sortedList)
         {
             listEntries.add(new ListEntry(this, entry));
-            if (mc.fontRendererObj.getStringWidth(entry.getValue()) > maxEntryWidth)
-                maxEntryWidth = mc.fontRendererObj.getStringWidth(entry.getValue());
+            if (mc.fontRenderer.getStringWidth(entry.getValue()) > maxEntryWidth)
+                maxEntryWidth = mc.fontRenderer.getStringWidth(entry.getValue());
 
             if (owningScreen.currentValue.equals(entry.getKey()))
             {
@@ -185,9 +185,9 @@ public class GuiSelectStringEntries extends GuiListExtended
         }
 
         @Override
-        public void func_192634_a(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partial)
+        public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partial)
         {
-            owningList.mc.fontRendererObj.drawString(value.getValue(), x + 1, y, slotIndex == owningList.selectedIndex ? 16777215 : 14737632);
+            owningList.mc.fontRenderer.drawString(value.getValue(), x + 1, y, slotIndex == owningList.selectedIndex ? 16777215 : 14737632);
         }
 
         /**
@@ -214,11 +214,11 @@ public class GuiSelectStringEntries extends GuiListExtended
         }
 
         @Override
-        public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_){}
+        public void updatePosition(int slotIndex, int x, int y, float partialTicks){}
     }
 
     public static interface IGuiSelectStringListEntry extends GuiListExtended.IGuiListEntry
     {
-        public Object getValue();
+        Object getValue();
     }
 }

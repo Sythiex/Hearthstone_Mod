@@ -691,7 +691,23 @@ public class FontRenderer implements IResourceManagerReloadListener
     }
 
     /**
-     * Trims a string to a specified width, and will reverse it if par3 is set.
+     * Trims a string to a specified width, optionally starting from the end and working backwards.
+     * <h3>Samples:</h3>
+     * (Assuming that {@link #getCharWidth(char)} returns <code>6</code> for all of the characters in
+     * <code>0123456789</code> on the current resource pack)
+     * <table>
+     * <tr><th>Input</th><th>Returns</th></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 1, false)</code></td><td><samp>""</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 6, false)</code></td><td><samp>"0"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 29, false)</code></td><td><samp>"0123"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 30, false)</code></td><td><samp>"01234"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 9001, false)</code></td><td><samp>"0123456789"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 1, true)</code></td><td><samp>""</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 6, true)</code></td><td><samp>"9"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 29, true)</code></td><td><samp>"6789"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 30, true)</code></td><td><samp>"56789"</samp></td></tr>
+     * <tr><td><code>trimStringToWidth("0123456789", 9001, true)</code></td><td><samp>"0123456789"</samp></td></tr>
+     * </table>
      */
     public String trimStringToWidth(String text, int width, boolean reverse)
     {
@@ -793,9 +809,9 @@ public class FontRenderer implements IResourceManagerReloadListener
     }
 
     /**
-     * Returns the width of the wordwrapped String (maximum length is parameter k)
+     * Returns the height (in pixels) of the given string if it is wordwrapped to the given max width.
      */
-    public int splitStringWidth(String str, int maxLength)
+    public int getWordWrappedHeight(String str, int maxLength)
     {
         return this.FONT_HEIGHT * this.listFormattedStringToWidth(str, maxLength).size();
     }
@@ -827,7 +843,8 @@ public class FontRenderer implements IResourceManagerReloadListener
     }
 
     /**
-     * Breaks a string into a list of pieces that will fit a specified width.
+     * Breaks a string into a list of pieces where the width of each line is always less than or equal to the provided
+     * width. Formatting codes will be preserved between lines.
      */
     public List<String> listFormattedStringToWidth(String str, int wrapWidth)
     {

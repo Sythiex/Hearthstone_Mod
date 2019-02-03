@@ -66,7 +66,7 @@ public class EnchantmentProtection extends Enchantment
         {
             return level * 2;
         }
-        else if (this.protectionType == EnchantmentProtection.Type.FALL && source == DamageSource.fall)
+        else if (this.protectionType == EnchantmentProtection.Type.FALL && source == DamageSource.FALL)
         {
             return level * 3;
         }
@@ -121,7 +121,7 @@ public class EnchantmentProtection extends Enchantment
 
         if (i > 0)
         {
-            p_92093_1_ -= MathHelper.floor_float((float)p_92093_1_ * (float)i * 0.15F);
+            p_92093_1_ -= MathHelper.floor((float)p_92093_1_ * (float)i * 0.15F);
         }
 
         return p_92093_1_;
@@ -133,7 +133,7 @@ public class EnchantmentProtection extends Enchantment
 
         if (i > 0)
         {
-            damage -= (double)MathHelper.floor_double(damage * (double)((float)i * 0.15F));
+            damage -= (double)MathHelper.floor(damage * (double)((float)i * 0.15F));
         }
 
         return damage;

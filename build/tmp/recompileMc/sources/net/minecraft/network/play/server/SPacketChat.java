@@ -23,10 +23,10 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
         this(componentIn, ChatType.SYSTEM);
     }
 
-    public SPacketChat(ITextComponent p_i47428_1_, ChatType p_i47428_2_)
+    public SPacketChat(ITextComponent message, ChatType type)
     {
-        this.chatComponent = p_i47428_1_;
-        this.type = p_i47428_2_;
+        this.chatComponent = message;
+        this.type = type;
     }
 
     /**
@@ -35,7 +35,7 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
     public void readPacketData(PacketBuffer buf) throws IOException
     {
         this.chatComponent = buf.readTextComponent();
-        this.type = ChatType.func_192582_a(buf.readByte());
+        this.type = ChatType.byId(buf.readByte());
     }
 
     /**
@@ -44,7 +44,7 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
     public void writePacketData(PacketBuffer buf) throws IOException
     {
         buf.writeTextComponent(this.chatComponent);
-        buf.writeByte(this.type.func_192583_a());
+        buf.writeByte(this.type.getId());
     }
 
     /**
@@ -69,7 +69,7 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
         return this.type == ChatType.SYSTEM || this.type == ChatType.GAME_INFO;
     }
 
-    public ChatType func_192590_c()
+    public ChatType getType()
     {
         return this.type;
     }

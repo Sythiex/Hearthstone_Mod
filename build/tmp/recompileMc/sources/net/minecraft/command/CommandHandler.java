@@ -53,7 +53,7 @@ public abstract class CommandHandler implements ICommandManager
             {
                 TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.notFound", new Object[0]);
                 textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
-                sender.addChatMessage(textcomponenttranslation1);
+                sender.sendMessage(textcomponenttranslation1);
             }
             else if (icommand.checkPermission(this.getServer(), sender))
             {
@@ -62,7 +62,7 @@ public abstract class CommandHandler implements ICommandManager
                 {
                     if (event.getException() != null)
                     {
-                        com.google.common.base.Throwables.propagateIfPossible(event.getException());
+                        com.google.common.base.Throwables.throwIfUnchecked(event.getException());
                     }
                     return 1;
                 }
@@ -105,14 +105,14 @@ public abstract class CommandHandler implements ICommandManager
             {
                 TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.permission", new Object[0]);
                 textcomponenttranslation2.getStyle().setColor(TextFormatting.RED);
-                sender.addChatMessage(textcomponenttranslation2);
+                sender.sendMessage(textcomponenttranslation2);
             }
         }
         catch (CommandException commandexception)
         {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(commandexception.getMessage(), commandexception.getErrorObjects());
             textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
-            sender.addChatMessage(textcomponenttranslation);
+            sender.sendMessage(textcomponenttranslation);
         }
 
         sender.setCommandStat(CommandResultStats.Type.SUCCESS_COUNT, i);
@@ -130,19 +130,19 @@ public abstract class CommandHandler implements ICommandManager
         {
             TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new Object[] {new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.getErrorObjects())});
             textcomponenttranslation2.getStyle().setColor(TextFormatting.RED);
-            sender.addChatMessage(textcomponenttranslation2);
+            sender.sendMessage(textcomponenttranslation2);
         }
         catch (CommandException commandexception)
         {
             TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation(commandexception.getMessage(), commandexception.getErrorObjects());
             textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
-            sender.addChatMessage(textcomponenttranslation1);
+            sender.sendMessage(textcomponenttranslation1);
         }
         catch (Throwable throwable)
         {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.exception", new Object[0]);
             textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
-            sender.addChatMessage(textcomponenttranslation);
+            sender.sendMessage(textcomponenttranslation);
             LOGGER.warn("Couldn't process command: " + input, throwable);
         }
 
@@ -156,14 +156,14 @@ public abstract class CommandHandler implements ICommandManager
      */
     public ICommand registerCommand(ICommand command)
     {
-        this.commandMap.put(command.getCommandName(), command);
+        this.commandMap.put(command.getName(), command);
         this.commandSet.add(command);
 
-        for (String s : command.getCommandAliases())
+        for (String s : command.getAliases())
         {
             ICommand icommand = this.commandMap.get(s);
 
-            if (icommand == null || !icommand.getCommandName().equals(s))
+            if (icommand == null || !icommand.getName().equals(s))
             {
                 this.commandMap.put(s, command);
             }
@@ -187,7 +187,7 @@ public abstract class CommandHandler implements ICommandManager
      * command is specified or a partial command is specified. It could also be a list of arguments for the command that
      * is specified.
      */
-    public List<String> getTabCompletionOptions(ICommandSender sender, String input, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos)
     {
         String[] astring = input.split(" ", -1);
         String s = astring[0];
@@ -214,7 +214,7 @@ public abstract class CommandHandler implements ICommandManager
 
                 if (icommand != null && icommand.checkPermission(this.getServer(), sender))
                 {
-                    return icommand.getTabCompletionOptions(this.getServer(), sender, dropFirstString(astring), pos);
+                    return icommand.getTabCompletions(this.getServer(), sender, dropFirstString(astring), pos);
                 }
             }
 

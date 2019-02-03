@@ -12,26 +12,31 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class SearchTreeManager implements IResourceManagerReloadListener
 {
-    public static final SearchTreeManager.Key<ItemStack> field_194011_a = new SearchTreeManager.Key<ItemStack>();
-    public static final SearchTreeManager.Key<RecipeList> field_194012_b = new SearchTreeManager.Key<RecipeList>();
-    private final Map < SearchTreeManager.Key<?>, SearchTree<? >> field_194013_c = Maps. < SearchTreeManager.Key<?>, SearchTree<? >> newHashMap();
+    /** The item search tree, used for the creative inventory's search tab */
+    public static final SearchTreeManager.Key<ItemStack> ITEMS = new SearchTreeManager.Key<ItemStack>();
+    /** The recipe search tree, used for the recipe book */
+    public static final SearchTreeManager.Key<RecipeList> RECIPES = new SearchTreeManager.Key<RecipeList>();
+    private final Map < SearchTreeManager.Key<?>, SearchTree<? >> trees = Maps. < SearchTreeManager.Key<?>, SearchTree<? >> newHashMap();
 
     public void onResourceManagerReload(IResourceManager resourceManager)
     {
-        for (SearchTree<?> searchtree : this.field_194013_c.values())
+        for (SearchTree<?> searchtree : this.trees.values())
         {
-            searchtree.func_194040_a();
+            searchtree.recalculate();
         }
     }
 
-    public <T> void func_194009_a(SearchTreeManager.Key<T> p_194009_1_, SearchTree<T> p_194009_2_)
+    public <T> void register(SearchTreeManager.Key<T> key, SearchTree<T> searchTreeIn)
     {
-        this.field_194013_c.put(p_194009_1_, p_194009_2_);
+        this.trees.put(key, searchTreeIn);
     }
 
-    public <T> ISearchTree<T> func_194010_a(SearchTreeManager.Key<T> p_194010_1_)
+    /**
+     * Gets the {@link ISearchTree} for the given search tree key, returning null if no such tree exists.
+     */
+    public <T> ISearchTree<T> get(SearchTreeManager.Key<T> key)
     {
-        return (ISearchTree)this.field_194013_c.get(p_194010_1_);
+        return (ISearchTree)this.trees.get(key);
     }
 
     @SideOnly(Side.CLIENT)

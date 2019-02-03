@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CPacketCreativeInventoryAction implements Packet<INetHandlerPlayServer>
 {
     private int slotId;
-    private ItemStack stack = ItemStack.field_190927_a;
+    private ItemStack stack = ItemStack.EMPTY;
 
     public CPacketCreativeInventoryAction()
     {
@@ -38,7 +38,7 @@ public class CPacketCreativeInventoryAction implements Packet<INetHandlerPlaySer
     public void readPacketData(PacketBuffer buf) throws IOException
     {
         this.slotId = buf.readShort();
-        this.stack = buf.readItemStackFromBuffer();
+        this.stack = buf.readItemStack();
     }
 
     /**

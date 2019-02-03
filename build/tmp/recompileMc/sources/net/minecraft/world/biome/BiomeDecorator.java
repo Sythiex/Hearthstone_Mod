@@ -33,10 +33,10 @@ public class BiomeDecorator
     /** The sand generator. */
     public WorldGenerator sandGen = new WorldGenSand(Blocks.SAND, 7);
     /** The gravel generator. */
-    public WorldGenerator gravelAsSandGen = new WorldGenSand(Blocks.GRAVEL, 6);
+    public WorldGenerator gravelGen = new WorldGenSand(Blocks.GRAVEL, 6);
     /** The dirt generator. */
     public WorldGenerator dirtGen;
-    public WorldGenerator gravelGen;
+    public WorldGenerator gravelOreGen;
     public WorldGenerator graniteGen;
     public WorldGenerator dioriteGen;
     public WorldGenerator andesiteGen;
@@ -48,7 +48,7 @@ public class BiomeDecorator
     public WorldGenerator diamondGen;
     /** Field that holds Lapis WorldGenMinable */
     public WorldGenerator lapisGen;
-    public WorldGenFlowers yellowFlowerGen = new WorldGenFlowers(Blocks.YELLOW_FLOWER, BlockFlower.EnumFlowerType.DANDELION);
+    public WorldGenFlowers flowerGen = new WorldGenFlowers(Blocks.YELLOW_FLOWER, BlockFlower.EnumFlowerType.DANDELION);
     /** Field that holds mushroomBrown WorldGenFlowers */
     public WorldGenerator mushroomBrownGen = new WorldGenBush(Blocks.BROWN_MUSHROOM);
     /** Field that holds mushroomRed WorldGenFlowers */
@@ -84,19 +84,16 @@ public class BiomeDecorator
     public int reedsPerChunk;
     /** The number of cactus plants to generate per chunk. Cacti only work on sand. */
     public int cactiPerChunk;
+    /** The number of gravel patches to generate per chunk. */
+    public int gravelPatchesPerChunk = 1;
     /** The number of sand patches to generate per chunk. Sand patches only generate when part of it is underwater. */
-    public int sandPerChunk = 1;
-    /**
-     * The number of sand patches to generate per chunk. Sand patches only generate when part of it is underwater. There
-     * appear to be two separate fields for this.
-     */
-    public int sandPerChunk2 = 3;
+    public int sandPatchesPerChunk = 3;
     /** The number of clay patches to generate per chunk. Only generates when part of it is underwater. */
     public int clayPerChunk = 1;
     /** Amount of big mushrooms per chunk */
     public int bigMushroomsPerChunk;
     /** True if decorator should generate surface lava & water */
-    public boolean generateLakes = true;
+    public boolean generateFalls = true;
 
     public void decorate(World worldIn, Random random, Biome biome, BlockPos pos)
     {
@@ -109,7 +106,7 @@ public class BiomeDecorator
             this.chunkProviderSettings = ChunkGeneratorSettings.Factory.jsonToFactory(worldIn.getWorldInfo().getGeneratorOptions()).build();
             this.chunkPos = pos;
             this.dirtGen = new WorldGenMinable(Blocks.DIRT.getDefaultState(), this.chunkProviderSettings.dirtSize);
-            this.gravelGen = new WorldGenMinable(Blocks.GRAVEL.getDefaultState(), this.chunkProviderSettings.gravelSize);
+            this.gravelOreGen = new WorldGenMinable(Blocks.GRAVEL.getDefaultState(), this.chunkProviderSettings.gravelSize);
             this.graniteGen = new WorldGenMinable(Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE), this.chunkProviderSettings.graniteSize);
             this.dioriteGen = new WorldGenMinable(Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE), this.chunkProviderSettings.dioriteSize);
             this.andesiteGen = new WorldGenMinable(Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.ANDESITE), this.chunkProviderSettings.andesiteSize);
@@ -126,18 +123,19 @@ public class BiomeDecorator
 
     protected void genDecorations(Biome biomeIn, World worldIn, Random random)
     {
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Pre(worldIn, random, chunkPos));
+        net.minecraft.util.math.ChunkPos forgeChunkPos = new net.minecraft.util.math.ChunkPos(chunkPos); // actual ChunkPos instead of BlockPos, used for events
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Pre(worldIn, random, forgeChunkPos));
         this.generateOres(worldIn, random);
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SAND))
-        for (int i = 0; i < this.sandPerChunk2; ++i)
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SAND))
+        for (int i = 0; i < this.sandPatchesPerChunk; ++i)
         {
             int j = random.nextInt(16) + 8;
             int k = random.nextInt(16) + 8;
             this.sandGen.generate(worldIn, random, worldIn.getTopSolidOrLiquidBlock(this.chunkPos.add(j, 0, k)));
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.CLAY))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.CLAY))
         for (int i1 = 0; i1 < this.clayPerChunk; ++i1)
         {
             int l1 = random.nextInt(16) + 8;
@@ -145,12 +143,12 @@ public class BiomeDecorator
             this.clayGen.generate(worldIn, random, worldIn.getTopSolidOrLiquidBlock(this.chunkPos.add(l1, 0, i6)));
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SAND_PASS2))
-        for (int j1 = 0; j1 < this.sandPerChunk; ++j1)
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SAND_PASS2))
+        for (int j1 = 0; j1 < this.gravelPatchesPerChunk; ++j1)
         {
             int i2 = random.nextInt(16) + 8;
             int j6 = random.nextInt(16) + 8;
-            this.gravelAsSandGen.generate(worldIn, random, worldIn.getTopSolidOrLiquidBlock(this.chunkPos.add(i2, 0, j6)));
+            this.gravelGen.generate(worldIn, random, worldIn.getTopSolidOrLiquidBlock(this.chunkPos.add(i2, 0, j6)));
         }
 
         int k1 = this.treesPerChunk;
@@ -160,12 +158,12 @@ public class BiomeDecorator
             ++k1;
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.TREE))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.TREE))
         for (int j2 = 0; j2 < k1; ++j2)
         {
             int k6 = random.nextInt(16) + 8;
             int l = random.nextInt(16) + 8;
-            WorldGenAbstractTree worldgenabstracttree = biomeIn.genBigTreeChance(random);
+            WorldGenAbstractTree worldgenabstracttree = biomeIn.getRandomTreeFeature(random);
             worldgenabstracttree.setDecorationDefaults();
             BlockPos blockpos = worldIn.getHeight(this.chunkPos.add(k6, 0, l));
 
@@ -175,7 +173,7 @@ public class BiomeDecorator
             }
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.BIG_SHROOM))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.BIG_SHROOM))
         for (int k2 = 0; k2 < this.bigMushroomsPerChunk; ++k2)
         {
             int l6 = random.nextInt(16) + 8;
@@ -183,7 +181,7 @@ public class BiomeDecorator
             this.bigMushroomGen.generate(worldIn, random, worldIn.getHeight(this.chunkPos.add(l6, 0, k10)));
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
         for (int l2 = 0; l2 < this.flowersPerChunk; ++l2)
         {
             int i7 = random.nextInt(16) + 8;
@@ -199,13 +197,13 @@ public class BiomeDecorator
 
                 if (blockflower.getDefaultState().getMaterial() != Material.AIR)
                 {
-                    this.yellowFlowerGen.setGeneratedBlock(blockflower, blockflower$enumflowertype);
-                    this.yellowFlowerGen.generate(worldIn, random, blockpos1);
+                    this.flowerGen.setGeneratedBlock(blockflower, blockflower$enumflowertype);
+                    this.flowerGen.generate(worldIn, random, blockpos1);
                 }
             }
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
         for (int i3 = 0; i3 < this.grassPerChunk; ++i3)
         {
             int j7 = random.nextInt(16) + 8;
@@ -219,7 +217,7 @@ public class BiomeDecorator
             }
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DEAD_BUSH))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DEAD_BUSH))
         for (int j3 = 0; j3 < this.deadBushPerChunk; ++j3)
         {
             int k7 = random.nextInt(16) + 8;
@@ -233,7 +231,7 @@ public class BiomeDecorator
             }
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.LILYPAD))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.LILYPAD))
         for (int k3 = 0; k3 < this.waterlilyPerChunk; ++k3)
         {
             int l7 = random.nextInt(16) + 8;
@@ -260,7 +258,7 @@ public class BiomeDecorator
             }
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM))
         {
         for (int l3 = 0; l3 < this.mushroomsPerChunk; ++l3)
         {
@@ -313,7 +311,7 @@ public class BiomeDecorator
             }
         }
         } // End of Mushroom generation
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.REED))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.REED))
         {
         for (int k4 = 0; k4 < this.reedsPerChunk; ++k4)
         {
@@ -341,7 +339,7 @@ public class BiomeDecorator
             }
         }
         } // End of Reed generation
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
         if (random.nextInt(32) == 0)
         {
             int i5 = random.nextInt(16) + 8;
@@ -355,7 +353,7 @@ public class BiomeDecorator
             }
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.CACTUS))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.CACTUS))
         for (int j5 = 0; j5 < this.cactiPerChunk; ++j5)
         {
             int l9 = random.nextInt(16) + 8;
@@ -369,9 +367,9 @@ public class BiomeDecorator
             }
         }
 
-        if (this.generateLakes)
+        if (this.generateFalls)
         {
-            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.LAKE_WATER))
+            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.LAKE_WATER))
             for (int k5 = 0; k5 < 50; ++k5)
             {
                 int i10 = random.nextInt(16) + 8;
@@ -386,7 +384,7 @@ public class BiomeDecorator
                 }
             }
 
-            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, chunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.LAKE_LAVA))
+            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, random, forgeChunkPos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.LAKE_LAVA))
             for (int l5 = 0; l5 < 20; ++l5)
             {
                 int j10 = random.nextInt(16) + 8;
@@ -396,7 +394,7 @@ public class BiomeDecorator
                 (new WorldGenLiquids(Blocks.FLOWING_LAVA)).generate(worldIn, random, blockpos3);
             }
         }
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Post(worldIn, random, chunkPos));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Post(worldIn, random, forgeChunkPos));
     }
 
     /**
@@ -407,8 +405,8 @@ public class BiomeDecorator
         net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Pre(worldIn, random, chunkPos));
         if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, dirtGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.DIRT))
         this.genStandardOre1(worldIn, random, this.chunkProviderSettings.dirtCount, this.dirtGen, this.chunkProviderSettings.dirtMinHeight, this.chunkProviderSettings.dirtMaxHeight);
-        if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, gravelGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.GRAVEL))
-        this.genStandardOre1(worldIn, random, this.chunkProviderSettings.gravelCount, this.gravelGen, this.chunkProviderSettings.gravelMinHeight, this.chunkProviderSettings.gravelMaxHeight);
+        if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, gravelOreGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.GRAVEL))
+        this.genStandardOre1(worldIn, random, this.chunkProviderSettings.gravelCount, this.gravelOreGen, this.chunkProviderSettings.gravelMinHeight, this.chunkProviderSettings.gravelMaxHeight);
         if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, dioriteGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.DIORITE))
         this.genStandardOre1(worldIn, random, this.chunkProviderSettings.dioriteCount, this.dioriteGen, this.chunkProviderSettings.dioriteMinHeight, this.chunkProviderSettings.dioriteMaxHeight);
         if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, graniteGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.GRANITE))

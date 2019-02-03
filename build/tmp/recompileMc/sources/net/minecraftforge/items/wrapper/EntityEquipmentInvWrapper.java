@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -85,8 +85,8 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
     @Override
     public ItemStack insertItem(final int slot, @Nonnull final ItemStack stack, final boolean simulate)
     {
-        if (stack.func_190926_b())
-            return ItemStack.field_190927_a;
+        if (stack.isEmpty())
+            return ItemStack.EMPTY;
 
         final EntityEquipmentSlot equipmentSlot = validateSlotIndex(slot);
 
@@ -94,32 +94,32 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
 
         int limit = getStackLimit(slot, stack);
 
-        if (!existing.func_190926_b())
+        if (!existing.isEmpty())
         {
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
                 return stack;
 
-            limit -= existing.func_190916_E();
+            limit -= existing.getCount();
         }
 
         if (limit <= 0)
             return stack;
 
-        boolean reachedLimit = stack.func_190916_E() > limit;
+        boolean reachedLimit = stack.getCount() > limit;
 
         if (!simulate)
         {
-            if (existing.func_190926_b())
+            if (existing.isEmpty())
             {
                 entity.setItemStackToSlot(equipmentSlot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             }
             else
             {
-                existing.func_190917_f(reachedLimit ? limit : stack.func_190916_E());
+                existing.grow(reachedLimit ? limit : stack.getCount());
             }
         }
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.func_190916_E() - limit) : ItemStack.field_190927_a;
+        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
     @Nonnull
@@ -127,22 +127,22 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
     public ItemStack extractItem(final int slot, final int amount, final boolean simulate)
     {
         if (amount == 0)
-            return ItemStack.field_190927_a;
+            return ItemStack.EMPTY;
 
         final EntityEquipmentSlot equipmentSlot = validateSlotIndex(slot);
 
         final ItemStack existing = entity.getItemStackFromSlot(equipmentSlot);
 
-        if (existing.func_190926_b())
-            return ItemStack.field_190927_a;
+        if (existing.isEmpty())
+            return ItemStack.EMPTY;
 
         final int toExtract = Math.min(amount, existing.getMaxStackSize());
 
-        if (existing.func_190916_E() <= toExtract)
+        if (existing.getCount() <= toExtract)
         {
             if (!simulate)
             {
-                entity.setItemStackToSlot(equipmentSlot, ItemStack.field_190927_a);
+                entity.setItemStackToSlot(equipmentSlot, ItemStack.EMPTY);
             }
 
             return existing;
@@ -151,7 +151,7 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
         {
             if (!simulate)
             {
-                entity.setItemStackToSlot(equipmentSlot, ItemHandlerHelper.copyStackWithSize(existing, existing.func_190916_E() - toExtract));
+                entity.setItemStackToSlot(equipmentSlot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
             }
 
             return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
@@ -177,6 +177,12 @@ public abstract class EntityEquipmentInvWrapper implements IItemHandlerModifiabl
         if (ItemStack.areItemStacksEqual(entity.getItemStackFromSlot(equipmentSlot), stack))
             return;
         entity.setItemStackToSlot(equipmentSlot, stack);
+    }
+
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack)
+    {
+        return IItemHandlerModifiable.super.isItemValid(slot, stack);
     }
 
     protected EntityEquipmentSlot validateSlotIndex(final int slot)

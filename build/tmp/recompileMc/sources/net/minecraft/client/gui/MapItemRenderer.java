@@ -36,9 +36,9 @@ public class MapItemRenderer
         this.getMapRendererInstance(mapdataIn).updateMapTexture();
     }
 
-    public void renderMap(MapData mapdataIn, boolean p_148250_2_)
+    public void renderMap(MapData mapdataIn, boolean noOverlayRendering)
     {
-        this.getMapRendererInstance(mapdataIn).render(p_148250_2_);
+        this.getMapRendererInstance(mapdataIn).render(noOverlayRendering);
     }
 
     /**
@@ -58,7 +58,7 @@ public class MapItemRenderer
     }
 
     @Nullable
-    public MapItemRenderer.Instance func_191205_a(String p_191205_1_)
+    public MapItemRenderer.Instance getMapInstanceIfExists(String p_191205_1_)
     {
         return this.loadedMaps.get(p_191205_1_);
     }
@@ -77,7 +77,7 @@ public class MapItemRenderer
     }
 
     @Nullable
-    public MapData func_191207_a(@Nullable MapItemRenderer.Instance p_191207_1_)
+    public MapData getData(@Nullable MapItemRenderer.Instance p_191207_1_)
     {
         return p_191207_1_ != null ? p_191207_1_.mapData : null;
     }
@@ -152,14 +152,16 @@ public class MapItemRenderer
 
             for (MapDecoration mapdecoration : this.mapData.mapDecorations.values())
             {
-                if (!noOverlayRendering || mapdecoration.func_191180_f())
+                if (!noOverlayRendering || mapdecoration.renderOnFrame())
                 {
+                    if (mapdecoration.render(k)) { k++; continue; }
+                    MapItemRenderer.this.textureManager.bindTexture(MapItemRenderer.TEXTURE_MAP_ICONS); // Rebind in case custom render changes it
                     GlStateManager.pushMatrix();
                     GlStateManager.translate(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F, 0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F, -0.02F);
                     GlStateManager.rotate((float)(mapdecoration.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
                     GlStateManager.scale(4.0F, 4.0F, 3.0F);
                     GlStateManager.translate(-0.125F, 0.125F, 0.0F);
-                    byte b0 = mapdecoration.getType();
+                    byte b0 = mapdecoration.getImage();
                     float f1 = (float)(b0 % 4 + 0) / 4.0F;
                     float f2 = (float)(b0 / 4 + 0) / 4.0F;
                     float f3 = (float)(b0 % 4 + 1) / 4.0F;

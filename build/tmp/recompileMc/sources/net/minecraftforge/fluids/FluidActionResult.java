@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ import net.minecraft.item.ItemStack;
  */
 public class FluidActionResult
 {
-	public static final FluidActionResult FAILURE = new FluidActionResult(false, ItemStack.field_190927_a);
+	public static final FluidActionResult FAILURE = new FluidActionResult(false, ItemStack.EMPTY);
 
 	public final boolean success;
 	@Nonnull

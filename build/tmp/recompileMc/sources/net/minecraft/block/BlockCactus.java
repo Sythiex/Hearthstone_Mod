@@ -23,8 +23,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockCactus extends Block implements net.minecraftforge.common.IPlantable
 {
     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
-    protected static final AxisAlignedBB CACTUS_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.9375D, 0.9375D);
-    protected static final AxisAlignedBB CACTUS_COLLISION_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D);
+    protected static final AxisAlignedBB CACTUS_COLLISION_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.9375D, 0.9375D);
+    protected static final AxisAlignedBB CACTUS_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D);
 
     protected BlockCactus()
     {
@@ -36,6 +36,7 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
+        if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent growing cactus from loading unloaded chunks with block update
         BlockPos blockpos = pos.up();
 
         if (worldIn.isAirBlock(blockpos))
@@ -72,13 +73,16 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
 
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
-        return CACTUS_AABB;
+        return CACTUS_COLLISION_AABB;
     }
 
+    /**
+     * Return an AABB (in world coords!) that should be highlighted when the player is targeting this Block
+     */
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos)
     {
-        return CACTUS_COLLISION_AABB.offset(pos);
+        return CACTUS_AABB.offset(pos);
     }
 
     public boolean isFullCube(IBlockState state)
@@ -94,6 +98,9 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
         return false;
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return super.canPlaceBlockAt(worldIn, pos) ? this.canBlockStay(worldIn, pos) : false;
@@ -104,7 +111,7 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!this.canBlockStay(worldIn, pos))
         {
@@ -133,7 +140,7 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
      */
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn)
     {
-        entityIn.attackEntityFrom(DamageSource.cactus, 1.0F);
+        entityIn.attackEntityFrom(DamageSource.CACTUS, 1.0F);
     }
 
     /**
@@ -175,7 +182,16 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
         return new BlockStateContainer(this, new IProperty[] {AGE});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

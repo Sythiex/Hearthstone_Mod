@@ -54,7 +54,7 @@ public class BlockDaylightDetector extends BlockContainer
 
     public void updatePower(World worldIn, BlockPos pos)
     {
-        if (worldIn.provider.func_191066_m())
+        if (worldIn.provider.hasSkyLight())
         {
             IBlockState iblockstate = worldIn.getBlockState(pos);
             int i = worldIn.getLightFor(EnumSkyBlock.SKY, pos) - worldIn.getSkylightSubtracted();
@@ -72,7 +72,7 @@ public class BlockDaylightDetector extends BlockContainer
                 i = Math.round((float)i * MathHelper.cos(f));
             }
 
-            i = MathHelper.clamp_int(i, 0, 15);
+            i = MathHelper.clamp(i, 0, 15);
 
             if (((Integer)iblockstate.getValue(POWER)).intValue() != i)
             {
@@ -81,7 +81,10 @@ public class BlockDaylightDetector extends BlockContainer
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
+    /**
+     * Called when the block is right clicked by a player.
+     */
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (playerIn.isAllowEdit())
         {
@@ -107,7 +110,7 @@ public class BlockDaylightDetector extends BlockContainer
         }
         else
         {
-            return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY);
+            return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
         }
     }
 
@@ -186,16 +189,25 @@ public class BlockDaylightDetector extends BlockContainer
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
     {
         if (!this.inverted)
         {
-            super.getSubBlocks(itemIn, tab);
+            super.getSubBlocks(itemIn, items);
         }
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+        return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 }

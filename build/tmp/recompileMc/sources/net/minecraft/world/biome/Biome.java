@@ -95,7 +95,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     /** The block to fill spots in when not on the top */
     public IBlockState fillerBlock = Blocks.DIRT.getDefaultState();
     /** The biome decorator. */
-    public BiomeDecorator theBiomeDecorator;
+    public BiomeDecorator decorator;
     /** Holds the classes of IMobs (hostile mobs) that can be spawned in the biome. */
     protected List<Biome.SpawnListEntry> spawnableMonsterList = Lists.<Biome.SpawnListEntry>newArrayList();
     /** Holds the classes of any creature that can be spawned in the biome as friendly creature. */
@@ -134,7 +134,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
         this.enableSnow = properties.enableSnow;
         this.enableRain = properties.enableRain;
         this.baseBiomeRegName = properties.baseBiomeRegName;
-        this.theBiomeDecorator = this.createBiomeDecorator();
+        this.decorator = this.createBiomeDecorator();
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntitySheep.class, 12, 4, 4));
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityPig.class, 10, 4, 4));
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityChicken.class, 10, 4, 4));
@@ -165,7 +165,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
         return this.baseBiomeRegName != null;
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
         return (WorldGenAbstractTree)(rand.nextInt(10) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
     }
@@ -190,7 +190,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     public int getSkyColorByTemp(float currentTemperature)
     {
         currentTemperature = currentTemperature / 3.0F;
-        currentTemperature = MathHelper.clamp_float(currentTemperature, -1.0F, 1.0F);
+        currentTemperature = MathHelper.clamp(currentTemperature, -1.0F, 1.0F);
         return MathHelper.hsvToRGB(0.62222224F - currentTemperature * 0.05F, 0.5F + currentTemperature * 0.1F, 1.0F);
     }
 
@@ -249,24 +249,25 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     }
 
     /**
-     * Gets a floating point representation of this biome's temperature
+     * Gets the current temperature at the given location, based off of the default for this biome, the elevation of the
+     * position, and {@linkplain #TEMPERATURE_NOISE} some random perlin noise.
      */
-    public final float getFloatTemperature(BlockPos pos)
+    public final float getTemperature(BlockPos pos)
     {
         if (pos.getY() > 64)
         {
             float f = (float)(TEMPERATURE_NOISE.getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F)) * 4.0D);
-            return this.getTemperature() - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
+            return this.getDefaultTemperature() - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
         }
         else
         {
-            return this.getTemperature();
+            return this.getDefaultTemperature();
         }
     }
 
     public void decorate(World worldIn, Random rand, BlockPos pos)
     {
-        this.theBiomeDecorator.decorate(worldIn, rand, this, pos);
+        this.decorator.decorate(worldIn, rand, this, pos);
     }
 
     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
@@ -277,8 +278,8 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     @SideOnly(Side.CLIENT)
     public int getGrassColorAtPos(BlockPos pos)
     {
-        double d0 = (double)MathHelper.clamp_float(this.getFloatTemperature(pos), 0.0F, 1.0F);
-        double d1 = (double)MathHelper.clamp_float(this.getRainfall(), 0.0F, 1.0F);
+        double d0 = (double)MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
+        double d1 = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
         return getModdedBiomeGrassColor(ColorizerGrass.getGrassColor(d0, d1));
     }
 
@@ -334,7 +335,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
                         if (j1 < i && (iblockstate == null || iblockstate.getMaterial() == Material.AIR))
                         {
-                            if (this.getFloatTemperature(blockpos$mutableblockpos.setPos(x, j1, z)) < 0.15F)
+                            if (this.getTemperature(blockpos$mutableblockpos.setPos(x, j1, z)) < 0.15F)
                             {
                                 iblockstate = ICE;
                             }
@@ -380,8 +381,8 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     @SideOnly(Side.CLIENT)
     public int getFoliageColorAtPos(BlockPos pos)
     {
-        double d0 = (double)MathHelper.clamp_float(this.getFloatTemperature(pos), 0.0F, 1.0F);
-        double d1 = (double)MathHelper.clamp_float(this.getRainfall(), 0.0F, 1.0F);
+        double d0 = (double)MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
+        double d1 = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
         return getModdedBiomeFoliageColor(ColorizerFoliage.getFoliageColor(d0, d1));
     }
 
@@ -392,13 +393,13 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
     public Biome.TempCategory getTempCategory()
     {
-        if ((double)this.getTemperature() < 0.2D)
+        if ((double)this.getDefaultTemperature() < 0.2D)
         {
             return Biome.TempCategory.COLD;
         }
         else
         {
-            return (double)this.getTemperature() < 1.0D ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
+            return (double)this.getDefaultTemperature() < 1.0D ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
         }
     }
 
@@ -446,7 +447,10 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
         return this.heightVariation;
     }
 
-    public final float getTemperature()
+    /**
+     * Gets the constant default temperature for this biome.
+     */
+    public final float getDefaultTemperature()
     {
         return this.temperature;
     }
@@ -526,6 +530,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
     public void plantFlower(World world, Random rand, BlockPos pos)
     {
+        if (flowers.isEmpty()) return;
         FlowerEntry flower = (FlowerEntry)WeightedRandom.getRandomItem(rand, flowers);
         if (flower == null || flower.state == null ||
             (flower.state.getBlock() instanceof net.minecraft.block.BlockBush &&
@@ -700,7 +705,6 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
             public Class <? extends EntityLiving > entityClass;
             public int minGroupCount;
             public int maxGroupCount;
-            private final java.lang.reflect.Constructor<?> ctr;
 
             public SpawnListEntry(Class <? extends EntityLiving > entityclassIn, int weight, int groupCountMin, int groupCountMax)
             {
@@ -708,17 +712,6 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
                 this.entityClass = entityclassIn;
                 this.minGroupCount = groupCountMin;
                 this.maxGroupCount = groupCountMax;
-
-                java.lang.reflect.Constructor<?> tmp = null;
-                try
-                {
-                    tmp = entityclassIn.getConstructor(World.class);
-                }
-                catch (NoSuchMethodException e)
-                {
-                    com.google.common.base.Throwables.propagate(e);
-                }
-                ctr = tmp;
             }
 
             public String toString()
@@ -728,7 +721,9 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
             public EntityLiving newInstance(World world) throws Exception
             {
-                return (EntityLiving)ctr.newInstance(world);
+                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(this.entityClass);
+                if (entry != null) return (EntityLiving) entry.newInstance(world);
+                return this.entityClass.getConstructor(World.class).newInstance(world);
             }
         }
 

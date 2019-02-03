@@ -43,7 +43,7 @@ public abstract class EntityMob extends EntityCreature implements IMob
 
         if (f > 0.5F)
         {
-            this.entityAge += 2;
+            this.idleTime += 2;
         }
 
         super.onLivingUpdate();
@@ -56,7 +56,7 @@ public abstract class EntityMob extends EntityCreature implements IMob
     {
         super.onUpdate();
 
-        if (!this.worldObj.isRemote && this.worldObj.getDifficulty() == EnumDifficulty.PEACEFUL)
+        if (!this.world.isRemote && this.world.getDifficulty() == EnumDifficulty.PEACEFUL)
         {
             this.setDead();
         }
@@ -80,7 +80,7 @@ public abstract class EntityMob extends EntityCreature implements IMob
         return this.isEntityInvulnerable(source) ? false : super.attackEntityFrom(source, amount);
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_HOSTILE_HURT;
     }
@@ -128,16 +128,16 @@ public abstract class EntityMob extends EntityCreature implements IMob
             {
                 EntityPlayer entityplayer = (EntityPlayer)entityIn;
                 ItemStack itemstack = this.getHeldItemMainhand();
-                ItemStack itemstack1 = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : ItemStack.field_190927_a;
+                ItemStack itemstack1 = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : ItemStack.EMPTY;
 
-                if (!itemstack.func_190926_b() && !itemstack1.func_190926_b() && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this) && itemstack1.getItem().isShield(itemstack1, entityplayer))
+                if (!itemstack.isEmpty() && !itemstack1.isEmpty() && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this) && itemstack1.getItem().isShield(itemstack1, entityplayer))
                 {
                     float f1 = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
 
                     if (this.rand.nextFloat() < f1)
                     {
                         entityplayer.getCooldownTracker().setCooldown(itemstack1.getItem(), 100);
-                        this.worldObj.setEntityState(entityplayer, (byte)30);
+                        this.world.setEntityState(entityplayer, (byte)30);
                     }
                 }
             }
@@ -150,7 +150,7 @@ public abstract class EntityMob extends EntityCreature implements IMob
 
     public float getBlockPathWeight(BlockPos pos)
     {
-        return 0.5F - this.worldObj.getLightBrightness(pos);
+        return 0.5F - this.world.getLightBrightness(pos);
     }
 
     /**
@@ -160,20 +160,20 @@ public abstract class EntityMob extends EntityCreature implements IMob
     {
         BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
 
-        if (this.worldObj.getLightFor(EnumSkyBlock.SKY, blockpos) > this.rand.nextInt(32))
+        if (this.world.getLightFor(EnumSkyBlock.SKY, blockpos) > this.rand.nextInt(32))
         {
             return false;
         }
         else
         {
-            int i = this.worldObj.getLightFromNeighbors(blockpos);
+            int i = this.world.getLightFromNeighbors(blockpos);
 
-            if (this.worldObj.isThundering())
+            if (this.world.isThundering())
             {
-                int j = this.worldObj.getSkylightSubtracted();
-                this.worldObj.setSkylightSubtracted(10);
-                i = this.worldObj.getLightFromNeighbors(blockpos);
-                this.worldObj.setSkylightSubtracted(j);
+                int j = this.world.getSkylightSubtracted();
+                this.world.setSkylightSubtracted(10);
+                i = this.world.getLightFromNeighbors(blockpos);
+                this.world.setSkylightSubtracted(j);
             }
 
             return i <= this.rand.nextInt(8);
@@ -185,7 +185,7 @@ public abstract class EntityMob extends EntityCreature implements IMob
      */
     public boolean getCanSpawnHere()
     {
-        return this.worldObj.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
+        return this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
     }
 
     protected void applyEntityAttributes()
@@ -202,7 +202,7 @@ public abstract class EntityMob extends EntityCreature implements IMob
         return true;
     }
 
-    public boolean func_191990_c(EntityPlayer p_191990_1_)
+    public boolean isPreventingPlayerRest(EntityPlayer playerIn)
     {
         return true;
     }

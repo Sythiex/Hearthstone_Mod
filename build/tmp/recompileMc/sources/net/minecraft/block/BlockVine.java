@@ -102,7 +102,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
         BlockPos blockpos = pos.up();
-        return state.withProperty(UP, Boolean.valueOf(worldIn.getBlockState(blockpos).func_193401_d(worldIn, blockpos, EnumFacing.DOWN) == BlockFaceShape.SOLID));
+        return state.withProperty(UP, Boolean.valueOf(worldIn.getBlockState(blockpos).getBlockFaceShape(worldIn, blockpos, EnumFacing.DOWN) == BlockFaceShape.SOLID));
     }
 
     /**
@@ -127,26 +127,26 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     }
 
     /**
-     * Check whether this Block can be placed on the given side
+     * Check whether this Block can be placed at pos, while aiming at the specified side of an adjacent block
      */
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
     {
-        return side != EnumFacing.DOWN && side != EnumFacing.UP && this.func_193395_a(worldIn, pos, side);
+        return side != EnumFacing.DOWN && side != EnumFacing.UP && this.canAttachTo(worldIn, pos, side);
     }
 
-    public boolean func_193395_a(World p_193395_1_, BlockPos p_193395_2_, EnumFacing p_193395_3_)
+    public boolean canAttachTo(World p_193395_1_, BlockPos p_193395_2_, EnumFacing p_193395_3_)
     {
         Block block = p_193395_1_.getBlockState(p_193395_2_.up()).getBlock();
-        return this.func_193396_c(p_193395_1_, p_193395_2_.offset(p_193395_3_.getOpposite()), p_193395_3_) && (block == Blocks.AIR || block == Blocks.VINE || this.func_193396_c(p_193395_1_, p_193395_2_.up(), EnumFacing.UP));
+        return this.isAcceptableNeighbor(p_193395_1_, p_193395_2_.offset(p_193395_3_.getOpposite()), p_193395_3_) && (block == Blocks.AIR || block == Blocks.VINE || this.isAcceptableNeighbor(p_193395_1_, p_193395_2_.up(), EnumFacing.UP));
     }
 
-    private boolean func_193396_c(World p_193396_1_, BlockPos p_193396_2_, EnumFacing p_193396_3_)
+    private boolean isAcceptableNeighbor(World p_193396_1_, BlockPos p_193396_2_, EnumFacing p_193396_3_)
     {
         IBlockState iblockstate = p_193396_1_.getBlockState(p_193396_2_);
-        return iblockstate.func_193401_d(p_193396_1_, p_193396_2_, p_193396_3_) == BlockFaceShape.SOLID && !func_193397_e(iblockstate.getBlock());
+        return iblockstate.getBlockFaceShape(p_193396_1_, p_193396_2_, p_193396_3_) == BlockFaceShape.SOLID && !isExceptBlockForAttaching(iblockstate.getBlock());
     }
 
-    protected static boolean func_193397_e(Block p_193397_0_)
+    protected static boolean isExceptBlockForAttaching(Block p_193397_0_)
     {
         return p_193397_0_ instanceof BlockShulkerBox || p_193397_0_ == Blocks.BEACON || p_193397_0_ == Blocks.CAULDRON || p_193397_0_ == Blocks.GLASS || p_193397_0_ == Blocks.STAINED_GLASS || p_193397_0_ == Blocks.PISTON || p_193397_0_ == Blocks.STICKY_PISTON || p_193397_0_ == Blocks.PISTON_HEAD || p_193397_0_ == Blocks.TRAPDOOR;
     }
@@ -159,7 +159,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
         {
             PropertyBool propertybool = getPropertyFor(enumfacing);
 
-            if (((Boolean)state.getValue(propertybool)).booleanValue() && !this.func_193395_a(worldIn, pos, enumfacing.getOpposite()))
+            if (((Boolean)state.getValue(propertybool)).booleanValue() && !this.canAttachTo(worldIn, pos, enumfacing.getOpposite()))
             {
                 IBlockState iblockstate1 = worldIn.getBlockState(pos.up());
 
@@ -190,7 +190,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!worldIn.isRemote && !this.recheckGrownSides(worldIn, pos, state))
         {
@@ -203,7 +203,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     {
         if (!worldIn.isRemote)
         {
-            if (worldIn.rand.nextInt(4) == 0)
+            if (worldIn.rand.nextInt(4) == 0 && worldIn.isAreaLoaded(pos, 4)) // Forge: check area to prevent loading unloaded chunks
             {
                 int i = 4;
                 int j = 5;
@@ -239,7 +239,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
 
                     for (EnumFacing enumfacing2 : EnumFacing.Plane.HORIZONTAL)
                     {
-                        if (rand.nextBoolean() && this.func_193395_a(worldIn, blockpos2, enumfacing2.getOpposite()))
+                        if (rand.nextBoolean() && this.canAttachTo(worldIn, blockpos2, enumfacing2.getOpposite()))
                         {
                             iblockstate2 = iblockstate2.withProperty(getPropertyFor(enumfacing2), Boolean.valueOf(true));
                         }
@@ -262,7 +262,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
                         IBlockState iblockstate3 = worldIn.getBlockState(blockpos4);
                         Block block1 = iblockstate3.getBlock();
 
-                        if (block1.blockMaterial == Material.AIR)
+                        if (block1.isAir(iblockstate3, worldIn, blockpos4))
                         {
                             EnumFacing enumfacing3 = enumfacing1.rotateY();
                             EnumFacing enumfacing4 = enumfacing1.rotateYCCW();
@@ -271,24 +271,24 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
                             BlockPos blockpos = blockpos4.offset(enumfacing3);
                             BlockPos blockpos1 = blockpos4.offset(enumfacing4);
 
-                            if (flag1 && this.func_193395_a(worldIn, blockpos.offset(enumfacing3), enumfacing3))
+                            if (flag1 && this.canAttachTo(worldIn, blockpos.offset(enumfacing3), enumfacing3))
                             {
                                 worldIn.setBlockState(blockpos4, this.getDefaultState().withProperty(getPropertyFor(enumfacing3), Boolean.valueOf(true)), 2);
                             }
-                            else if (flag2 && this.func_193395_a(worldIn, blockpos1.offset(enumfacing4), enumfacing4))
+                            else if (flag2 && this.canAttachTo(worldIn, blockpos1.offset(enumfacing4), enumfacing4))
                             {
                                 worldIn.setBlockState(blockpos4, this.getDefaultState().withProperty(getPropertyFor(enumfacing4), Boolean.valueOf(true)), 2);
                             }
-                            else if (flag1 && worldIn.isAirBlock(blockpos) && this.func_193395_a(worldIn, blockpos, enumfacing1))
+                            else if (flag1 && worldIn.isAirBlock(blockpos) && this.canAttachTo(worldIn, blockpos, enumfacing1))
                             {
                                 worldIn.setBlockState(blockpos, this.getDefaultState().withProperty(getPropertyFor(enumfacing1.getOpposite()), Boolean.valueOf(true)), 2);
                             }
-                            else if (flag2 && worldIn.isAirBlock(blockpos1) && this.func_193395_a(worldIn, blockpos1, enumfacing1))
+                            else if (flag2 && worldIn.isAirBlock(blockpos1) && this.canAttachTo(worldIn, blockpos1, enumfacing1))
                             {
                                 worldIn.setBlockState(blockpos1, this.getDefaultState().withProperty(getPropertyFor(enumfacing1.getOpposite()), Boolean.valueOf(true)), 2);
                             }
                         }
-                        else if (iblockstate3.func_193401_d(worldIn, blockpos4, enumfacing1) == BlockFaceShape.SOLID)
+                        else if (iblockstate3.getBlockFaceShape(worldIn, blockpos4, enumfacing1) == BlockFaceShape.SOLID)
                         {
                             worldIn.setBlockState(pos, state.withProperty(getPropertyFor(enumfacing1), Boolean.valueOf(true)), 2);
                         }
@@ -348,7 +348,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         IBlockState iblockstate = this.getDefaultState().withProperty(UP, Boolean.valueOf(false)).withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false));
         return facing.getAxis().isHorizontal() ? iblockstate.withProperty(getPropertyFor(facing.getOpposite()), Boolean.valueOf(true)) : iblockstate;
@@ -359,7 +359,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.field_190931_a;
+        return Items.AIR;
     }
 
     /**
@@ -370,6 +370,10 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
         return 0;
     }
 
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
         if (!worldIn.isRemote && stack.getItem() == Items.SHEARS)
@@ -512,7 +516,16 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     /*************************FORGE END***********************************/
 
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

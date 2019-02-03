@@ -67,6 +67,7 @@ public class SoundHandler implements IResourceManagerReloadListener, ITickable
     {
         this.soundRegistry.clearMap();
 
+        java.util.List<net.minecraft.util.Tuple<ResourceLocation, SoundList>> resources = new java.util.LinkedList<>();
         for (String s : resourceManager.getResourceDomains())
         {
             try
@@ -79,7 +80,7 @@ public class SoundHandler implements IResourceManagerReloadListener, ITickable
 
                         for (Entry<String, SoundList> entry : map.entrySet())
                         {
-                            this.loadSoundResource(new ResourceLocation(s, entry.getKey()), entry.getValue());
+                            resources.add(new net.minecraft.util.Tuple<>(new ResourceLocation(s, entry.getKey()), entry.getValue()));
                         }
                     }
                     catch (RuntimeException runtimeexception)
@@ -94,6 +95,20 @@ public class SoundHandler implements IResourceManagerReloadListener, ITickable
             }
         }
 
+        net.minecraftforge.fml.common.ProgressManager.ProgressBar resourcesBar = net.minecraftforge.fml.common.ProgressManager.push("Loading sounds", resources.size());
+        resources.forEach(entry ->
+        {
+            resourcesBar.step(entry.getFirst().toString());
+            try
+            {
+                this.loadSoundResource(entry.getFirst(), entry.getSecond());
+            }
+            catch (RuntimeException e)
+            {
+                LOGGER.warn("Invalid sounds.json", e);
+            }
+        });
+        net.minecraftforge.fml.common.ProgressManager.pop(resourcesBar);
         for (ResourceLocation resourcelocation : this.soundRegistry.getKeys())
         {
             SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.soundRegistry.getObject(resourcelocation);
@@ -127,7 +142,7 @@ public class SoundHandler implements IResourceManagerReloadListener, ITickable
 
         try
         {
-            map = (Map)JsonUtils.func_193841_a(GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), TYPE);
+            map = (Map)JsonUtils.fromJson(GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), TYPE);
         }
         finally
         {
@@ -257,6 +272,11 @@ public class SoundHandler implements IResourceManagerReloadListener, ITickable
     public void setListener(EntityPlayer player, float p_147691_2_)
     {
         this.sndManager.setListener(player, p_147691_2_);
+    }
+
+    public void setListener(net.minecraft.entity.Entity entity, float partialTicks)
+    {
+        this.sndManager.setListener(entity, partialTicks);
     }
 
     public void pauseSounds()

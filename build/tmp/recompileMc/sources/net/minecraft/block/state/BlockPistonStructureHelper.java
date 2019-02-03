@@ -67,7 +67,7 @@ public class BlockPistonStructureHelper
             {
                 BlockPos blockpos = this.toMove.get(i);
 
-                if (this.world.getBlockState(blockpos).getBlock() == Blocks.SLIME_BLOCK && !this.addBranchingBlocks(blockpos))
+                if (this.world.getBlockState(blockpos).getBlock().isStickyBlock(this.world.getBlockState(blockpos)) && !this.addBranchingBlocks(blockpos))
                 {
                     return false;
                 }
@@ -108,7 +108,7 @@ public class BlockPistonStructureHelper
             }
             else
             {
-                while (block == Blocks.SLIME_BLOCK)
+                while (block.isStickyBlock(iblockstate))
                 {
                     BlockPos blockpos = origin.offset(this.moveDirection.getOpposite(), i);
                     iblockstate = this.world.getBlockState(blockpos);
@@ -150,7 +150,7 @@ public class BlockPistonStructureHelper
                         {
                             BlockPos blockpos2 = this.toMove.get(l);
 
-                            if (this.world.getBlockState(blockpos2).getBlock() == Blocks.SLIME_BLOCK && !this.addBranchingBlocks(blockpos2))
+                            if (this.world.getBlockState(blockpos2).getBlock().isStickyBlock(this.world.getBlockState(blockpos2)) && !this.addBranchingBlocks(blockpos2))
                             {
                                 return false;
                             }
@@ -204,11 +204,11 @@ public class BlockPistonStructureHelper
         this.toMove.addAll(list2);
     }
 
-    private boolean addBranchingBlocks(BlockPos p_177250_1_)
+    private boolean addBranchingBlocks(BlockPos fromPos)
     {
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            if (enumfacing.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(p_177250_1_.offset(enumfacing), enumfacing))
+            if (enumfacing.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(fromPos.offset(enumfacing), enumfacing))
             {
                 return false;
             }

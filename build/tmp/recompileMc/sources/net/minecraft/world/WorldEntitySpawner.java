@@ -47,8 +47,8 @@ public final class WorldEntitySpawner
             {
                 if (!entityplayer.isSpectator())
                 {
-                    int j = MathHelper.floor_double(entityplayer.posX / 16.0D);
-                    int k = MathHelper.floor_double(entityplayer.posZ / 16.0D);
+                    int j = MathHelper.floor(entityplayer.posX / 16.0D);
+                    int k = MathHelper.floor(entityplayer.posZ / 16.0D);
                     int l = 8;
 
                     for (int i1 = -8; i1 <= 8; ++i1)
@@ -64,7 +64,7 @@ public final class WorldEntitySpawner
 
                                 if (!flag && worldServerIn.getWorldBorder().contains(chunkpos))
                                 {
-                                    PlayerChunkMapEntry playerchunkmapentry = worldServerIn.getPlayerChunkMap().getEntry(chunkpos.chunkXPos, chunkpos.chunkZPos);
+                                    PlayerChunkMapEntry playerchunkmapentry = worldServerIn.getPlayerChunkMap().getEntry(chunkpos.x, chunkpos.z);
 
                                     if (playerchunkmapentry != null && playerchunkmapentry.isSentToPlayers())
                                     {
@@ -96,7 +96,7 @@ public final class WorldEntitySpawner
 
                         for (ChunkPos chunkpos1 : shuffled)
                         {
-                            BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkpos1.chunkXPos, chunkpos1.chunkZPos);
+                            BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkpos1.x, chunkpos1.z);
                             int k1 = blockpos.getX();
                             int l1 = blockpos.getY();
                             int i2 = blockpos.getZ();
@@ -114,7 +114,7 @@ public final class WorldEntitySpawner
                                     int k3 = 6;
                                     Biome.SpawnListEntry biome$spawnlistentry = null;
                                     IEntityLivingData ientitylivingdata = null;
-                                    int l3 = MathHelper.ceiling_double_int(Math.random() * 4.0D);
+                                    int l3 = MathHelper.ceil(Math.random() * 4.0D);
 
                                     for (int i4 = 0; i4 < l3; ++i4)
                                     {
@@ -162,7 +162,7 @@ public final class WorldEntitySpawner
                                                     if (entityliving.isNotColliding())
                                                     {
                                                         ++j2;
-                                                        worldServerIn.spawnEntityInWorld(entityliving);
+                                                        worldServerIn.spawnEntity(entityliving);
                                                     }
                                                     else
                                                     {
@@ -228,6 +228,13 @@ public final class WorldEntitySpawner
         }
         else
         {
+            return spawnPlacementTypeIn.canSpawnAt(worldIn, pos);
+        }
+    }
+
+    public static boolean canCreatureTypeSpawnBody(EntityLiving.SpawnPlacementType spawnPlacementTypeIn, World worldIn, BlockPos pos)
+    {
+        {
             IBlockState iblockstate = worldIn.getBlockState(pos);
 
             if (spawnPlacementTypeIn == EntityLiving.SpawnPlacementType.IN_WATER)
@@ -255,8 +262,13 @@ public final class WorldEntitySpawner
 
     /**
      * Called during chunk generation to spawn initial creatures.
+     *  
+     * @param centerX The X coordinate of the point to spawn mobs arround.
+     * @param centerZ The Z coordinate of the point to spawn mobs arround.
+     * @param diameterX The X diameter of the rectangle to spawn mobs in
+     * @param diameterZ The Z diameter of the rectangle to spawn mobs in
      */
-    public static void performWorldGenSpawning(World worldIn, Biome biomeIn, int p_77191_2_, int p_77191_3_, int p_77191_4_, int p_77191_5_, Random randomIn)
+    public static void performWorldGenSpawning(World worldIn, Biome biomeIn, int centerX, int centerZ, int diameterX, int diameterZ, Random randomIn)
     {
         List<Biome.SpawnListEntry> list = biomeIn.getSpawnableList(EnumCreatureType.CREATURE);
 
@@ -267,8 +279,8 @@ public final class WorldEntitySpawner
                 Biome.SpawnListEntry biome$spawnlistentry = (Biome.SpawnListEntry)WeightedRandom.getRandomItem(worldIn.rand, list);
                 int i = biome$spawnlistentry.minGroupCount + randomIn.nextInt(1 + biome$spawnlistentry.maxGroupCount - biome$spawnlistentry.minGroupCount);
                 IEntityLivingData ientitylivingdata = null;
-                int j = p_77191_2_ + randomIn.nextInt(p_77191_4_);
-                int k = p_77191_3_ + randomIn.nextInt(p_77191_5_);
+                int j = centerX + randomIn.nextInt(diameterX);
+                int k = centerZ + randomIn.nextInt(diameterZ);
                 int l = j;
                 int i1 = k;
 
@@ -296,14 +308,14 @@ public final class WorldEntitySpawner
 
                             if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldIn, j + 0.5f, (float) blockpos.getY(), k +0.5f, false) == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) continue;
                             entityliving.setLocationAndAngles((double)((float)j + 0.5F), (double)blockpos.getY(), (double)((float)k + 0.5F), randomIn.nextFloat() * 360.0F, 0.0F);
-                            worldIn.spawnEntityInWorld(entityliving);
+                            worldIn.spawnEntity(entityliving);
                             ientitylivingdata = entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
                             flag = true;
                         }
 
                         j += randomIn.nextInt(5) - randomIn.nextInt(5);
 
-                        for (k += randomIn.nextInt(5) - randomIn.nextInt(5); j < p_77191_2_ || j >= p_77191_2_ + p_77191_4_ || k < p_77191_3_ || k >= p_77191_3_ + p_77191_4_; k = i1 + randomIn.nextInt(5) - randomIn.nextInt(5))
+                        for (k += randomIn.nextInt(5) - randomIn.nextInt(5); j < centerX || j >= centerX + diameterX || k < centerZ || k >= centerZ + diameterX; k = i1 + randomIn.nextInt(5) - randomIn.nextInt(5))
                         {
                             j = l + randomIn.nextInt(5) - randomIn.nextInt(5);
                         }

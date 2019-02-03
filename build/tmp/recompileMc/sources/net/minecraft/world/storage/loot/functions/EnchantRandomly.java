@@ -65,7 +65,7 @@ public class EnchantRandomly extends LootFunction
             enchantment = this.enchantments.get(rand.nextInt(this.enchantments.size()));
         }
 
-        int i = MathHelper.getRandomIntegerInRange(rand, enchantment.getMinLevel(), enchantment.getMaxLevel());
+        int i = MathHelper.getInt(rand, enchantment.getMinLevel(), enchantment.getMaxLevel());
 
         if (stack.getItem() == Items.BOOK)
         {

@@ -18,7 +18,7 @@ import net.minecraft.world.storage.WorldSavedData;
 
 public class VillageCollection extends WorldSavedData
 {
-    private World worldObj;
+    private World world;
     /**
      * This is a black hole. You can add data to this list through a public interface, but you can't query that
      * information in any way and it's not used internally either.
@@ -36,13 +36,13 @@ public class VillageCollection extends WorldSavedData
     public VillageCollection(World worldIn)
     {
         super(fileNameForProvider(worldIn.provider));
-        this.worldObj = worldIn;
+        this.world = worldIn;
         this.markDirty();
     }
 
     public void setWorldsForAll(World worldIn)
     {
-        this.worldObj = worldIn;
+        this.world = worldIn;
 
         for (Village village : this.villageList)
         {
@@ -148,7 +148,7 @@ public class VillageCollection extends WorldSavedData
 
             if (village == null)
             {
-                village = new Village(this.worldObj);
+                village = new Village(this.world);
                 this.villageList.add(village);
                 this.markDirty();
             }
@@ -161,6 +161,7 @@ public class VillageCollection extends WorldSavedData
 
     private void addDoorsAround(BlockPos central)
     {
+        if (!this.world.isAreaLoaded(central, 16)) return; // Forge: prevent loading unloaded chunks when checking for doors
         int i = 16;
         int j = 4;
         int k = 16;
@@ -220,7 +221,7 @@ public class VillageCollection extends WorldSavedData
 
     private void addToNewDoorsList(BlockPos doorBlock)
     {
-        EnumFacing enumfacing = BlockDoor.getFacing(this.worldObj, doorBlock);
+        EnumFacing enumfacing = BlockDoor.getFacing(this.world, doorBlock);
         EnumFacing enumfacing1 = enumfacing.getOpposite();
         int i = this.countBlocksCanSeeSky(doorBlock, enumfacing, 5);
         int j = this.countBlocksCanSeeSky(doorBlock, enumfacing1, i + 1);
@@ -240,7 +241,7 @@ public class VillageCollection extends WorldSavedData
 
         for (int j = 1; j <= 5; ++j)
         {
-            if (this.worldObj.canSeeSky(centerPos.offset(direction, j)))
+            if (this.world.canSeeSky(centerPos.offset(direction, j)))
             {
                 ++i;
 
@@ -269,7 +270,7 @@ public class VillageCollection extends WorldSavedData
 
     private boolean isWoodDoor(BlockPos doorPos)
     {
-        IBlockState iblockstate = this.worldObj.getBlockState(doorPos);
+        IBlockState iblockstate = this.world.getBlockState(doorPos);
         Block block = iblockstate.getBlock();
 
         if (block instanceof BlockDoor)

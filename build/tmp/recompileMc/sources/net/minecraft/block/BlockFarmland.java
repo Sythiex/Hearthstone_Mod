@@ -64,7 +64,7 @@ public class BlockFarmland extends Block
             }
             else if (!this.hasCrops(worldIn, pos))
             {
-                func_190970_b(worldIn, pos);
+                turnToDirt(worldIn, pos);
             }
         }
         else if (i < 7)
@@ -78,18 +78,18 @@ public class BlockFarmland extends Block
      */
     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance)
     {
-        if (!worldIn.isRemote && entityIn.canTrample(worldIn, this, pos, fallDistance)) // Forge: Move logic to Entity#canTrample
+        if (net.minecraftforge.common.ForgeHooks.onFarmlandTrample(worldIn, pos, Blocks.DIRT.getDefaultState(), fallDistance, entityIn)) // Forge: Move logic to Entity#canTrample
         {
-            func_190970_b(worldIn, pos);
+            turnToDirt(worldIn, pos);
         }
 
         super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
     }
 
-    protected static void func_190970_b(World p_190970_0_, BlockPos p_190970_1_)
+    protected static void turnToDirt(World p_190970_0_, BlockPos worldIn)
     {
-        p_190970_0_.setBlockState(p_190970_1_, Blocks.DIRT.getDefaultState());
-        AxisAlignedBB axisalignedbb = field_194405_c.offset(p_190970_1_);
+        p_190970_0_.setBlockState(worldIn, Blocks.DIRT.getDefaultState());
+        AxisAlignedBB axisalignedbb = field_194405_c.offset(worldIn);
 
         for (Entity entity : p_190970_0_.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb))
         {
@@ -114,7 +114,7 @@ public class BlockFarmland extends Block
             }
         }
 
-        return false;
+        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(worldIn, pos);
     }
 
     /**
@@ -122,13 +122,13 @@ public class BlockFarmland extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        super.neighborChanged(state, worldIn, pos, blockIn, p_189540_5_);
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 
         if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
         {
-            func_190970_b(worldIn, pos);
+            turnToDirt(worldIn, pos);
         }
     }
 
@@ -141,7 +141,7 @@ public class BlockFarmland extends Block
 
         if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
         {
-            func_190970_b(worldIn, pos);
+            turnToDirt(worldIn, pos);
         }
     }
 
@@ -193,8 +193,17 @@ public class BlockFarmland extends Block
         return new BlockStateContainer(this, new IProperty[] {MOISTURE});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+        return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 }

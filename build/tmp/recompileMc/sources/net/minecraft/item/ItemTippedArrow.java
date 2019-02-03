@@ -19,9 +19,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ItemTippedArrow extends ItemArrow
 {
     @SideOnly(Side.CLIENT)
-    public ItemStack func_190903_i()
+    public ItemStack getDefaultInstance()
     {
-        return PotionUtils.addPotionToItemStack(super.func_190903_i(), PotionTypes.POISON);
+        return PotionUtils.addPotionToItemStack(super.getDefaultInstance(), PotionTypes.POISON);
     }
 
     public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter)
@@ -34,15 +34,15 @@ public class ItemTippedArrow extends ItemArrow
     /**
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
-    public void getSubItems(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (this.func_194125_a(itemIn))
+        if (this.isInCreativeTab(tab))
         {
             for (PotionType potiontype : PotionType.REGISTRY)
             {
                 if (!potiontype.getEffects().isEmpty())
                 {
-                    tab.add(PotionUtils.addPotionToItemStack(new ItemStack(this), potiontype));
+                    items.add(PotionUtils.addPotionToItemStack(new ItemStack(this), potiontype));
                 }
             }
         }
@@ -52,7 +52,7 @@ public class ItemTippedArrow extends ItemArrow
      * allows items to add custom lines of information to the mouseover description
      */
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced)
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         PotionUtils.addPotionTooltip(stack, tooltip, 0.125F);
     }

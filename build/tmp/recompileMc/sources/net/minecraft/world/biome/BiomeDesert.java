@@ -20,10 +20,10 @@ public class BiomeDesert extends Biome
         this.spawnableCreatureList.clear();
         this.topBlock = Blocks.SAND.getDefaultState();
         this.fillerBlock = Blocks.SAND.getDefaultState();
-        this.theBiomeDecorator.treesPerChunk = -999;
-        this.theBiomeDecorator.deadBushPerChunk = 2;
-        this.theBiomeDecorator.reedsPerChunk = 50;
-        this.theBiomeDecorator.cactiPerChunk = 10;
+        this.decorator.treesPerChunk = -999;
+        this.decorator.deadBushPerChunk = 2;
+        this.decorator.reedsPerChunk = 50;
+        this.decorator.cactiPerChunk = 10;
         this.spawnableCreatureList.clear();
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityRabbit.class, 4, 2, 3));
         Iterator<Biome.SpawnListEntry> iterator = this.spawnableMonsterList.iterator();
@@ -47,7 +47,7 @@ public class BiomeDesert extends Biome
     {
         super.decorate(worldIn, rand, pos);
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DESERT_WELL))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DESERT_WELL))
         if (rand.nextInt(1000) == 0)
         {
             int i = rand.nextInt(16) + 8;
@@ -56,7 +56,7 @@ public class BiomeDesert extends Biome
             (new WorldGenDesertWells()).generate(worldIn, rand, blockpos);
         }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
         if (rand.nextInt(64) == 0)
         {
             (new WorldGenFossils()).generate(worldIn, rand, pos);

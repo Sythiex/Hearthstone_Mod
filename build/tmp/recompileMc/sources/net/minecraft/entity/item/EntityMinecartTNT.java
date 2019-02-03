@@ -58,14 +58,14 @@ public class EntityMinecartTNT extends EntityMinecart
         if (this.minecartTNTFuse > 0)
         {
             --this.minecartTNTFuse;
-            this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
+            this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
         }
         else if (this.minecartTNTFuse == 0)
         {
             this.explodeCart(this.motionX * this.motionX + this.motionZ * this.motionZ);
         }
 
-        if (this.isCollidedHorizontally)
+        if (this.collidedHorizontally)
         {
             double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
@@ -81,7 +81,7 @@ public class EntityMinecartTNT extends EntityMinecart
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        Entity entity = source.getSourceOfDamage();
+        Entity entity = source.getImmediateSource();
 
         if (entity instanceof EntityArrow)
         {
@@ -104,7 +104,7 @@ public class EntityMinecartTNT extends EntityMinecart
         {
             super.killMinecart(source);
 
-            if (!source.isExplosion() && this.worldObj.getGameRules().getBoolean("doEntityDrops"))
+            if (!source.isExplosion() && this.world.getGameRules().getBoolean("doEntityDrops"))
             {
                 this.entityDropItem(new ItemStack(Blocks.TNT, 1), 0.0F);
             }
@@ -124,7 +124,7 @@ public class EntityMinecartTNT extends EntityMinecart
      */
     protected void explodeCart(double p_94103_1_)
     {
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
             double d0 = Math.sqrt(p_94103_1_);
 
@@ -133,7 +133,7 @@ public class EntityMinecartTNT extends EntityMinecart
                 d0 = 5.0D;
             }
 
-            this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, (float)(4.0D + this.rand.nextDouble() * 1.5D * d0), true);
+            this.world.createExplosion(this, this.posX, this.posY, this.posZ, (float)(4.0D + this.rand.nextDouble() * 1.5D * d0), true);
             this.setDead();
         }
     }
@@ -160,6 +160,9 @@ public class EntityMinecartTNT extends EntityMinecart
         }
     }
 
+    /**
+     * Handler for {@link World#setEntityState}
+     */
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {
@@ -180,13 +183,13 @@ public class EntityMinecartTNT extends EntityMinecart
     {
         this.minecartTNTFuse = 80;
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
-            this.worldObj.setEntityState(this, (byte)10);
+            this.world.setEntityState(this, (byte)10);
 
             if (!this.isSilent())
             {
-                this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }
     }
@@ -216,9 +219,9 @@ public class EntityMinecartTNT extends EntityMinecart
         return !this.isIgnited() || !BlockRailBase.isRailBlock(blockStateIn) && !BlockRailBase.isRailBlock(worldIn, pos.up()) ? super.getExplosionResistance(explosionIn, worldIn, pos, blockStateIn) : 0.0F;
     }
 
-    public boolean verifyExplosion(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn, float p_174816_5_)
+    public boolean canExplosionDestroyBlock(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn, float p_174816_5_)
     {
-        return !this.isIgnited() || !BlockRailBase.isRailBlock(blockStateIn) && !BlockRailBase.isRailBlock(worldIn, pos.up()) ? super.verifyExplosion(explosionIn, worldIn, pos, blockStateIn, p_174816_5_) : false;
+        return !this.isIgnited() || !BlockRailBase.isRailBlock(blockStateIn) && !BlockRailBase.isRailBlock(worldIn, pos.up()) ? super.canExplosionDestroyBlock(explosionIn, worldIn, pos, blockStateIn, p_174816_5_) : false;
     }
 
     /**

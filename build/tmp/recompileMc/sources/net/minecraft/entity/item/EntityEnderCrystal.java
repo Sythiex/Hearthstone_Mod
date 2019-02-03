@@ -64,13 +64,13 @@ public class EntityEnderCrystal extends Entity
         this.prevPosZ = this.posZ;
         ++this.innerRotation;
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
             BlockPos blockpos = new BlockPos(this);
 
-            if (this.worldObj.provider instanceof WorldProviderEnd && this.worldObj.getBlockState(blockpos).getBlock() != Blocks.FIRE)
+            if (this.world.provider instanceof WorldProviderEnd && this.world.getBlockState(blockpos).getBlock() != Blocks.FIRE)
             {
-                this.worldObj.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
+                this.world.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
             }
         }
     }
@@ -121,21 +121,21 @@ public class EntityEnderCrystal extends Entity
         {
             return false;
         }
-        else if (source.getEntity() instanceof EntityDragon)
+        else if (source.getTrueSource() instanceof EntityDragon)
         {
             return false;
         }
         else
         {
-            if (!this.isDead && !this.worldObj.isRemote)
+            if (!this.isDead && !this.world.isRemote)
             {
                 this.setDead();
 
-                if (!this.worldObj.isRemote)
+                if (!this.world.isRemote)
                 {
                     if (!source.isExplosion())
                     {
-                        this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, 6.0F, true);
+                        this.world.createExplosion((Entity)null, this.posX, this.posY, this.posZ, 6.0F, true);
                     }
 
                     this.onCrystalDestroyed(source);
@@ -151,15 +151,15 @@ public class EntityEnderCrystal extends Entity
      */
     public void onKillCommand()
     {
-        this.onCrystalDestroyed(DamageSource.generic);
+        this.onCrystalDestroyed(DamageSource.GENERIC);
         super.onKillCommand();
     }
 
     private void onCrystalDestroyed(DamageSource source)
     {
-        if (this.worldObj.provider instanceof WorldProviderEnd)
+        if (this.world.provider instanceof WorldProviderEnd)
         {
-            WorldProviderEnd worldproviderend = (WorldProviderEnd)this.worldObj.provider;
+            WorldProviderEnd worldproviderend = (WorldProviderEnd)this.world.provider;
             DragonFightManager dragonfightmanager = worldproviderend.getDragonFightManager();
 
             if (dragonfightmanager != null)

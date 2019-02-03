@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 package net.minecraftforge.common.util;
 
 import java.util.List;
@@ -123,11 +124,14 @@ public class CompoundDataFixer extends DataFixer
     @Deprecated //Modders do not use this, use add below, To better allow custom fix types.
     public void registerWalker(FixTypes type, IDataWalker walker)
     {
-        registerWalkerAdd(type, walker);
+        registerVanillaWalker(type, walker);
     }
 
+    /**
+     * Do not invoke this method, use registerWalker instead. It is expected to be removed in future versions.
+     */
     @Override
-    public void registerWalkerAdd(IFixType type, IDataWalker walker)
+    public void registerVanillaWalker(IFixType type, IDataWalker walker)
     {
         getWalkers(type).add(walker);
     }

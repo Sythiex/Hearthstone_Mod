@@ -52,7 +52,10 @@ public class BlockCake extends Block
         return false;
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
+    /**
+     * Called when the block is right clicked by a player.
+     */
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (!worldIn.isRemote)
         {
@@ -61,7 +64,7 @@ public class BlockCake extends Block
         else
         {
             ItemStack itemstack = playerIn.getHeldItem(hand);
-            return this.eatCake(worldIn, pos, state, playerIn) || itemstack.func_190926_b();
+            return this.eatCake(worldIn, pos, state, playerIn) || itemstack.isEmpty();
         }
     }
 
@@ -90,6 +93,9 @@ public class BlockCake extends Block
         }
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return super.canPlaceBlockAt(worldIn, pos) ? this.canBlockStay(worldIn, pos) : false;
@@ -100,7 +106,7 @@ public class BlockCake extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!this.canBlockStay(worldIn, pos))
         {
@@ -126,7 +132,7 @@ public class BlockCake extends Block
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.field_190931_a;
+        return Items.AIR;
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
@@ -171,7 +177,16 @@ public class BlockCake extends Block
         return true;
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

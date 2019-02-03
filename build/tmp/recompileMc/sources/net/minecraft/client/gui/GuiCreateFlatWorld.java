@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiCreateFlatWorld extends GuiScreen
 {
     private final GuiCreateWorld createWorldGui;
-    private FlatGeneratorInfo theFlatGeneratorInfo = FlatGeneratorInfo.getDefaultFlatGenerator();
+    private FlatGeneratorInfo generatorInfo = FlatGeneratorInfo.getDefaultFlatGenerator();
     /** The title given to the flat world currently in creation */
     private String flatWorldTitle;
     /** The text used to identify the material for a layer */
@@ -48,7 +48,7 @@ public class GuiCreateFlatWorld extends GuiScreen
      */
     public String getPreset()
     {
-        return this.theFlatGeneratorInfo.toString();
+        return this.generatorInfo.toString();
     }
 
     /**
@@ -56,7 +56,7 @@ public class GuiCreateFlatWorld extends GuiScreen
      */
     public void setPreset(String preset)
     {
-        this.theFlatGeneratorInfo = FlatGeneratorInfo.createFlatGeneratorFromString(preset);
+        this.generatorInfo = FlatGeneratorInfo.createFlatGeneratorFromString(preset);
     }
 
     /**
@@ -78,7 +78,7 @@ public class GuiCreateFlatWorld extends GuiScreen
         this.buttonList.add(new GuiButton(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.format("gui.cancel")));
         this.addLayerButton.visible = false;
         this.editLayerButton.visible = false;
-        this.theFlatGeneratorInfo.updateLayers();
+        this.generatorInfo.updateLayers();
         this.onLayersChanged();
     }
 
@@ -96,7 +96,7 @@ public class GuiCreateFlatWorld extends GuiScreen
      */
     protected void actionPerformed(GuiButton button) throws IOException
     {
-        int i = this.theFlatGeneratorInfo.getFlatLayers().size() - this.createFlatWorldListSlotGui.selectedLayer - 1;
+        int i = this.generatorInfo.getFlatLayers().size() - this.createFlatWorldListSlotGui.selectedLayer - 1;
 
         if (button.id == 1)
         {
@@ -113,11 +113,11 @@ public class GuiCreateFlatWorld extends GuiScreen
         }
         else if (button.id == 4 && this.hasSelectedLayer())
         {
-            this.theFlatGeneratorInfo.getFlatLayers().remove(i);
-            this.createFlatWorldListSlotGui.selectedLayer = Math.min(this.createFlatWorldListSlotGui.selectedLayer, this.theFlatGeneratorInfo.getFlatLayers().size() - 1);
+            this.generatorInfo.getFlatLayers().remove(i);
+            this.createFlatWorldListSlotGui.selectedLayer = Math.min(this.createFlatWorldListSlotGui.selectedLayer, this.generatorInfo.getFlatLayers().size() - 1);
         }
 
-        this.theFlatGeneratorInfo.updateLayers();
+        this.generatorInfo.updateLayers();
         this.onLayersChanged();
     }
 
@@ -139,7 +139,7 @@ public class GuiCreateFlatWorld extends GuiScreen
      */
     private boolean hasSelectedLayer()
     {
-        return this.createFlatWorldListSlotGui.selectedLayer > -1 && this.createFlatWorldListSlotGui.selectedLayer < this.theFlatGeneratorInfo.getFlatLayers().size();
+        return this.createFlatWorldListSlotGui.selectedLayer > -1 && this.createFlatWorldListSlotGui.selectedLayer < this.generatorInfo.getFlatLayers().size();
     }
 
     /**
@@ -149,10 +149,10 @@ public class GuiCreateFlatWorld extends GuiScreen
     {
         this.drawDefaultBackground();
         this.createFlatWorldListSlotGui.drawScreen(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRendererObj, this.flatWorldTitle, this.width / 2, 8, 16777215);
+        this.drawCenteredString(this.fontRenderer, this.flatWorldTitle, this.width / 2, 8, 16777215);
         int i = this.width / 2 - 92 - 16;
-        this.drawString(this.fontRendererObj, this.materialText, i, 32, 16777215);
-        this.drawString(this.fontRendererObj, this.heightText, i + 2 + 213 - this.fontRendererObj.getStringWidth(this.heightText), 32, 16777215);
+        this.drawString(this.fontRenderer, this.materialText, i, 32, 16777215);
+        this.drawString(this.fontRenderer, this.heightText, i + 2 + 213 - this.fontRenderer.getStringWidth(this.heightText), 32, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -179,7 +179,7 @@ public class GuiCreateFlatWorld extends GuiScreen
             this.drawItemBackground(x + 1, z + 1);
             GlStateManager.enableRescaleNormal();
 
-            if (!itemToDraw.func_190926_b())
+            if (!itemToDraw.isEmpty())
             {
                 RenderHelper.enableGUIStandardItemLighting();
                 GuiCreateFlatWorld.this.itemRender.renderItemIntoGUI(itemToDraw, x + 2, z + 2);
@@ -220,7 +220,7 @@ public class GuiCreateFlatWorld extends GuiScreen
 
         protected int getSize()
         {
-            return GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().size();
+            return GuiCreateFlatWorld.this.generatorInfo.getFlatLayers().size();
         }
 
         /**
@@ -244,14 +244,14 @@ public class GuiCreateFlatWorld extends GuiScreen
         {
         }
 
-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+        protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks)
         {
-            FlatLayerInfo flatlayerinfo = (FlatLayerInfo)GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().get(GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().size() - p_192637_1_ - 1);
+            FlatLayerInfo flatlayerinfo = (FlatLayerInfo)GuiCreateFlatWorld.this.generatorInfo.getFlatLayers().get(GuiCreateFlatWorld.this.generatorInfo.getFlatLayers().size() - slotIndex - 1);
             IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
             Block block = iblockstate.getBlock();
             Item item = Item.getItemFromBlock(block);
 
-            if (item == Items.field_190931_a)
+            if (item == Items.AIR)
             {
                 if (block != Blocks.WATER && block != Blocks.FLOWING_WATER)
                 {
@@ -268,15 +268,15 @@ public class GuiCreateFlatWorld extends GuiScreen
 
             ItemStack itemstack = new ItemStack(item, 1, item.getHasSubtypes() ? block.getMetaFromState(iblockstate) : 0);
             String s = item.getItemStackDisplayName(itemstack);
-            this.drawItem(p_192637_2_, p_192637_3_, itemstack);
-            GuiCreateFlatWorld.this.fontRendererObj.drawString(s, p_192637_2_ + 18 + 5, p_192637_3_ + 3, 16777215);
+            this.drawItem(xPos, yPos, itemstack);
+            GuiCreateFlatWorld.this.fontRenderer.drawString(s, xPos + 18 + 5, yPos + 3, 16777215);
             String s1;
 
-            if (p_192637_1_ == 0)
+            if (slotIndex == 0)
             {
                 s1 = I18n.format("createWorld.customize.flat.layer.top", flatlayerinfo.getLayerCount());
             }
-            else if (p_192637_1_ == GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().size() - 1)
+            else if (slotIndex == GuiCreateFlatWorld.this.generatorInfo.getFlatLayers().size() - 1)
             {
                 s1 = I18n.format("createWorld.customize.flat.layer.bottom", flatlayerinfo.getLayerCount());
             }
@@ -285,7 +285,7 @@ public class GuiCreateFlatWorld extends GuiScreen
                 s1 = I18n.format("createWorld.customize.flat.layer", flatlayerinfo.getLayerCount());
             }
 
-            GuiCreateFlatWorld.this.fontRendererObj.drawString(s1, p_192637_2_ + 2 + 213 - GuiCreateFlatWorld.this.fontRendererObj.getStringWidth(s1), p_192637_3_ + 3, 16777215);
+            GuiCreateFlatWorld.this.fontRenderer.drawString(s1, xPos + 2 + 213 - GuiCreateFlatWorld.this.fontRenderer.getStringWidth(s1), yPos + 3, 16777215);
         }
 
         protected int getScrollBarX()

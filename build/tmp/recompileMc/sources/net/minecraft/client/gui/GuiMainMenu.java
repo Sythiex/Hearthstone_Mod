@@ -44,8 +44,12 @@ public class GuiMainMenu extends GuiScreen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Random RANDOM = new Random();
-    /** Counts the number of screen updates. */
-    private final float updateCounter;
+    /**
+     * A random number between 0.0 and 1.0, used to determine if the title screen says <a
+     * href="https://minecraft.gamepedia.com/Menu_screen#Minceraft">Minceraft</a> instead of Minecraft. Set during
+     * construction; if the value is less than .0001, then Minceraft is displayed.
+     */
+    private final float minceraftRoll;
     /** The splash message. */
     private String splashText;
     private GuiButton buttonResetDemo;
@@ -89,8 +93,8 @@ public class GuiMainMenu extends GuiScreen
      * drawn at the same time). May be null.
      */
     private GuiScreen realmsNotification;
-    private int field_193978_M;
-    private int field_193979_N;
+    private int widthCopyright;
+    private int widthCopyrightRest;
     private GuiButton modButton;
     private net.minecraftforge.client.gui.NotificationModUpdateScreen modUpdateNotification;
 
@@ -139,7 +143,7 @@ public class GuiMainMenu extends GuiScreen
             IOUtils.closeQuietly((Closeable)iresource);
         }
 
-        this.updateCounter = RANDOM.nextFloat();
+        this.minceraftRoll = RANDOM.nextFloat();
         this.openGLWarning1 = "";
 
         if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported())
@@ -193,8 +197,8 @@ public class GuiMainMenu extends GuiScreen
     {
         this.viewportTexture = new DynamicTexture(256, 256);
         this.backgroundTexture = this.mc.getTextureManager().getDynamicTextureLocation("background", this.viewportTexture);
-        this.field_193978_M = this.fontRendererObj.getStringWidth("Copyright Mojang AB. Do not distribute!");
-        this.field_193979_N = this.width - this.field_193978_M - 2;
+        this.widthCopyright = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
+        this.widthCopyrightRest = this.width - this.widthCopyright - 2;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
@@ -229,11 +233,11 @@ public class GuiMainMenu extends GuiScreen
 
         synchronized (this.threadLock)
         {
-            this.openGLWarning1Width = this.fontRendererObj.getStringWidth(this.openGLWarning1);
-            this.openGLWarning2Width = this.fontRendererObj.getStringWidth(this.openGLWarning2);
+            this.openGLWarning1Width = this.fontRenderer.getStringWidth(this.openGLWarning1);
+            this.openGLWarning2Width = this.fontRenderer.getStringWidth(this.openGLWarning2);
             int k = Math.max(this.openGLWarning1Width, this.openGLWarning2Width);
             this.openGLWarningX1 = (this.width - k) / 2;
-            this.openGLWarningY1 = (this.buttonList.get(0)).yPosition - 24;
+            this.openGLWarningY1 = (this.buttonList.get(0)).y - 24;
             this.openGLWarningX2 = this.openGLWarningX1 + k;
             this.openGLWarningY2 = this.openGLWarningY1 + 24;
         }
@@ -552,7 +556,7 @@ public class GuiMainMenu extends GuiScreen
         this.mc.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        if ((double)this.updateCounter < 1.0E-4D)
+        if ((double)this.minceraftRoll < 1.0E-4D)
         {
             this.drawTexturedModalRect(j + 0, 30, 0, 0, 99, 44);
             this.drawTexturedModalRect(j + 99, 30, 129, 0, 27, 44);
@@ -569,15 +573,15 @@ public class GuiMainMenu extends GuiScreen
         this.mc.getTextureManager().bindTexture(field_194400_H);
         drawModalRectWithCustomSizedTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
 
-        this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRendererObj, this.width, this.height, this.splashText);
+        this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRenderer, this.width, this.height, this.splashText);
 
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
         GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
         float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * ((float)Math.PI * 2F)) * 0.1F);
-        f = f * 100.0F / (float)(this.fontRendererObj.getStringWidth(this.splashText) + 32);
+        f = f * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
         GlStateManager.scale(f, f, f);
-        this.drawCenteredString(this.fontRendererObj, this.splashText, 0, -8, -256);
+        this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
         String s = "Minecraft 1.12.2";
 
@@ -596,22 +600,22 @@ public class GuiMainMenu extends GuiScreen
             String brd = brandings.get(brdline);
             if (!com.google.common.base.Strings.isNullOrEmpty(brd))
             {
-                this.drawString(this.fontRendererObj, brd, 2, this.height - ( 10 + brdline * (this.fontRendererObj.FONT_HEIGHT + 1)), 16777215);
+                this.drawString(this.fontRenderer, brd, 2, this.height - ( 10 + brdline * (this.fontRenderer.FONT_HEIGHT + 1)), 16777215);
             }
         }
 
-        this.drawString(this.fontRendererObj, "Copyright Mojang AB. Do not distribute!", this.field_193979_N, this.height - 10, -1);
+        this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, -1);
 
-        if (mouseX > this.field_193979_N && mouseX < this.field_193979_N + this.field_193978_M && mouseY > this.height - 10 && mouseY < this.height && Mouse.isInsideWindow())
+        if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height && Mouse.isInsideWindow())
         {
-            drawRect(this.field_193979_N, this.height - 1, this.field_193979_N + this.field_193978_M, this.height, -1);
+            drawRect(this.widthCopyrightRest, this.height - 1, this.widthCopyrightRest + this.widthCopyright, this.height, -1);
         }
 
         if (this.openGLWarning1 != null && !this.openGLWarning1.isEmpty())
         {
             drawRect(this.openGLWarningX1 - 2, this.openGLWarningY1 - 2, this.openGLWarningX2 + 2, this.openGLWarningY2 - 1, 1428160512);
-            this.drawString(this.fontRendererObj, this.openGLWarning1, this.openGLWarningX1, this.openGLWarningY1, -1);
-            this.drawString(this.fontRendererObj, this.openGLWarning2, (this.width - this.openGLWarning2Width) / 2, (this.buttonList.get(0)).yPosition - 12, -1);
+            this.drawString(this.fontRenderer, this.openGLWarning1, this.openGLWarningX1, this.openGLWarningY1, -1);
+            this.drawString(this.fontRenderer, this.openGLWarning2, (this.width - this.openGLWarning2Width) / 2, (this.buttonList.get(0)).y - 12, -1);
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -645,7 +649,7 @@ public class GuiMainMenu extends GuiScreen
             this.realmsNotification.mouseClicked(mouseX, mouseY, mouseButton);
         }
 
-        if (mouseX > this.field_193979_N && mouseX < this.field_193979_N + this.field_193978_M && mouseY > this.height - 10 && mouseY < this.height)
+        if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height)
         {
             this.mc.displayGuiScreen(new GuiWinGame(false, Runnables.doNothing()));
         }

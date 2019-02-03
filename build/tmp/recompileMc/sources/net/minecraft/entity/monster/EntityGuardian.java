@@ -40,7 +40,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityGuardian extends EntityMob
 {
-    private static final DataParameter<Boolean> field_190766_bz = EntityDataManager.<Boolean>createKey(EntityGuardian.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> MOVING = EntityDataManager.<Boolean>createKey(EntityGuardian.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Integer> TARGET_ENTITY = EntityDataManager.<Integer>createKey(EntityGuardian.class, DataSerializers.VARINT);
     protected float clientSideTailAnimation;
     protected float clientSideTailAnimationO;
@@ -94,7 +94,7 @@ public class EntityGuardian extends EntityMob
     /**
      * Returns new PathNavigateGround instance
      */
-    protected PathNavigate getNewNavigator(World worldIn)
+    protected PathNavigate createNavigator(World worldIn)
     {
         return new PathNavigateSwimmer(this, worldIn);
     }
@@ -102,18 +102,18 @@ public class EntityGuardian extends EntityMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataManager.register(field_190766_bz, Boolean.valueOf(false));
+        this.dataManager.register(MOVING, Boolean.valueOf(false));
         this.dataManager.register(TARGET_ENTITY, Integer.valueOf(0));
     }
 
     public boolean isMoving()
     {
-        return ((Boolean)this.dataManager.get(field_190766_bz)).booleanValue();
+        return ((Boolean)this.dataManager.get(MOVING)).booleanValue();
     }
 
     private void setMoving(boolean moving)
     {
-        this.dataManager.set(field_190766_bz, Boolean.valueOf(moving));
+        this.dataManager.set(MOVING, Boolean.valueOf(moving));
     }
 
     public int getAttackDuration()
@@ -138,7 +138,7 @@ public class EntityGuardian extends EntityMob
         {
             return null;
         }
-        else if (this.worldObj.isRemote)
+        else if (this.world.isRemote)
         {
             if (this.targetedEntity != null)
             {
@@ -146,7 +146,7 @@ public class EntityGuardian extends EntityMob
             }
             else
             {
-                Entity entity = this.worldObj.getEntityByID(((Integer)this.dataManager.get(TARGET_ENTITY)).intValue());
+                Entity entity = this.world.getEntityByID(((Integer)this.dataManager.get(TARGET_ENTITY)).intValue());
 
                 if (entity instanceof EntityLivingBase)
                 {
@@ -189,7 +189,7 @@ public class EntityGuardian extends EntityMob
         return this.isInWater() ? SoundEvents.ENTITY_GUARDIAN_AMBIENT : SoundEvents.ENTITY_GUARDIAN_AMBIENT_LAND;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return this.isInWater() ? SoundEvents.ENTITY_GUARDIAN_HURT : SoundEvents.ENTITY_GUARDIAN_HURT_LAND;
     }
@@ -215,7 +215,7 @@ public class EntityGuardian extends EntityMob
 
     public float getBlockPathWeight(BlockPos pos)
     {
-        return this.worldObj.getBlockState(pos).getMaterial() == Material.WATER ? 10.0F + this.worldObj.getLightBrightness(pos) - 0.5F : super.getBlockPathWeight(pos);
+        return this.world.getBlockState(pos).getMaterial() == Material.WATER ? 10.0F + this.world.getLightBrightness(pos) - 0.5F : super.getBlockPathWeight(pos);
     }
 
     /**
@@ -224,7 +224,7 @@ public class EntityGuardian extends EntityMob
      */
     public void onLivingUpdate()
     {
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             this.clientSideTailAnimationO = this.clientSideTailAnimation;
 
@@ -234,10 +234,10 @@ public class EntityGuardian extends EntityMob
 
                 if (this.motionY > 0.0D && this.clientSideTouchedGround && !this.isSilent())
                 {
-                    this.worldObj.playSound(this.posX, this.posY, this.posZ, this.func_190765_dj(), this.getSoundCategory(), 1.0F, 1.0F, false);
+                    this.world.playSound(this.posX, this.posY, this.posZ, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
                 }
 
-                this.clientSideTouchedGround = this.motionY < 0.0D && this.worldObj.isBlockNormalCube((new BlockPos(this)).down(), false);
+                this.clientSideTouchedGround = this.motionY < 0.0D && this.world.isBlockNormalCube((new BlockPos(this)).down(), false);
             }
             else if (this.isMoving())
             {
@@ -277,7 +277,7 @@ public class EntityGuardian extends EntityMob
 
                 for (int i = 0; i < 2; ++i)
                 {
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width - vec3d.xCoord * 1.5D, this.posY + this.rand.nextDouble() * (double)this.height - vec3d.yCoord * 1.5D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width - vec3d.zCoord * 1.5D, 0.0D, 0.0D, 0.0D);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width - vec3d.x * 1.5D, this.posY + this.rand.nextDouble() * (double)this.height - vec3d.y * 1.5D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width - vec3d.z * 1.5D, 0.0D, 0.0D, 0.0D);
                 }
             }
 
@@ -307,7 +307,7 @@ public class EntityGuardian extends EntityMob
                     while (d4 < d3)
                     {
                         d4 += 1.8D - d5 + this.rand.nextDouble() * (1.7D - d5);
-                        this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + d0 * d4, this.posY + d1 * d4 + (double)this.getEyeHeight(), this.posZ + d2 * d4, 0.0D, 0.0D, 0.0D);
+                        this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + d0 * d4, this.posY + d1 * d4 + (double)this.getEyeHeight(), this.posZ + d2 * d4, 0.0D, 0.0D, 0.0D);
                     }
                 }
             }
@@ -335,7 +335,7 @@ public class EntityGuardian extends EntityMob
         super.onLivingUpdate();
     }
 
-    protected SoundEvent func_190765_dj()
+    protected SoundEvent getFlopSound()
     {
         return SoundEvents.ENTITY_GUARDIAN_FLOP;
     }
@@ -376,7 +376,7 @@ public class EntityGuardian extends EntityMob
      */
     public boolean isNotColliding()
     {
-        return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty();
+        return this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty();
     }
 
     /**
@@ -384,7 +384,7 @@ public class EntityGuardian extends EntityMob
      */
     public boolean getCanSpawnHere()
     {
-        return (this.rand.nextInt(20) == 0 || !this.worldObj.canBlockSeeSky(new BlockPos(this))) && super.getCanSpawnHere();
+        return (this.rand.nextInt(20) == 0 || !this.world.canBlockSeeSky(new BlockPos(this))) && super.getCanSpawnHere();
     }
 
     /**
@@ -392,9 +392,9 @@ public class EntityGuardian extends EntityMob
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (!this.isMoving() && !source.isMagicDamage() && source.getSourceOfDamage() instanceof EntityLivingBase)
+        if (!this.isMoving() && !source.isMagicDamage() && source.getImmediateSource() instanceof EntityLivingBase)
         {
-            EntityLivingBase entitylivingbase = (EntityLivingBase)source.getSourceOfDamage();
+            EntityLivingBase entitylivingbase = (EntityLivingBase)source.getImmediateSource();
 
             if (!source.isExplosion())
             {
@@ -419,12 +419,12 @@ public class EntityGuardian extends EntityMob
         return 180;
     }
 
-    public void func_191986_a(float p_191986_1_, float p_191986_2_, float p_191986_3_)
+    public void travel(float strafe, float vertical, float forward)
     {
         if (this.isServerWorld() && this.isInWater())
         {
-            this.func_191958_b(p_191986_1_, p_191986_2_, p_191986_3_, 0.1F);
-            this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+            this.moveRelative(strafe, vertical, forward, 0.1F);
+            this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.8999999761581421D;
             this.motionY *= 0.8999999761581421D;
             this.motionZ *= 0.8999999761581421D;
@@ -436,20 +436,20 @@ public class EntityGuardian extends EntityMob
         }
         else
         {
-            super.func_191986_a(p_191986_1_, p_191986_2_, p_191986_3_);
+            super.travel(strafe, vertical, forward);
         }
     }
 
     static class AIGuardianAttack extends EntityAIBase
         {
-            private final EntityGuardian theEntity;
+            private final EntityGuardian guardian;
             private int tickCounter;
-            private final boolean field_190881_c;
+            private final boolean isElder;
 
             public AIGuardianAttack(EntityGuardian guardian)
             {
-                this.theEntity = guardian;
-                this.field_190881_c = guardian instanceof EntityElderGuardian;
+                this.guardian = guardian;
+                this.isElder = guardian instanceof EntityElderGuardian;
                 this.setMutexBits(3);
             }
 
@@ -458,16 +458,16 @@ public class EntityGuardian extends EntityMob
              */
             public boolean shouldExecute()
             {
-                EntityLivingBase entitylivingbase = this.theEntity.getAttackTarget();
+                EntityLivingBase entitylivingbase = this.guardian.getAttackTarget();
                 return entitylivingbase != null && entitylivingbase.isEntityAlive();
             }
 
             /**
              * Returns whether an in-progress EntityAIBase should continue executing
              */
-            public boolean continueExecuting()
+            public boolean shouldContinueExecuting()
             {
-                return super.continueExecuting() && (this.field_190881_c || this.theEntity.getDistanceSqToEntity(this.theEntity.getAttackTarget()) > 9.0D);
+                return super.shouldContinueExecuting() && (this.isElder || this.guardian.getDistanceSq(this.guardian.getAttackTarget()) > 9.0D);
             }
 
             /**
@@ -476,33 +476,33 @@ public class EntityGuardian extends EntityMob
             public void startExecuting()
             {
                 this.tickCounter = -10;
-                this.theEntity.getNavigator().clearPathEntity();
-                this.theEntity.getLookHelper().setLookPositionWithEntity(this.theEntity.getAttackTarget(), 90.0F, 90.0F);
-                this.theEntity.isAirBorne = true;
+                this.guardian.getNavigator().clearPath();
+                this.guardian.getLookHelper().setLookPositionWithEntity(this.guardian.getAttackTarget(), 90.0F, 90.0F);
+                this.guardian.isAirBorne = true;
             }
 
             /**
-             * Resets the task
+             * Reset the task's internal state. Called when this task is interrupted by another one
              */
             public void resetTask()
             {
-                this.theEntity.setTargetedEntity(0);
-                this.theEntity.setAttackTarget((EntityLivingBase)null);
-                this.theEntity.wander.makeUpdate();
+                this.guardian.setTargetedEntity(0);
+                this.guardian.setAttackTarget((EntityLivingBase)null);
+                this.guardian.wander.makeUpdate();
             }
 
             /**
-             * Updates the task
+             * Keep ticking a continuous task that has already been started
              */
             public void updateTask()
             {
-                EntityLivingBase entitylivingbase = this.theEntity.getAttackTarget();
-                this.theEntity.getNavigator().clearPathEntity();
-                this.theEntity.getLookHelper().setLookPositionWithEntity(entitylivingbase, 90.0F, 90.0F);
+                EntityLivingBase entitylivingbase = this.guardian.getAttackTarget();
+                this.guardian.getNavigator().clearPath();
+                this.guardian.getLookHelper().setLookPositionWithEntity(entitylivingbase, 90.0F, 90.0F);
 
-                if (!this.theEntity.canEntityBeSeen(entitylivingbase))
+                if (!this.guardian.canEntityBeSeen(entitylivingbase))
                 {
-                    this.theEntity.setAttackTarget((EntityLivingBase)null);
+                    this.guardian.setAttackTarget((EntityLivingBase)null);
                 }
                 else
                 {
@@ -510,26 +510,26 @@ public class EntityGuardian extends EntityMob
 
                     if (this.tickCounter == 0)
                     {
-                        this.theEntity.setTargetedEntity(this.theEntity.getAttackTarget().getEntityId());
-                        this.theEntity.worldObj.setEntityState(this.theEntity, (byte)21);
+                        this.guardian.setTargetedEntity(this.guardian.getAttackTarget().getEntityId());
+                        this.guardian.world.setEntityState(this.guardian, (byte)21);
                     }
-                    else if (this.tickCounter >= this.theEntity.getAttackDuration())
+                    else if (this.tickCounter >= this.guardian.getAttackDuration())
                     {
                         float f = 1.0F;
 
-                        if (this.theEntity.worldObj.getDifficulty() == EnumDifficulty.HARD)
+                        if (this.guardian.world.getDifficulty() == EnumDifficulty.HARD)
                         {
                             f += 2.0F;
                         }
 
-                        if (this.field_190881_c)
+                        if (this.isElder)
                         {
                             f += 2.0F;
                         }
 
-                        entitylivingbase.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this.theEntity, this.theEntity), f);
-                        entitylivingbase.attackEntityFrom(DamageSource.causeMobDamage(this.theEntity), (float)this.theEntity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
-                        this.theEntity.setAttackTarget((EntityLivingBase)null);
+                        entitylivingbase.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this.guardian, this.guardian), f);
+                        entitylivingbase.attackEntityFrom(DamageSource.causeMobDamage(this.guardian), (float)this.guardian.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
+                        this.guardian.setAttackTarget((EntityLivingBase)null);
                     }
 
                     super.updateTask();
@@ -554,7 +554,7 @@ public class EntityGuardian extends EntityMob
                     double d0 = this.posX - this.entityGuardian.posX;
                     double d1 = this.posY - this.entityGuardian.posY;
                     double d2 = this.posZ - this.entityGuardian.posZ;
-                    double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
+                    double d3 = (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
                     d1 = d1 / d3;
                     float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
                     this.entityGuardian.rotationYaw = this.limitAngle(this.entityGuardian.rotationYaw, f, 90.0F);
@@ -606,7 +606,7 @@ public class EntityGuardian extends EntityMob
 
             public boolean apply(@Nullable EntityLivingBase p_apply_1_)
             {
-                return (p_apply_1_ instanceof EntityPlayer || p_apply_1_ instanceof EntitySquid) && p_apply_1_.getDistanceSqToEntity(this.parentEntity) > 9.0D;
+                return (p_apply_1_ instanceof EntityPlayer || p_apply_1_ instanceof EntitySquid) && p_apply_1_.getDistanceSq(this.parentEntity) > 9.0D;
             }
         }
 }

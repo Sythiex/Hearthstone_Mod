@@ -154,9 +154,9 @@ public class IntHashMap<V>
      * Removes the specified object from the map and returns it
      */
     @Nullable
-    public V removeObject(int p_76049_1_)
+    public V removeObject(int o)
     {
-        IntHashMap.Entry<V> entry = this.removeEntry(p_76049_1_);
+        IntHashMap.Entry<V> entry = this.removeEntry(o);
         return (V)(entry == null ? null : entry.valueEntry);
     }
 

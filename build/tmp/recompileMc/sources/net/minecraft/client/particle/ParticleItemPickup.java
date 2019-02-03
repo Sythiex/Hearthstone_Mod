@@ -32,7 +32,7 @@ public class ParticleItemPickup extends Particle
     /**
      * Renders the particle
      */
-    public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
     {
         float f = ((float)this.age + partialTicks) / (float)this.maxAge;
         f = f * f;
@@ -54,7 +54,7 @@ public class ParticleItemPickup extends Particle
         d7 = d7 - interpPosY;
         d8 = d8 - interpPosZ;
         GlStateManager.enableLighting();
-        this.renderManager.doRenderEntity(this.item, d6, d7, d8, this.item.rotationYaw, partialTicks, false);
+        this.renderManager.renderEntity(this.item, d6, d7, d8, this.item.rotationYaw, partialTicks, false);
     }
 
     public void onUpdate()

@@ -36,6 +36,10 @@ public class BlockIce extends BlockBreakable
         return BlockRenderLayer.TRANSLUCENT;
     }
 
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
         player.addStat(StatList.getBlockStats(this));
@@ -44,7 +48,7 @@ public class BlockIce extends BlockBreakable
         if (this.canSilkHarvest(worldIn, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)
         {
             java.util.List<ItemStack> items = new java.util.ArrayList<ItemStack>();
-            items.add(this.createStackedBlock(state));
+            items.add(this.getSilkTouchDrop(state));
 
             net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, worldIn, pos, state, 0, 1.0f, true, player);
             for (ItemStack is : items)
@@ -97,7 +101,7 @@ public class BlockIce extends BlockBreakable
         {
             this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
             worldIn.setBlockState(pos, Blocks.WATER.getDefaultState());
-            worldIn.func_190524_a(pos, Blocks.WATER, pos);
+            worldIn.neighborChanged(pos, Blocks.WATER, pos);
         }
     }
 

@@ -17,7 +17,7 @@ public class WorldSummary implements Comparable<WorldSummary>
     private final long sizeOnDisk;
     private final boolean requiresConversion;
     /** Instance of EnumGameType. */
-    private final GameType theEnumGameType;
+    private final GameType gameType;
     private final boolean hardcore;
     private final boolean cheatsEnabled;
     private final String versionName;
@@ -30,7 +30,7 @@ public class WorldSummary implements Comparable<WorldSummary>
         this.displayName = displayNameIn;
         this.lastTimePlayed = info.getLastTimePlayed();
         this.sizeOnDisk = sizeOnDiskIn;
-        this.theEnumGameType = info.getGameType();
+        this.gameType = info.getGameType();
         this.requiresConversion = requiresConversionIn;
         this.hardcore = info.isHardcoreModeEnabled();
         this.cheatsEnabled = info.areCommandsAllowed();
@@ -87,7 +87,7 @@ public class WorldSummary implements Comparable<WorldSummary>
      */
     public GameType getEnumGameType()
     {
-        return this.theEnumGameType;
+        return this.gameType;
     }
 
     public boolean isHardcoreModeEnabled()

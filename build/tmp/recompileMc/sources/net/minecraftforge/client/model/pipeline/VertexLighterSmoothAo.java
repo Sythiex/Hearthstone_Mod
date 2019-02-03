@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,12 +40,7 @@ public class VertexLighterSmoothAo extends VertexLighterFlat
     @Override
     protected void updateColor(float[] normal, float[] color, float x, float y, float z, float tint, int multiplier)
     {
-        if(tint != -1)
-        {
-            color[0] *= (float)(multiplier >> 0x10 & 0xFF) / 0xFF;
-            color[1] *= (float)(multiplier >> 0x8 & 0xFF) / 0xFF;
-            color[2] *= (float)(multiplier & 0xFF) / 0xFF;
-        }
+        super.updateColor(normal, color, x, y, z, tint, multiplier);
         float a = getAo(x, y, z);
         color[0] *= a;
         color[1] *= a;
@@ -172,14 +167,14 @@ public class VertexLighterSmoothAo extends VertexLighterFlat
         a += ao[sx - 0][sy - 0][sz - 1] * (0 + x) * (0 + y) * (1 - z);
         a += ao[sx - 0][sy - 0][sz - 0] * (0 + x) * (0 + y) * (0 + z);
 
-        a = MathHelper.clamp_float(a, 0, 1);
+        a = MathHelper.clamp(a, 0, 1);
         return a;
     }
 
     @Override
     public void updateBlockInfo()
     {
-        super.updateBlockInfo();
+        blockInfo.updateShift();
         blockInfo.updateLightMatrix();
     }
 }

@@ -58,12 +58,12 @@ public class ResourcePackRepository
         }
     };
     private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
-    private static final ResourceLocation field_191400_f = new ResourceLocation("textures/misc/unknown_pack.png");
+    private static final ResourceLocation UNKNOWN_PACK_TEXTURE = new ResourceLocation("textures/misc/unknown_pack.png");
     private final File dirResourcepacks;
     public final IResourcePack rprDefaultResourcePack;
     private final File dirServerResourcepacks;
     public final MetadataSerializer rprMetadataSerializer;
-    private IResourcePack resourcePackInstance;
+    private IResourcePack serverResourcePack;
     private final ReentrantLock lock = new ReentrantLock();
     /** ResourcesPack currently beeing downloaded */
     private ListenableFuture<Object> downloadingPacks;
@@ -130,7 +130,7 @@ public class ResourcePackRepository
         return this.dirResourcepacks.isDirectory() ? Arrays.asList(this.dirResourcepacks.listFiles(RESOURCE_PACK_FILTER)) : Collections.emptyList();
     }
 
-    private IResourcePack func_191399_b(File p_191399_1_)
+    private IResourcePack getResourcePack(File p_191399_1_)
     {
         IResourcePack iresourcepack;
 
@@ -204,9 +204,9 @@ public class ResourcePackRepository
     @Nullable
     public ResourcePackRepository.Entry getResourcePackEntry()
     {
-        if (this.resourcePackInstance != null)
+        if (this.serverResourcePack != null)
         {
-            ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(this.resourcePackInstance);
+            ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(this.serverResourcePack);
 
             try
             {
@@ -258,7 +258,7 @@ public class ResourcePackRepository
             {
                 if (this.checkHash(s1, file1))
                 {
-                    ListenableFuture listenablefuture1 = this.setResourcePackInstance(file1);
+                    ListenableFuture listenablefuture1 = this.setServerResourcePack(file1);
                     return listenablefuture1;
                 }
 
@@ -285,7 +285,7 @@ public class ResourcePackRepository
                 {
                     if (ResourcePackRepository.this.checkHash(s1, file1))
                     {
-                        ResourcePackRepository.this.setResourcePackInstance(file1);
+                        ResourcePackRepository.this.setServerResourcePack(file1);
                         settablefuture.set((Object)null);
                     }
                     else
@@ -379,7 +379,7 @@ public class ResourcePackRepository
         }
     }
 
-    public ListenableFuture<Object> setResourcePackInstance(File resourceFile)
+    public ListenableFuture<Object> setServerResourcePack(File resourceFile)
     {
         if (!this.validatePack(resourceFile))
         {
@@ -387,7 +387,7 @@ public class ResourcePackRepository
         }
         else
         {
-            this.resourcePackInstance = new FileResourcePack(resourceFile);
+            this.serverResourcePack = new FileResourcePack(resourceFile);
             return Minecraft.getMinecraft().scheduleResourcesRefresh();
         }
     }
@@ -396,9 +396,9 @@ public class ResourcePackRepository
      * Getter for the IResourcePack instance associated with this ResourcePackRepository
      */
     @Nullable
-    public IResourcePack getResourcePackInstance()
+    public IResourcePack getServerResourcePack()
     {
-        return this.resourcePackInstance;
+        return this.serverResourcePack;
     }
 
     public void clearResourcePack()
@@ -414,9 +414,9 @@ public class ResourcePackRepository
 
             this.downloadingPacks = null;
 
-            if (this.resourcePackInstance != null)
+            if (this.serverResourcePack != null)
             {
-                this.resourcePackInstance = null;
+                this.serverResourcePack = null;
                 Minecraft.getMinecraft().scheduleResourcesRefresh();
             }
         }
@@ -435,7 +435,7 @@ public class ResourcePackRepository
 
         private Entry(File resourcePackFileIn)
         {
-            this(ResourcePackRepository.this.func_191399_b(resourcePackFileIn));
+            this(ResourcePackRepository.this.getResourcePack(resourcePackFileIn));
         }
 
         private Entry(IResourcePack reResourcePackIn)
@@ -466,7 +466,7 @@ public class ResourcePackRepository
             {
                 try
                 {
-                    bufferedimage = TextureUtil.readBufferedImage(Minecraft.getMinecraft().getResourceManager().getResource(ResourcePackRepository.field_191400_f).getInputStream());
+                    bufferedimage = TextureUtil.readBufferedImage(Minecraft.getMinecraft().getResourceManager().getResource(ResourcePackRepository.UNKNOWN_PACK_TEXTURE).getInputStream());
                 }
                 catch (IOException ioexception)
                 {

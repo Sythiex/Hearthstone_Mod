@@ -19,7 +19,7 @@ public interface ICommandManager
      * command is specified or a partial command is specified. It could also be a list of arguments for the command that
      * is specified.
      */
-    List<String> getTabCompletionOptions(ICommandSender sender, String input, @Nullable BlockPos pos);
+    List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos);
 
     /**
      * Get a list of commands that the given command sender has access to execute.

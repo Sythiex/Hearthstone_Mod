@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,12 +45,12 @@ public class VanillaHopperItemHandler extends InvWrapper
         }
         else
         {
-            boolean wasEmpty = getInv().func_191420_l();
+            boolean wasEmpty = getInv().isEmpty();
 
-            int originalStackSize = stack.func_190916_E();
+            int originalStackSize = stack.getCount();
             stack = super.insertItem(slot, stack, simulate);
 
-            if (wasEmpty && originalStackSize > stack.func_190916_E())
+            if (wasEmpty && originalStackSize > stack.getCount())
             {
                 if (!hopper.mayTransfer())
                 {

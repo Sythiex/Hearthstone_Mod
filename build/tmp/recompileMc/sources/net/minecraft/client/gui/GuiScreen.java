@@ -61,7 +61,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     protected List<GuiLabel> labelList = Lists.<GuiLabel>newArrayList();
     public boolean allowUserInput;
     /** The FontRenderer used by GuiScreen */
-    protected FontRenderer fontRendererObj;
+    protected FontRenderer fontRenderer;
     /** The button that was just pressed. */
     protected GuiButton selectedButton;
     private int eventButton;
@@ -69,7 +69,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     /** Tracks the number of fingers currently on the screen. Prevents subsequent fingers registering as clicks. */
     private int touchValue;
     private URI clickedLinkURI;
-    private boolean field_193977_u;
+    private boolean focused;
     protected boolean keyHandled, mouseHandled; // Forge: allow canceling key and mouse Post events from handleMouseInput and handleKeyboardInput
 
     /**
@@ -79,7 +79,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         for (int i = 0; i < this.buttonList.size(); ++i)
         {
-            ((GuiButton)this.buttonList.get(i)).func_191745_a(this.mc, mouseX, mouseY, partialTicks);
+            ((GuiButton)this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY, partialTicks);
         }
 
         for (int j = 0; j < this.labelList.size(); ++j)
@@ -105,10 +105,18 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         }
     }
 
-    protected <T extends GuiButton> T addButton(T p_189646_1_)
+    /**
+     * Adds a control to this GUI's button list. Any type that subclasses button may be added (particularly, GuiSlider,
+     * but not text fields).
+     *  
+     * @return The control passed in.
+     *  
+     * @param buttonIn The control to add
+     */
+    protected <T extends GuiButton> T addButton(T buttonIn)
     {
-        this.buttonList.add(p_189646_1_);
-        return p_189646_1_;
+        this.buttonList.add(buttonIn);
+        return buttonIn;
     }
 
     /**
@@ -156,13 +164,13 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         FontRenderer font = stack.getItem().getFontRenderer(stack);
         net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-        this.drawHoveringText(this.func_191927_a(stack), x, y, (font == null ? fontRendererObj : font));
+        this.drawHoveringText(this.getItemToolTip(stack), x, y, (font == null ? fontRenderer : font));
         net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
     }
 
-    public List<String> func_191927_a(ItemStack p_191927_1_)
+    public List<String> getItemToolTip(ItemStack p_191927_1_)
     {
-        List<String> list = p_191927_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+        List<String> list = p_191927_1_.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 
         for (int i = 0; i < list.size(); ++i)
         {
@@ -180,22 +188,21 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     }
 
     /**
-     * Draws the text when mouse is over creative inventory tab. Params: current creative tab to be checked, current
-     * mouse x position, current mouse y position.
+     * Draws the given text as a tooltip.
      */
-    public void drawCreativeTabHoveringText(String tabName, int mouseX, int mouseY)
+    public void drawHoveringText(String text, int x, int y)
     {
-        this.drawHoveringText(Arrays.asList(tabName), mouseX, mouseY);
+        this.drawHoveringText(Arrays.asList(text), x, y);
     }
 
-    public void func_193975_a(boolean p_193975_1_)
+    public void setFocused(boolean hasFocusedControlIn)
     {
-        this.field_193977_u = p_193975_1_;
+        this.focused = hasFocusedControlIn;
     }
 
-    public boolean func_193976_p()
+    public boolean isFocused()
     {
-        return this.field_193977_u;
+        return this.focused;
     }
 
     /**
@@ -203,7 +210,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     public void drawHoveringText(List<String> textLines, int x, int y)
     {
-        drawHoveringText(textLines, x, y, fontRendererObj);
+        drawHoveringText(textLines, x, y, fontRenderer);
     }
 
     protected void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font)
@@ -219,7 +226,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
             for (String s : textLines)
             {
-                int j = this.fontRendererObj.getStringWidth(s);
+                int j = this.fontRenderer.getStringWidth(s);
 
                 if (j > i)
                 {
@@ -264,7 +271,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
             for (int k1 = 0; k1 < textLines.size(); ++k1)
             {
                 String s1 = textLines.get(k1);
-                this.fontRendererObj.drawStringWithShadow(s1, (float)l1, (float)i2, -1);
+                this.fontRenderer.drawStringWithShadow(s1, (float)l1, (float)i2, -1);
 
                 if (k1 == 0)
                 {
@@ -294,7 +301,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
             if (hoverevent.getAction() == HoverEvent.Action.SHOW_ITEM)
             {
-                ItemStack itemstack = ItemStack.field_190927_a;
+                ItemStack itemstack = ItemStack.EMPTY;
 
                 try
                 {
@@ -310,9 +317,9 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                     ;
                 }
 
-                if (itemstack.func_190926_b())
+                if (itemstack.isEmpty())
                 {
-                    this.drawCreativeTabHoveringText(TextFormatting.RED + "Invalid Item!", x, y);
+                    this.drawHoveringText(TextFormatting.RED + "Invalid Item!", x, y);
                 }
                 else
                 {
@@ -340,13 +347,13 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                     }
                     catch (NBTException var8)
                     {
-                        this.drawCreativeTabHoveringText(TextFormatting.RED + "Invalid Entity!", x, y);
+                        this.drawHoveringText(TextFormatting.RED + "Invalid Entity!", x, y);
                     }
                 }
             }
             else if (hoverevent.getAction() == HoverEvent.Action.SHOW_TEXT)
             {
-                this.drawHoveringText(this.mc.fontRendererObj.listFormattedStringToWidth(hoverevent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), x, y);
+                this.drawHoveringText(this.mc.fontRenderer.listFormattedStringToWidth(hoverevent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), x, y);
             }
 
             GlStateManager.disableLighting();
@@ -460,9 +467,9 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         {
             this.mc.ingameGUI.getChatGUI().addToSentMessages(msg);
         }
-        if (net.minecraftforge.client.ClientCommandHandler.instance.executeCommand(mc.thePlayer, msg) != 0) return;
+        if (net.minecraftforge.client.ClientCommandHandler.instance.executeCommand(mc.player, msg) != 0) return;
 
-        this.mc.thePlayer.sendChatMessage(msg);
+        this.mc.player.sendChatMessage(msg);
     }
 
     /**
@@ -527,7 +534,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         this.mc = mc;
         this.itemRender = mc.getRenderItem();
-        this.fontRendererObj = mc.fontRendererObj;
+        this.fontRenderer = mc.fontRenderer;
         this.width = width;
         this.height = height;
         if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent.Pre(this, this.buttonList)))
@@ -660,7 +667,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
     public void drawWorldBackground(int tint)
     {
-        if (this.mc.theWorld != null)
+        if (this.mc.world != null)
         {
             this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
         }

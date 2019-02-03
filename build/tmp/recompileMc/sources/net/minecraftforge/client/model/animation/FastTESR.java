@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ import net.minecraft.tileentity.TileEntity;
 public abstract class FastTESR<T extends TileEntity> extends TileEntitySpecialRenderer<T>
 {
     @Override
-    public final void func_192841_a(T te, double x, double y, double z, float partialTicks, int destroyStage, float partial)
+    public final void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float partial)
     {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();

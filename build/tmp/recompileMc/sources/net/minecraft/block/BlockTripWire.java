@@ -114,11 +114,15 @@ public class BlockTripWire extends Block
         this.notifyHook(worldIn, pos, state.withProperty(POWERED, Boolean.valueOf(true)));
     }
 
+    /**
+     * Called before the Block is set to air in the world. Called regardless of if the player's tool can actually
+     * collect this block
+     */
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
     {
         if (!worldIn.isRemote)
         {
-            if (!player.getHeldItemMainhand().func_190926_b() && player.getHeldItemMainhand().getItem() == Items.SHEARS)
+            if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() == Items.SHEARS)
             {
                 worldIn.setBlockState(pos, state.withProperty(DISARMED, Boolean.valueOf(true)), 4);
             }
@@ -307,7 +311,16 @@ public class BlockTripWire extends Block
         return new BlockStateContainer(this, new IProperty[] {POWERED, ATTACHED, DISARMED, NORTH, EAST, WEST, SOUTH});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

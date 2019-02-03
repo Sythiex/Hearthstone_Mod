@@ -76,7 +76,7 @@ public final class EntitySelectors
                 {
                     return false;
                 }
-                else if (!entityIn.worldObj.isRemote || p_apply_1_ instanceof EntityPlayer && ((EntityPlayer)p_apply_1_).isUser())
+                else if (!entityIn.world.isRemote || p_apply_1_ instanceof EntityPlayer && ((EntityPlayer)p_apply_1_).isUser())
                 {
                     Team team1 = p_apply_1_.getTeam();
                     Team.CollisionRule team$collisionrule1 = team1 == null ? Team.CollisionRule.ALWAYS : team1.getCollisionRule();
@@ -108,7 +108,7 @@ public final class EntitySelectors
         return (Predicate<T>)ret;
     }
 
-    public static Predicate<Entity> func_191324_b(final Entity p_191324_0_)
+    public static Predicate<Entity> notRiding(final Entity p_191324_0_)
     {
         return new Predicate<Entity>()
         {
@@ -157,7 +157,7 @@ public final class EntitySelectors
                 {
                     EntityLivingBase entitylivingbase = (EntityLivingBase)p_apply_1_;
 
-                    if (!entitylivingbase.getItemStackFromSlot(EntityLiving.getSlotForItemStack(this.armor)).func_190926_b())
+                    if (!entitylivingbase.getItemStackFromSlot(EntityLiving.getSlotForItemStack(this.armor)).isEmpty())
                     {
                         return false;
                     }

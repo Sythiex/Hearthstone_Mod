@@ -70,7 +70,7 @@ public abstract class Enchantment extends net.minecraftforge.registries.IForgeRe
         {
             ItemStack itemstack = entityIn.getItemStackFromSlot(entityequipmentslot);
 
-            if (!itemstack.func_190926_b())
+            if (!itemstack.isEmpty())
             {
                 list.add(itemstack);
             }
@@ -137,7 +137,7 @@ public abstract class Enchantment extends net.minecraftforge.registries.IForgeRe
         return 0.0F;
     }
 
-    public final boolean func_191560_c(Enchantment p_191560_1_)
+    public final boolean isCompatibleWith(Enchantment p_191560_1_)
     {
         return this.canApplyTogether(p_191560_1_) && p_191560_1_.canApplyTogether(this);
     }
@@ -174,7 +174,7 @@ public abstract class Enchantment extends net.minecraftforge.registries.IForgeRe
     {
         String s = I18n.translateToLocal(this.getName());
 
-        if (this.func_190936_d())
+        if (this.isCurse())
         {
             s = TextFormatting.RED + s;
         }
@@ -210,7 +210,7 @@ public abstract class Enchantment extends net.minecraftforge.registries.IForgeRe
         return false;
     }
 
-    public boolean func_190936_d()
+    public boolean isCurse()
     {
         return false;
     }

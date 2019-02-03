@@ -19,7 +19,7 @@ public class CommandMessageRaw extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "tellraw";
     }
@@ -35,7 +35,7 @@ public class CommandMessageRaw extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.tellraw.usage";
     }
@@ -57,7 +57,7 @@ public class CommandMessageRaw extends CommandBase
             try
             {
                 ITextComponent itextcomponent = ITextComponent.Serializer.jsonToComponent(s);
-                entityplayer.addChatMessage(TextComponentUtils.processComponent(sender, itextcomponent, entityplayer));
+                entityplayer.sendMessage(TextComponentUtils.processComponent(sender, itextcomponent, entityplayer));
             }
             catch (JsonParseException jsonparseexception)
             {
@@ -72,9 +72,9 @@ public class CommandMessageRaw extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : Collections.emptyList();
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Collections.emptyList();
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -99,7 +99,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem, ICapabilityProv
     @Override
     public int fill(FluidStack resource, boolean doFill)
     {
-        if (container.func_190916_E() != 1 || resource == null || resource.amount <= 0 || !canFillFluidType(resource))
+        if (container.getCount() != 1 || resource == null || resource.amount <= 0 || !canFillFluidType(resource))
         {
             return 0;
         }
@@ -139,7 +139,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem, ICapabilityProv
     @Override
     public FluidStack drain(FluidStack resource, boolean doDrain)
     {
-        if (container.func_190916_E() != 1 || resource == null || resource.amount <= 0 || !resource.isFluidEqual(getFluid()))
+        if (container.getCount() != 1 || resource == null || resource.amount <= 0 || !resource.isFluidEqual(getFluid()))
         {
             return null;
         }
@@ -149,7 +149,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem, ICapabilityProv
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain)
     {
-        if (container.func_190916_E() != 1 || maxDrain <= 0)
+        if (container.getCount() != 1 || maxDrain <= 0)
         {
             return null;
         }
@@ -228,7 +228,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem, ICapabilityProv
         protected void setContainerToEmpty()
         {
             super.setContainerToEmpty();
-            container.func_190918_g(1);
+            container.shrink(1);
         }
     }
 

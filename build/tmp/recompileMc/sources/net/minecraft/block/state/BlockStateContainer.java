@@ -187,7 +187,7 @@ public class BlockStateContainer
                 this.propertyValueTable = propertyValueTable;
             }
 
-            public Collection < IProperty<? >> getPropertyNames()
+            public Collection < IProperty<? >> getPropertyKeys()
             {
                 return Collections. < IProperty<? >> unmodifiableCollection(this.properties.keySet());
             }
@@ -358,9 +358,9 @@ public class BlockStateContainer
             }
 
             @SideOnly(Side.CLIENT)
-            public boolean func_191057_i()
+            public boolean hasCustomBreakingProgress()
             {
-                return this.block.func_190946_v(this);
+                return this.block.hasCustomBreakingProgress(this);
             }
 
             public EnumBlockRenderType getRenderType()
@@ -458,9 +458,9 @@ public class BlockStateContainer
                 return this.block.getCollisionBoundingBox(this, worldIn, pos);
             }
 
-            public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_, boolean p_185908_6_)
+            public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185908_6_)
             {
-                this.block.addCollisionBoxToList(this, worldIn, pos, p_185908_3_, p_185908_4_, p_185908_5_, p_185908_6_);
+                this.block.addCollisionBoxToList(this, worldIn, pos, entityBox, collidingBoxes, entityIn, p_185908_6_);
             }
 
             public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos)
@@ -473,14 +473,18 @@ public class BlockStateContainer
                 return this.block.collisionRayTrace(this, worldIn, pos, start, end);
             }
 
-            public boolean isFullyOpaque()
+            /**
+             * Determines if the block is solid enough on the top side to support other blocks, like redstone
+             * components.
+             */
+            public boolean isTopSolid()
             {
-                return this.block.isFullyOpaque(this);
+                return this.block.isTopSolid(this);
             }
 
-            public Vec3d func_191059_e(IBlockAccess p_191059_1_, BlockPos p_191059_2_)
+            public Vec3d getOffset(IBlockAccess access, BlockPos pos)
             {
-                return this.block.func_190949_e(this, p_191059_1_, p_191059_2_);
+                return this.block.getOffset(this, access, pos);
             }
 
             /**
@@ -499,25 +503,25 @@ public class BlockStateContainer
              * neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a
              * neighboring solid block, etc.
              */
-            public void neighborChanged(World worldIn, BlockPos pos, Block blockIn, BlockPos p_189546_4_)
+            public void neighborChanged(World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
             {
-                this.block.neighborChanged(this, worldIn, pos, blockIn, p_189546_4_);
+                this.block.neighborChanged(this, worldIn, pos, blockIn, fromPos);
             }
 
-            public boolean func_191058_s()
+            public boolean causesSuffocation()
             {
-                return this.block.isVisuallyOpaque(this);
+                return this.block.causesSuffocation(this);
             }
 
-            public BlockFaceShape func_193401_d(IBlockAccess p_193401_1_, BlockPos p_193401_2_, EnumFacing p_193401_3_)
+            public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, BlockPos pos, EnumFacing facing)
             {
-                return this.block.func_193383_a(p_193401_1_, this, p_193401_2_, p_193401_3_);
+                return this.block.getBlockFaceShape(worldIn, this, pos, facing);
             }
 
             //Forge Start
+            @Override
             public ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
             {
-                /** Lookup-table for IBlockState instances. This is a Table<Property, Value, State>. */
                 return propertyValueTable;
             }
 
@@ -533,9 +537,16 @@ public class BlockStateContainer
                 return this.block.getLightValue(this, world, pos);
             }
 
+            @Override
             public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side)
             {
                 return this.block.isSideSolid(this, world, pos, side);
+            }
+
+            @Override
+            public boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side)
+            {
+                return this.block.doesSideBlockChestOpening(this, world, pos, side);
             }
 
             @Override

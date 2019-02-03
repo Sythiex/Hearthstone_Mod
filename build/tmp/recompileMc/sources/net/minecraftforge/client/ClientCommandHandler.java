@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -102,20 +102,20 @@ public class ClientCommandHandler extends CommandHandler
             }
             else
             {
-                sender.addChatMessage(format(RED, "commands.generic.permission"));
+                sender.sendMessage(format(RED, "commands.generic.permission"));
             }
         }
         catch (WrongUsageException wue)
         {
-            sender.addChatMessage(format(RED, "commands.generic.usage", format(RED, wue.getMessage(), wue.getErrorObjects())));
+            sender.sendMessage(format(RED, "commands.generic.usage", format(RED, wue.getMessage(), wue.getErrorObjects())));
         }
         catch (CommandException ce)
         {
-            sender.addChatMessage(format(RED, ce.getMessage(), ce.getErrorObjects()));
+            sender.sendMessage(format(RED, ce.getMessage(), ce.getErrorObjects()));
         }
         catch (Throwable t)
         {
-            sender.addChatMessage(format(RED, "commands.generic.exception"));
+            sender.sendMessage(format(RED, "commands.generic.exception"));
             FMLLog.log.error("Command '{}' threw an exception:", message, t);
         }
 
@@ -141,7 +141,7 @@ public class ClientCommandHandler extends CommandHandler
             Minecraft mc = FMLClientHandler.instance().getClient();
             if (mc.currentScreen instanceof GuiChat)
             {
-                List<String> commands = getTabCompletionOptions(mc.thePlayer, leftOfCursor, mc.thePlayer.getPosition());
+                List<String> commands = getTabCompletions(mc.player, leftOfCursor, mc.player.getPosition());
                 if (!commands.isEmpty())
                 {
                     if (leftOfCursor.indexOf(' ') == -1)

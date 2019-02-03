@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,11 @@
 
 package net.minecraftforge.oredict;
 
-import java.util.Iterator;
+import java.util.List;
 import net.minecraft.block.Block;
+import net.minecraft.client.util.RecipeItemHelper;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,13 +31,14 @@ import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.JsonContext;
+import net.minecraftforge.common.util.RecipeMatcher;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -45,9 +46,10 @@ import com.google.gson.JsonParseException;
 public class ShapelessOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
 {
     @Nonnull
-    protected ItemStack output = ItemStack.field_190927_a;
-    protected NonNullList<Ingredient> input = NonNullList.func_191196_a();
+    protected ItemStack output = ItemStack.EMPTY;
+    protected NonNullList<Ingredient> input = NonNullList.create();
     protected ResourceLocation group;
+    protected boolean isSimple = true;
 
     public ShapelessOreRecipe(ResourceLocation group, Block result, Object... recipe){ this(group, new ItemStack(result), recipe); }
     public ShapelessOreRecipe(ResourceLocation group, Item  result, Object... recipe){ this(group, new ItemStack(result), recipe); }
@@ -56,6 +58,8 @@ public class ShapelessOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implem
         this.group = group;
         output = result.copy();
         this.input = input;
+        for (Ingredient i : input)
+            this.isSimple &= i.isSimple();
     }
     public ShapelessOreRecipe(ResourceLocation group, @Nonnull ItemStack result, Object... recipe)
     {
@@ -67,6 +71,7 @@ public class ShapelessOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implem
             if (ing != null)
             {
                 input.add(ing);
+                this.isSimple &= ing.isSimple();
             }
             else
             {
@@ -96,65 +101,62 @@ public class ShapelessOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implem
      * Used to check if a recipe matches current crafting inventory
      */
     @Override
-    public boolean matches(@Nonnull InventoryCrafting var1, @Nonnull World world)
+    public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world)
     {
-        NonNullList<Ingredient> required = NonNullList.func_191196_a();
-        required.addAll(input);
+        int ingredientCount = 0;
+        RecipeItemHelper recipeItemHelper = new RecipeItemHelper();
+        List<ItemStack> items = Lists.newArrayList();
 
-        for (int x = 0; x < var1.getSizeInventory(); x++)
+        for (int i = 0; i < inv.getSizeInventory(); ++i)
         {
-            ItemStack slot = var1.getStackInSlot(x);
-
-            if (!slot.func_190926_b())
+            ItemStack itemstack = inv.getStackInSlot(i);
+            if (!itemstack.isEmpty())
             {
-                boolean inRecipe = false;
-                Iterator<Ingredient> req = required.iterator();
-
-                while (req.hasNext())
-                {
-                    if (req.next().apply(slot))
-                    {
-                        inRecipe = true;
-                        req.remove();
-                        break;
-                    }
-                }
-
-                if (!inRecipe)
-                {
-                    return false;
-                }
+                ++ingredientCount;
+                if (this.isSimple)
+                    recipeItemHelper.accountStack(itemstack, 1);
+                else
+                    items.add(itemstack);
             }
         }
 
-        return required.isEmpty();
+        if (ingredientCount != this.input.size())
+            return false;
+
+        if (this.isSimple)
+            return recipeItemHelper.canCraft(this, null);
+
+        return RecipeMatcher.findMatches(items, this.input) != null;
     }
 
     @Override
     @Nonnull
-    public NonNullList<Ingredient> func_192400_c()
+    public NonNullList<Ingredient> getIngredients()
     {
         return this.input;
     }
 
     @Override
     @Nonnull
-    public String func_193358_e()
+    public String getGroup()
     {
         return this.group == null ? "" : this.group.toString();
     }
 
+    /**
+     * Used to determine if this recipe can fit in a grid of the given width/height
+     */
     @Override
-    public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
+    public boolean canFit(int width, int height)
     {
-        return p_194133_1_ * p_194133_2_ >= this.input.size();
+        return width * height >= this.input.size();
     }
 
     public static ShapelessOreRecipe factory(JsonContext context, JsonObject json)
     {
         String group = JsonUtils.getString(json, "group", "");
 
-        NonNullList<Ingredient> ings = NonNullList.func_191196_a();
+        NonNullList<Ingredient> ings = NonNullList.create();
         for (JsonElement ele : JsonUtils.getJsonArray(json, "ingredients"))
             ings.add(CraftingHelper.getIngredient(ele, context));
 

@@ -20,7 +20,7 @@ public class CommandMessage extends CommandBase
     /**
      * Get a list of aliases for this command. <b>Never return null!</b>
      */
-    public List<String> getCommandAliases()
+    public List<String> getAliases()
     {
         return Arrays.<String>asList("w", "msg");
     }
@@ -28,7 +28,7 @@ public class CommandMessage extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "tell";
     }
@@ -44,7 +44,7 @@ public class CommandMessage extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.message.usage";
     }
@@ -73,8 +73,8 @@ public class CommandMessage extends CommandBase
                 TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.message.display.outgoing", new Object[] {entityplayer.getDisplayName(), itextcomponent.createCopy()});
                 textcomponenttranslation.getStyle().setColor(TextFormatting.GRAY).setItalic(Boolean.valueOf(true));
                 textcomponenttranslation1.getStyle().setColor(TextFormatting.GRAY).setItalic(Boolean.valueOf(true));
-                entityplayer.addChatMessage(textcomponenttranslation);
-                sender.addChatMessage(textcomponenttranslation1);
+                entityplayer.sendMessage(textcomponenttranslation);
+                sender.sendMessage(textcomponenttranslation1);
             }
         }
     }
@@ -82,9 +82,9 @@ public class CommandMessage extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
-        return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
+        return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
     }
 
     /**

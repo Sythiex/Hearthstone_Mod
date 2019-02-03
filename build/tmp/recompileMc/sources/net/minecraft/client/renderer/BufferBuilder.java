@@ -288,8 +288,6 @@ public class BufferBuilder
     /**
      * Gets the position into the vertex data buffer at which the given vertex's color data can be found, in {@code
      * int}s.
-     *  
-     * @param vertexIndex The index of the vertex in question, where 0 is the last one added, 1 is the second last, etc.
      */
     public int getColorIndex(int vertexIndex)
     {
@@ -298,8 +296,6 @@ public class BufferBuilder
 
     /**
      * Modify the color data of the given vertex with the given multipliers.
-     *  
-     * @param vertexIndex The index of the vertex to modify, where 0 is the last one added, 1 is the second last, etc.
      */
     public void putColorMultiplier(float red, float green, float blue, int vertexIndex)
     {
@@ -331,29 +327,27 @@ public class BufferBuilder
         this.rawIntBuffer.put(i, j);
     }
 
-    private void func_192836_a(int p_192836_1_, int p_192836_2_)
+    private void putColor(int argb, int vertexIndex)
     {
-        int i = this.getColorIndex(p_192836_2_);
-        int j = p_192836_1_ >> 16 & 255;
-        int k = p_192836_1_ >> 8 & 255;
-        int l = p_192836_1_ & 255;
+        int i = this.getColorIndex(vertexIndex);
+        int j = argb >> 16 & 255;
+        int k = argb >> 8 & 255;
+        int l = argb & 255;
         this.putColorRGBA(i, j, k, l);
     }
 
     public void putColorRGB_F(float red, float green, float blue, int vertexIndex)
     {
         int i = this.getColorIndex(vertexIndex);
-        int j = MathHelper.clamp_int((int)(red * 255.0F), 0, 255);
-        int k = MathHelper.clamp_int((int)(green * 255.0F), 0, 255);
-        int l = MathHelper.clamp_int((int)(blue * 255.0F), 0, 255);
+        int j = MathHelper.clamp((int)(red * 255.0F), 0, 255);
+        int k = MathHelper.clamp((int)(green * 255.0F), 0, 255);
+        int l = MathHelper.clamp((int)(blue * 255.0F), 0, 255);
         this.putColorRGBA(i, j, k, l);
     }
 
     /**
      * Write the given color data of 4 bytes at the given index into the vertex data buffer, accounting for system
      * endianness.
-     *  
-     * @param index The index in the vertex data buffer to which the color data will be written, in {@code int}s
      */
     public void putColorRGBA(int index, int red, int green, int blue)
     {
@@ -438,7 +432,7 @@ public class BufferBuilder
 
     public void addVertexData(int[] vertexData)
     {
-        this.growBuffer(vertexData.length * 4);
+        this.growBuffer(vertexData.length * 4 + this.vertexFormat.getNextOffset());//Forge, fix MC-122110
         this.rawIntBuffer.position(this.getBufferSize());
         this.rawIntBuffer.put(vertexData);
         this.vertexCount += vertexData.length / this.vertexFormat.getIntegerSize();
@@ -589,7 +583,7 @@ public class BufferBuilder
     {
         for (int i = 0; i < 4; ++i)
         {
-            this.func_192836_a(argb, i + 1);
+            this.putColor(argb, i + 1);
         }
     }
 
@@ -642,5 +636,13 @@ public class BufferBuilder
     public boolean isColorDisabled()
     {
         return this.noColor;
+    }
+
+    public void putBulkData(ByteBuffer buffer)
+    {
+        growBuffer(buffer.limit() + this.vertexFormat.getNextOffset());
+        this.byteBuffer.position(this.vertexCount * this.vertexFormat.getNextOffset());
+        this.byteBuffer.put(buffer);
+        this.vertexCount += buffer.limit() / this.vertexFormat.getNextOffset();
     }
 }

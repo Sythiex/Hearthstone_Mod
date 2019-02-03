@@ -50,8 +50,8 @@ public class ChunkRenderDispatcher
     public ChunkRenderDispatcher(int countRenderBuilders)
     {
         int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3D) / 10485760);
-        int j = Math.max(1, MathHelper.clamp_int(Runtime.getRuntime().availableProcessors(), 1, i / 5));
-        if(countRenderBuilders < 0) countRenderBuilders = MathHelper.clamp_int(j * 10, 1, i);
+        int j = Math.max(1, MathHelper.clamp(Runtime.getRuntime().availableProcessors(), 1, i / 5));
+        if(countRenderBuilders < 0) countRenderBuilders = MathHelper.clamp(j * 10, 1, i);
         this.countRenderBuilders = countRenderBuilders;
 
         if (j > 1)
@@ -81,7 +81,7 @@ public class ChunkRenderDispatcher
         return this.listWorkerThreads.isEmpty() ? String.format("pC: %03d, single-threaded", this.queueChunkUpdates.size()) : String.format("pC: %03d, pU: %1d, aB: %1d", this.queueChunkUpdates.size(), this.queueChunkUploads.size(), this.queueFreeRenderBuilders.size());
     }
 
-    public boolean runChunkUploads(long p_178516_1_)
+    public boolean runChunkUploads(long finishTimeNano)
     {
         boolean flag = false;
 
@@ -117,7 +117,7 @@ public class ChunkRenderDispatcher
                 }
             }
 
-            if (p_178516_1_ == 0L || !flag1 || p_178516_1_ < System.nanoTime())
+            if (finishTimeNano == 0L || !flag1 || finishTimeNano < System.nanoTime())
             {
                 break;
             }
@@ -289,12 +289,12 @@ public class ChunkRenderDispatcher
         }
     }
 
-    private void uploadDisplayList(BufferBuilder p_178510_1_, int p_178510_2_, RenderChunk chunkRenderer)
+    private void uploadDisplayList(BufferBuilder bufferBuilderIn, int list, RenderChunk chunkRenderer)
     {
-        GlStateManager.glNewList(p_178510_2_, 4864);
+        GlStateManager.glNewList(list, 4864);
         GlStateManager.pushMatrix();
         chunkRenderer.multModelviewMatrix();
-        this.worldVertexUploader.draw(p_178510_1_);
+        this.worldVertexUploader.draw(bufferBuilderIn);
         GlStateManager.popMatrix();
         GlStateManager.glEndList();
     }
@@ -359,10 +359,10 @@ public class ChunkRenderDispatcher
         private final ListenableFutureTask<Object> uploadTask;
         private final double distanceSq;
 
-        public PendingUpload(ListenableFutureTask<Object> p_i46994_2_, double p_i46994_3_)
+        public PendingUpload(ListenableFutureTask<Object> uploadTaskIn, double distanceSqIn)
         {
-            this.uploadTask = p_i46994_2_;
-            this.distanceSq = p_i46994_3_;
+            this.uploadTask = uploadTaskIn;
+            this.distanceSq = distanceSqIn;
         }
 
         public int compareTo(ChunkRenderDispatcher.PendingUpload p_compareTo_1_)

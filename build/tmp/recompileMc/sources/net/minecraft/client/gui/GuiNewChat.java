@@ -52,7 +52,7 @@ public class GuiNewChat extends Gui
                 }
 
                 float f1 = this.getChatScale();
-                int k = MathHelper.ceiling_float_int((float)this.getChatWidth() / f1);
+                int k = MathHelper.ceil((float)this.getChatWidth() / f1);
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(2.0F, 8.0F, 0.0F);
                 GlStateManager.scale(f1, f1, 1.0F);
@@ -71,7 +71,7 @@ public class GuiNewChat extends Gui
                             double d0 = (double)j1 / 200.0D;
                             d0 = 1.0D - d0;
                             d0 = d0 * 10.0D;
-                            d0 = MathHelper.clamp_double(d0, 0.0D, 1.0D);
+                            d0 = MathHelper.clamp(d0, 0.0D, 1.0D);
                             d0 = d0 * d0;
                             int l1 = (int)(255.0D * d0);
 
@@ -90,7 +90,7 @@ public class GuiNewChat extends Gui
                                 drawRect(-2, j2 - 9, 0 + k + 4, j2, l1 / 2 << 24);
                                 String s = chatline.getChatComponent().getFormattedText();
                                 GlStateManager.enableBlend();
-                                this.mc.fontRendererObj.drawStringWithShadow(s, 0.0F, (float)(j2 - 8), 16777215 + (l1 << 24));
+                                this.mc.fontRenderer.drawStringWithShadow(s, 0.0F, (float)(j2 - 8), 16777215 + (l1 << 24));
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
                             }
@@ -100,7 +100,7 @@ public class GuiNewChat extends Gui
 
                 if (flag)
                 {
-                    int k2 = this.mc.fontRendererObj.FONT_HEIGHT;
+                    int k2 = this.mc.fontRenderer.FONT_HEIGHT;
                     GlStateManager.translate(-3.0F, 0.0F, 0.0F);
                     int l2 = j * k2 + j;
                     int i3 = l * k2 + l;
@@ -156,8 +156,8 @@ public class GuiNewChat extends Gui
             this.deleteChatLine(chatLineId);
         }
 
-        int i = MathHelper.floor_float((float)this.getChatWidth() / this.getChatScale());
-        List<ITextComponent> list = GuiUtilRenderComponents.splitText(chatComponent, i, this.mc.fontRendererObj, false, false);
+        int i = MathHelper.floor((float)this.getChatWidth() / this.getChatScale());
+        List<ITextComponent> list = GuiUtilRenderComponents.splitText(chatComponent, i, this.mc.fontRenderer, false, false);
         boolean flag = this.getChatOpen();
 
         for (ITextComponent itextcomponent : list)
@@ -264,16 +264,16 @@ public class GuiNewChat extends Gui
             float f = this.getChatScale();
             int j = mouseX / i - 2;
             int k = mouseY / i - 40;
-            j = MathHelper.floor_float((float)j / f);
-            k = MathHelper.floor_float((float)k / f);
+            j = MathHelper.floor((float)j / f);
+            k = MathHelper.floor((float)k / f);
 
             if (j >= 0 && k >= 0)
             {
                 int l = Math.min(this.getLineCount(), this.drawnChatLines.size());
 
-                if (j <= MathHelper.floor_float((float)this.getChatWidth() / this.getChatScale()) && k < this.mc.fontRendererObj.FONT_HEIGHT * l + l)
+                if (j <= MathHelper.floor((float)this.getChatWidth() / this.getChatScale()) && k < this.mc.fontRenderer.FONT_HEIGHT * l + l)
                 {
-                    int i1 = k / this.mc.fontRendererObj.FONT_HEIGHT + this.scrollPos;
+                    int i1 = k / this.mc.fontRenderer.FONT_HEIGHT + this.scrollPos;
 
                     if (i1 >= 0 && i1 < this.drawnChatLines.size())
                     {
@@ -284,7 +284,7 @@ public class GuiNewChat extends Gui
                         {
                             if (itextcomponent instanceof TextComponentString)
                             {
-                                j1 += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString)itextcomponent).getText(), false));
+                                j1 += this.mc.fontRenderer.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString)itextcomponent).getText(), false));
 
                                 if (j1 > j)
                                 {
@@ -369,14 +369,14 @@ public class GuiNewChat extends Gui
     {
         int i = 320;
         int j = 40;
-        return MathHelper.floor_float(scale * 280.0F + 40.0F);
+        return MathHelper.floor(scale * 280.0F + 40.0F);
     }
 
     public static int calculateChatboxHeight(float scale)
     {
         int i = 180;
         int j = 20;
-        return MathHelper.floor_float(scale * 160.0F + 20.0F);
+        return MathHelper.floor(scale * 160.0F + 20.0F);
     }
 
     public int getLineCount()

@@ -41,7 +41,7 @@ import net.minecraft.world.storage.loot.LootTableList;
 public class EntityPig extends EntityAnimal
 {
     private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityPig.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Integer> field_191520_bx = EntityDataManager.<Integer>createKey(EntityPig.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> BOOST_TIME = EntityDataManager.<Integer>createKey(EntityPig.class, DataSerializers.VARINT);
     private static final Set<Item> TEMPTATION_ITEMS = Sets.newHashSet(Items.CARROT, Items.POTATO, Items.BEETROOT);
     private boolean boosting;
     private int boostTime;
@@ -104,11 +104,11 @@ public class EntityPig extends EntityAnimal
 
     public void notifyDataManagerChange(DataParameter<?> key)
     {
-        if (field_191520_bx.equals(key) && this.worldObj.isRemote)
+        if (BOOST_TIME.equals(key) && this.world.isRemote)
         {
             this.boosting = true;
             this.boostTime = 0;
-            this.totalBoostTime = ((Integer)this.dataManager.get(field_191520_bx)).intValue();
+            this.totalBoostTime = ((Integer)this.dataManager.get(BOOST_TIME)).intValue();
         }
 
         super.notifyDataManagerChange(key);
@@ -118,7 +118,7 @@ public class EntityPig extends EntityAnimal
     {
         super.entityInit();
         this.dataManager.register(SADDLED, Boolean.valueOf(false));
-        this.dataManager.register(field_191520_bx, Integer.valueOf(0));
+        this.dataManager.register(BOOST_TIME, Integer.valueOf(0));
     }
 
     public static void registerFixesPig(DataFixer fixer)
@@ -149,7 +149,7 @@ public class EntityPig extends EntityAnimal
         return SoundEvents.ENTITY_PIG_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_PIG_HURT;
     }
@@ -177,7 +177,7 @@ public class EntityPig extends EntityAnimal
             }
             else if (this.getSaddled() && !this.isBeingRidden())
             {
-                if (!this.worldObj.isRemote)
+                if (!this.world.isRemote)
                 {
                     player.startRiding(this);
                 }
@@ -207,7 +207,7 @@ public class EntityPig extends EntityAnimal
     {
         super.onDeath(cause);
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
             if (this.getSaddled())
             {
@@ -250,9 +250,9 @@ public class EntityPig extends EntityAnimal
      */
     public void onStruckByLightning(EntityLightningBolt lightningBolt)
     {
-        if (!this.worldObj.isRemote && !this.isDead)
+        if (!this.world.isRemote && !this.isDead)
         {
-            EntityPigZombie entitypigzombie = new EntityPigZombie(this.worldObj);
+            EntityPigZombie entitypigzombie = new EntityPigZombie(this.world);
             entitypigzombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
             entitypigzombie.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
             entitypigzombie.setNoAI(this.isAIDisabled());
@@ -263,12 +263,12 @@ public class EntityPig extends EntityAnimal
                 entitypigzombie.setAlwaysRenderNameTag(this.getAlwaysRenderNameTag());
             }
 
-            this.worldObj.spawnEntityInWorld(entitypigzombie);
+            this.world.spawnEntity(entitypigzombie);
             this.setDead();
         }
     }
 
-    public void func_191986_a(float p_191986_1_, float p_191986_2_, float p_191986_3_)
+    public void travel(float strafe, float vertical, float forward)
     {
         Entity entity = this.getPassengers().isEmpty() ? null : (Entity)this.getPassengers().get(0);
 
@@ -298,7 +298,7 @@ public class EntityPig extends EntityAnimal
                 }
 
                 this.setAIMoveSpeed(f);
-                super.func_191986_a(0.0F, 0.0F, 1.0F);
+                super.travel(0.0F, 0.0F, 1.0F);
             }
             else
             {
@@ -310,7 +310,7 @@ public class EntityPig extends EntityAnimal
             this.prevLimbSwingAmount = this.limbSwingAmount;
             double d1 = this.posX - this.prevPosX;
             double d0 = this.posZ - this.prevPosZ;
-            float f1 = MathHelper.sqrt_double(d1 * d1 + d0 * d0) * 4.0F;
+            float f1 = MathHelper.sqrt(d1 * d1 + d0 * d0) * 4.0F;
 
             if (f1 > 1.0F)
             {
@@ -324,7 +324,7 @@ public class EntityPig extends EntityAnimal
         {
             this.stepHeight = 0.5F;
             this.jumpMovementFactor = 0.02F;
-            super.func_191986_a(p_191986_1_, p_191986_2_, p_191986_3_);
+            super.travel(strafe, vertical, forward);
         }
     }
 
@@ -339,14 +339,14 @@ public class EntityPig extends EntityAnimal
             this.boosting = true;
             this.boostTime = 0;
             this.totalBoostTime = this.getRNG().nextInt(841) + 140;
-            this.getDataManager().set(field_191520_bx, Integer.valueOf(this.totalBoostTime));
+            this.getDataManager().set(BOOST_TIME, Integer.valueOf(this.totalBoostTime));
             return true;
         }
     }
 
     public EntityPig createChild(EntityAgeable ageable)
     {
-        return new EntityPig(this.worldObj);
+        return new EntityPig(this.world);
     }
 
     /**

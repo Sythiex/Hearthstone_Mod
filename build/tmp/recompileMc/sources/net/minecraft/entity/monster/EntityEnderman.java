@@ -136,14 +136,14 @@ public class EntityEnderman extends EntityMob
 
             if (!this.isSilent())
             {
-                this.worldObj.playSound(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ, SoundEvents.ENTITY_ENDERMEN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
+                this.world.playSound(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ, SoundEvents.ENTITY_ENDERMEN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
             }
         }
     }
 
     public void notifyDataManagerChange(DataParameter<?> key)
     {
-        if (SCREAMING.equals(key) && this.isScreaming() && this.worldObj.isRemote)
+        if (SCREAMING.equals(key) && this.isScreaming() && this.world.isRemote)
         {
             this.playEndermanSound();
         }
@@ -229,11 +229,11 @@ public class EntityEnderman extends EntityMob
      */
     public void onLivingUpdate()
     {
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             for (int i = 0; i < 2; ++i)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height - 0.25D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+                this.world.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height - 0.25D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
             }
         }
 
@@ -245,14 +245,14 @@ public class EntityEnderman extends EntityMob
     {
         if (this.isWet())
         {
-            this.attackEntityFrom(DamageSource.drown, 1.0F);
+            this.attackEntityFrom(DamageSource.DROWN, 1.0F);
         }
 
-        if (this.worldObj.isDaytime() && this.ticksExisted >= this.targetChangeTime + 600)
+        if (this.world.isDaytime() && this.ticksExisted >= this.targetChangeTime + 600)
         {
             float f = this.getBrightness();
 
-            if (f > 0.5F && this.worldObj.canSeeSky(new BlockPos(this)) && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F)
+            if (f > 0.5F && this.world.canSeeSky(new BlockPos(this)) && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F)
             {
                 this.setAttackTarget((EntityLivingBase)null);
                 this.teleportRandomly();
@@ -281,9 +281,9 @@ public class EntityEnderman extends EntityMob
         Vec3d vec3d = new Vec3d(this.posX - p_70816_1_.posX, this.getEntityBoundingBox().minY + (double)(this.height / 2.0F) - p_70816_1_.posY + (double)p_70816_1_.getEyeHeight(), this.posZ - p_70816_1_.posZ);
         vec3d = vec3d.normalize();
         double d0 = 16.0D;
-        double d1 = this.posX + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.xCoord * 16.0D;
-        double d2 = this.posY + (double)(this.rand.nextInt(16) - 8) - vec3d.yCoord * 16.0D;
-        double d3 = this.posZ + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.zCoord * 16.0D;
+        double d1 = this.posX + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.x * 16.0D;
+        double d2 = this.posY + (double)(this.rand.nextInt(16) - 8) - vec3d.y * 16.0D;
+        double d3 = this.posZ + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.z * 16.0D;
         return this.teleportTo(d1, d2, d3);
     }
 
@@ -298,7 +298,7 @@ public class EntityEnderman extends EntityMob
 
         if (flag)
         {
-            this.worldObj.playSound((EntityPlayer)null, this.prevPosX, this.prevPosY, this.prevPosZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
+            this.world.playSound((EntityPlayer)null, this.prevPosX, this.prevPosY, this.prevPosZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
             this.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
         }
 
@@ -310,7 +310,7 @@ public class EntityEnderman extends EntityMob
         return this.isScreaming() ? SoundEvents.ENTITY_ENDERMEN_SCREAM : SoundEvents.ENTITY_ENDERMEN_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_ENDERMEN_HURT;
     }
@@ -449,7 +449,7 @@ public class EntityEnderman extends EntityMob
             public boolean shouldExecute()
             {
                 double d0 = this.getTargetDistance();
-                this.player = this.enderman.worldObj.getNearestAttackablePlayer(this.enderman.posX, this.enderman.posY, this.enderman.posZ, d0, d0, (Function)null, new Predicate<EntityPlayer>()
+                this.player = this.enderman.world.getNearestAttackablePlayer(this.enderman.posX, this.enderman.posY, this.enderman.posZ, d0, d0, (Function)null, new Predicate<EntityPlayer>()
                 {
                     public boolean apply(@Nullable EntityPlayer p_apply_1_)
                     {
@@ -469,7 +469,7 @@ public class EntityEnderman extends EntityMob
             }
 
             /**
-             * Resets the task
+             * Reset the task's internal state. Called when this task is interrupted by another one
              */
             public void resetTask()
             {
@@ -480,7 +480,7 @@ public class EntityEnderman extends EntityMob
             /**
              * Returns whether an in-progress EntityAIBase should continue executing
              */
-            public boolean continueExecuting()
+            public boolean shouldContinueExecuting()
             {
                 if (this.player != null)
                 {
@@ -496,12 +496,12 @@ public class EntityEnderman extends EntityMob
                 }
                 else
                 {
-                    return this.targetEntity != null && ((EntityPlayer)this.targetEntity).isEntityAlive() ? true : super.continueExecuting();
+                    return this.targetEntity != null && ((EntityPlayer)this.targetEntity).isEntityAlive() ? true : super.shouldContinueExecuting();
                 }
             }
 
             /**
-             * Updates the task
+             * Keep ticking a continuous task that has already been started
              */
             public void updateTask()
             {
@@ -520,14 +520,14 @@ public class EntityEnderman extends EntityMob
                     {
                         if (this.enderman.shouldAttackPlayer((EntityPlayer)this.targetEntity))
                         {
-                            if (((EntityPlayer)this.targetEntity).getDistanceSqToEntity(this.enderman) < 16.0D)
+                            if (((EntityPlayer)this.targetEntity).getDistanceSq(this.enderman) < 16.0D)
                             {
                                 this.enderman.teleportRandomly();
                             }
 
                             this.teleportTime = 0;
                         }
-                        else if (((EntityPlayer)this.targetEntity).getDistanceSqToEntity(this.enderman) > 256.0D && this.teleportTime++ >= 30 && this.enderman.teleportToEntity(this.targetEntity))
+                        else if (((EntityPlayer)this.targetEntity).getDistanceSq(this.enderman) > 256.0D && this.teleportTime++ >= 30 && this.enderman.teleportToEntity(this.targetEntity))
                         {
                             this.teleportTime = 0;
                         }
@@ -556,7 +556,7 @@ public class EntityEnderman extends EntityMob
                 {
                     return false;
                 }
-                else if (!this.enderman.worldObj.getGameRules().getBoolean("mobGriefing"))
+                else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.enderman.world, this.enderman))
                 {
                     return false;
                 }
@@ -567,15 +567,15 @@ public class EntityEnderman extends EntityMob
             }
 
             /**
-             * Updates the task
+             * Keep ticking a continuous task that has already been started
              */
             public void updateTask()
             {
                 Random random = this.enderman.getRNG();
-                World world = this.enderman.worldObj;
-                int i = MathHelper.floor_double(this.enderman.posX - 1.0D + random.nextDouble() * 2.0D);
-                int j = MathHelper.floor_double(this.enderman.posY + random.nextDouble() * 2.0D);
-                int k = MathHelper.floor_double(this.enderman.posZ - 1.0D + random.nextDouble() * 2.0D);
+                World world = this.enderman.world;
+                int i = MathHelper.floor(this.enderman.posX - 1.0D + random.nextDouble() * 2.0D);
+                int j = MathHelper.floor(this.enderman.posY + random.nextDouble() * 2.0D);
+                int k = MathHelper.floor(this.enderman.posZ - 1.0D + random.nextDouble() * 2.0D);
                 BlockPos blockpos = new BlockPos(i, j, k);
                 IBlockState iblockstate = world.getBlockState(blockpos);
                 IBlockState iblockstate1 = world.getBlockState(blockpos.down());
@@ -627,7 +627,7 @@ public class EntityEnderman extends EntityMob
                 {
                     return false;
                 }
-                else if (!this.enderman.worldObj.getGameRules().getBoolean("mobGriefing"))
+                else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.enderman.world, this.enderman))
                 {
                     return false;
                 }
@@ -638,19 +638,19 @@ public class EntityEnderman extends EntityMob
             }
 
             /**
-             * Updates the task
+             * Keep ticking a continuous task that has already been started
              */
             public void updateTask()
             {
                 Random random = this.enderman.getRNG();
-                World world = this.enderman.worldObj;
-                int i = MathHelper.floor_double(this.enderman.posX - 2.0D + random.nextDouble() * 4.0D);
-                int j = MathHelper.floor_double(this.enderman.posY + random.nextDouble() * 3.0D);
-                int k = MathHelper.floor_double(this.enderman.posZ - 2.0D + random.nextDouble() * 4.0D);
+                World world = this.enderman.world;
+                int i = MathHelper.floor(this.enderman.posX - 2.0D + random.nextDouble() * 4.0D);
+                int j = MathHelper.floor(this.enderman.posY + random.nextDouble() * 3.0D);
+                int k = MathHelper.floor(this.enderman.posZ - 2.0D + random.nextDouble() * 4.0D);
                 BlockPos blockpos = new BlockPos(i, j, k);
                 IBlockState iblockstate = world.getBlockState(blockpos);
                 Block block = iblockstate.getBlock();
-                RayTraceResult raytraceresult = world.rayTraceBlocks(new Vec3d((double)((float)MathHelper.floor_double(this.enderman.posX) + 0.5F), (double)((float)j + 0.5F), (double)((float)MathHelper.floor_double(this.enderman.posZ) + 0.5F)), new Vec3d((double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F)), false, true, false);
+                RayTraceResult raytraceresult = world.rayTraceBlocks(new Vec3d((double)((float)MathHelper.floor(this.enderman.posX) + 0.5F), (double)((float)j + 0.5F), (double)((float)MathHelper.floor(this.enderman.posZ) + 0.5F)), new Vec3d((double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F)), false, true, false);
                 boolean flag = raytraceresult != null && raytraceresult.getBlockPos().equals(blockpos);
 
                 if (EntityEnderman.CARRIABLE_BLOCKS.contains(block) && flag)

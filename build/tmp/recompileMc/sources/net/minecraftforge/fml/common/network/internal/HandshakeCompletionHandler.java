@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,7 @@ public class HandshakeCompletionHandler extends SimpleChannelInboundHandler<FMLM
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, CompleteHandshake msg) throws Exception
     {
-        NetworkDispatcher dispatcher = ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).getAndRemove();
+        NetworkDispatcher dispatcher = ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).getAndSet(null);
         dispatcher.completeHandshake(msg.target);
     }
 

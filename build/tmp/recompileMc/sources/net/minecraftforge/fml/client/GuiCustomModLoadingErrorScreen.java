@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ public class GuiCustomModLoadingErrorScreen extends GuiErrorBase
     public void initGui()
     {
         super.initGui();
-        this.customException.initGui(this, fontRendererObj);
+        this.customException.initGui(this, fontRenderer);
     }
     /**
      * Draws the screen and all the components in it.
@@ -44,6 +44,6 @@ public class GuiCustomModLoadingErrorScreen extends GuiErrorBase
     {
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        this.customException.drawScreen(this, fontRendererObj, mouseX, mouseY, partialTicks);
+        this.customException.drawScreen(this, fontRenderer, mouseX, mouseY, partialTicks);
     }
 }

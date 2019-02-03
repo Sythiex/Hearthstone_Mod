@@ -53,7 +53,16 @@ public class BlockAnvil extends BlockFalling
         return false;
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }
@@ -70,13 +79,13 @@ public class BlockAnvil extends BlockFalling
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         EnumFacing enumfacing = placer.getHorizontalFacing().rotateY();
 
         try
         {
-            return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(FACING, enumfacing).withProperty(DAMAGE, Integer.valueOf(meta >> 2));
+            return super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(FACING, enumfacing).withProperty(DAMAGE, Integer.valueOf(meta >> 2));
         }
         catch (IllegalArgumentException var11)
         {
@@ -86,15 +95,18 @@ public class BlockAnvil extends BlockFalling
 
                 if (placer instanceof EntityPlayer)
                 {
-                    placer.addChatMessage(new TextComponentTranslation("Invalid damage property. Please pick in [0, 1, 2]", new Object[0]));
+                    placer.sendMessage(new TextComponentTranslation("Invalid damage property. Please pick in [0, 1, 2]", new Object[0]));
                 }
             }
 
-            return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, 0, placer).withProperty(FACING, enumfacing).withProperty(DAMAGE, Integer.valueOf(0));
+            return super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, 0, placer).withProperty(FACING, enumfacing).withProperty(DAMAGE, Integer.valueOf(0));
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
+    /**
+     * Called when the block is right clicked by a player.
+     */
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (!worldIn.isRemote)
         {
@@ -122,11 +134,11 @@ public class BlockAnvil extends BlockFalling
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
     {
-        tab.add(new ItemStack(this));
-        tab.add(new ItemStack(this, 1, 1));
-        tab.add(new ItemStack(this, 1, 2));
+        items.add(new ItemStack(this));
+        items.add(new ItemStack(this, 1, 1));
+        items.add(new ItemStack(this, 1, 2));
     }
 
     protected void onStartFalling(EntityFallingBlock fallingEntity)
@@ -139,9 +151,9 @@ public class BlockAnvil extends BlockFalling
         worldIn.playEvent(1031, pos, 0);
     }
 
-    public void func_190974_b(World p_190974_1_, BlockPos p_190974_2_)
+    public void onBroken(World worldIn, BlockPos pos)
     {
-        p_190974_1_.playEvent(1029, p_190974_2_, 0);
+        worldIn.playEvent(1029, pos, 0);
     }
 
     @SideOnly(Side.CLIENT)

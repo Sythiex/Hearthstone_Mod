@@ -9,7 +9,7 @@ import net.minecraft.server.MinecraftServer;
 public class BiomeCache
 {
     /** Reference to the WorldChunkManager */
-    private final BiomeProvider chunkManager;
+    private final BiomeProvider provider;
     /** The last time this BiomeCache was cleaned, in milliseconds. */
     private long lastCleanupTime;
     /** The map of keys to BiomeCacheBlocks. Keys are based on the chunk x, z coordinates as (x | z << 32). */
@@ -17,15 +17,15 @@ public class BiomeCache
     /** The list of cached BiomeCacheBlocks */
     private final List<BiomeCache.Block> cache = Lists.<BiomeCache.Block>newArrayList();
 
-    public BiomeCache(BiomeProvider chunkManagerIn)
+    public BiomeCache(BiomeProvider provider)
     {
-        this.chunkManager = chunkManagerIn;
+        this.provider = provider;
     }
 
     /**
      * Returns a biome cache block at location specified.
      */
-    public BiomeCache.Block getBiomeCacheBlock(int x, int z)
+    public BiomeCache.Block getEntry(int x, int z)
     {
         x = x >> 4;
         z = z >> 4;
@@ -45,7 +45,7 @@ public class BiomeCache
 
     public Biome getBiome(int x, int z, Biome defaultValue)
     {
-        Biome biome = this.getBiomeCacheBlock(x, z).getBiome(x, z);
+        Biome biome = this.getEntry(x, z).getBiome(x, z);
         return biome == null ? defaultValue : biome;
     }
 
@@ -69,7 +69,7 @@ public class BiomeCache
                 if (l > 30000L || l < 0L)
                 {
                     this.cache.remove(k--);
-                    long i1 = (long)biomecache$block.xPosition & 4294967295L | ((long)biomecache$block.zPosition & 4294967295L) << 32;
+                    long i1 = (long)biomecache$block.x & 4294967295L | ((long)biomecache$block.z & 4294967295L) << 32;
                     this.cacheMap.remove(i1);
                 }
             }
@@ -81,25 +81,25 @@ public class BiomeCache
      */
     public Biome[] getCachedBiomes(int x, int z)
     {
-        return this.getBiomeCacheBlock(x, z).biomes;
+        return this.getEntry(x, z).biomes;
     }
 
     public class Block
     {
-        /** The array of biome types stored in this BiomeCacheBlock. */
+        /** Flattened 16 * 16 array of the biomes in this chunk */
         public Biome[] biomes = new Biome[256];
-        /** The x coordinate of the BiomeCacheBlock. */
-        public int xPosition;
-        /** The z coordinate of the BiomeCacheBlock. */
-        public int zPosition;
+        /** World x coordinate of this entry, rounded down to nearest chunk */
+        public int x;
+        /** World z coordinate of this entry, rounded down to nearest chunk */
+        public int z;
         /** The last time this BiomeCacheBlock was accessed, in milliseconds. */
         public long lastAccessTime;
 
         public Block(int x, int z)
         {
-            this.xPosition = x;
-            this.zPosition = z;
-            BiomeCache.this.chunkManager.getBiomes(this.biomes, x << 4, z << 4, 16, 16, false);
+            this.x = x;
+            this.z = z;
+            BiomeCache.this.provider.getBiomes(this.biomes, x << 4, z << 4, 16, 16, false);
         }
 
         /**

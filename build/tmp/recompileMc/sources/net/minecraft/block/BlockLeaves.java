@@ -86,7 +86,8 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
                     this.surroundings = new int[32768];
                 }
 
-                if (worldIn.isAreaLoaded(new BlockPos(k - 5, l - 5, i1 - 5), new BlockPos(k + 5, l + 5, i1 + 5)))
+                if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent decaying leaves from updating neighbors and loading unloaded chunks
+                if (worldIn.isAreaLoaded(pos, 6)) // Forge: extend range from 5 to 6 to account for neighbor checks in world.markAndNotifyBlock -> world.updateObservingBlocksAt
                 {
                     BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
@@ -187,7 +188,7 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-        if (worldIn.isRainingAt(pos.up()) && !worldIn.getBlockState(pos.down()).isFullyOpaque() && rand.nextInt(15) == 1)
+        if (worldIn.isRainingAt(pos.up()) && !worldIn.getBlockState(pos.down()).isTopSolid() && rand.nextInt(15) == 1)
         {
             double d0 = (double)((float)pos.getX() + rand.nextFloat());
             double d1 = (double)pos.getY() - 0.05D;
@@ -252,7 +253,7 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
         return this.leavesFancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
     }
 
-    public boolean isVisuallyOpaque(IBlockState p_176214_1_)
+    public boolean causesSuffocation(IBlockState state)
     {
         return false;
     }
@@ -286,7 +287,7 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
         if (rand.nextInt(chance) == 0)
         {
             ItemStack drop = new ItemStack(getItemDropped(state, rand, fortune), 1, damageDropped(state));
-            if (!drop.func_190926_b())
+            if (!drop.isEmpty())
                 drops.add(drop);
         }
 

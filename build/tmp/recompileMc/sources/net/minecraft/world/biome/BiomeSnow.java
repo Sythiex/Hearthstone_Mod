@@ -59,7 +59,7 @@ public class BiomeSnow extends Biome
 
     public void decorate(World worldIn, Random rand, BlockPos pos)
     {
-        if (this.superIcy && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.ICE))
+        if (this.superIcy && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.ICE))
         {
             for (int i = 0; i < 3; ++i)
             {
@@ -79,7 +79,7 @@ public class BiomeSnow extends Biome
         super.decorate(worldIn, rand, pos);
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
         return new WorldGenTaiga2(false);
     }

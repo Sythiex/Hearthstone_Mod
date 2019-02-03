@@ -150,9 +150,13 @@ public class BlockRedstoneWire extends Block
         return false;
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.down()).isFullyOpaque() || worldIn.getBlockState(pos.down()).getBlock() == Blocks.GLOWSTONE;
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID || worldIn.getBlockState(pos.down()).getBlock() == Blocks.GLOWSTONE;
     }
 
     private IBlockState updateSurroundingRedstone(World worldIn, BlockPos pos, IBlockState state)
@@ -354,7 +358,7 @@ public class BlockRedstoneWire extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!worldIn.isRemote)
         {
@@ -472,7 +476,7 @@ public class BlockRedstoneWire extends Block
             EnumFacing enumfacing = (EnumFacing)blockState.getValue(BlockRedstoneRepeater.FACING);
             return enumfacing == side || enumfacing.getOpposite() == side;
         }
-        else if (Blocks.field_190976_dk == blockState.getBlock())
+        else if (Blocks.OBSERVER == blockState.getBlock())
         {
             return side == blockState.getValue(BlockObserver.FACING);
         }
@@ -514,9 +518,9 @@ public class BlockRedstoneWire extends Block
             f3 = 0.0F;
         }
 
-        int i = MathHelper.clamp_int((int)(f1 * 255.0F), 0, 255);
-        int j = MathHelper.clamp_int((int)(f2 * 255.0F), 0, 255);
-        int k = MathHelper.clamp_int((int)(f3 * 255.0F), 0, 255);
+        int i = MathHelper.clamp((int)(f1 * 255.0F), 0, 255);
+        int j = MathHelper.clamp((int)(f2 * 255.0F), 0, 255);
+        int k = MathHelper.clamp((int)(f3 * 255.0F), 0, 255);
         return -16777216 | i << 16 | j << 8 | k;
     }
 
@@ -606,7 +610,16 @@ public class BlockRedstoneWire extends Block
         return new BlockStateContainer(this, new IProperty[] {NORTH, EAST, SOUTH, WEST, POWER});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

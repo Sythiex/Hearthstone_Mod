@@ -30,20 +30,20 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
     public final NonNullList<Ingredient> recipeItems;
     /** Is the ItemStack that you get when craft the recipe. */
     private final ItemStack recipeOutput;
-    private final String field_194137_e;
+    private final String group;
 
-    public ShapedRecipes(String p_i47501_1_, int p_i47501_2_, int p_i47501_3_, NonNullList<Ingredient> p_i47501_4_, ItemStack p_i47501_5_)
+    public ShapedRecipes(String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result)
     {
-        this.field_194137_e = p_i47501_1_;
-        this.recipeWidth = p_i47501_2_;
-        this.recipeHeight = p_i47501_3_;
-        this.recipeItems = p_i47501_4_;
-        this.recipeOutput = p_i47501_5_;
+        this.group = group;
+        this.recipeWidth = width;
+        this.recipeHeight = height;
+        this.recipeItems = ingredients;
+        this.recipeOutput = result;
     }
 
-    public String func_193358_e()
+    public String getGroup()
     {
-        return this.field_194137_e;
+        return this.group;
     }
 
     public ItemStack getRecipeOutput()
@@ -53,7 +53,7 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
 
     public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
     {
-        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(inv.getSizeInventory(), ItemStack.field_190927_a);
+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
 
         for (int i = 0; i < nonnulllist.size(); ++i)
         {
@@ -65,14 +65,17 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         return nonnulllist;
     }
 
-    public NonNullList<Ingredient> func_192400_c()
+    public NonNullList<Ingredient> getIngredients()
     {
         return this.recipeItems;
     }
 
-    public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
+    /**
+     * Used to determine if this recipe can fit in a grid of the given width/height
+     */
+    public boolean canFit(int width, int height)
     {
-        return p_194133_1_ >= this.recipeWidth && p_194133_2_ >= this.recipeHeight;
+        return width >= this.recipeWidth && height >= this.recipeHeight;
     }
 
     /**
@@ -80,9 +83,9 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
      */
     public boolean matches(InventoryCrafting inv, World worldIn)
     {
-        for (int i = 0; i <= 3 - this.recipeWidth; ++i)
+        for (int i = 0; i <= inv.getWidth() - this.recipeWidth; ++i)
         {
-            for (int j = 0; j <= 3 - this.recipeHeight; ++j)
+            for (int j = 0; j <= inv.getHeight() - this.recipeHeight; ++j)
             {
                 if (this.checkMatch(inv, i, j, true))
                 {
@@ -104,13 +107,13 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
      */
     private boolean checkMatch(InventoryCrafting p_77573_1_, int p_77573_2_, int p_77573_3_, boolean p_77573_4_)
     {
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < p_77573_1_.getWidth(); ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int j = 0; j < p_77573_1_.getHeight(); ++j)
             {
                 int k = i - p_77573_2_;
                 int l = j - p_77573_3_;
-                Ingredient ingredient = Ingredient.field_193370_a;
+                Ingredient ingredient = Ingredient.EMPTY;
 
                 if (k >= 0 && l >= 0 && k < this.recipeWidth && l < this.recipeHeight)
                 {
@@ -142,31 +145,31 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         return this.getRecipeOutput().copy();
     }
 
-    public int func_192403_f()
+    public int getWidth()
     {
         return this.recipeWidth;
     }
 
-    public int func_192404_g()
+    public int getHeight()
     {
         return this.recipeHeight;
     }
 
-    public static ShapedRecipes func_193362_a(JsonObject p_193362_0_)
+    public static ShapedRecipes deserialize(JsonObject p_193362_0_)
     {
         String s = JsonUtils.getString(p_193362_0_, "group", "");
-        Map<String, Ingredient> map = func_192408_a(JsonUtils.getJsonObject(p_193362_0_, "key"));
-        String[] astring = func_194134_a(func_192407_a(JsonUtils.getJsonArray(p_193362_0_, "pattern")));
+        Map<String, Ingredient> map = deserializeKey(JsonUtils.getJsonObject(p_193362_0_, "key"));
+        String[] astring = shrink(patternFromJson(JsonUtils.getJsonArray(p_193362_0_, "pattern")));
         int i = astring[0].length();
         int j = astring.length;
-        NonNullList<Ingredient> nonnulllist = func_192402_a(astring, map, i, j);
-        ItemStack itemstack = func_192405_a(JsonUtils.getJsonObject(p_193362_0_, "result"), true);
+        NonNullList<Ingredient> nonnulllist = deserializeIngredients(astring, map, i, j);
+        ItemStack itemstack = deserializeItem(JsonUtils.getJsonObject(p_193362_0_, "result"), true);
         return new ShapedRecipes(s, i, j, nonnulllist, itemstack);
     }
 
-    private static NonNullList<Ingredient> func_192402_a(String[] p_192402_0_, Map<String, Ingredient> p_192402_1_, int p_192402_2_, int p_192402_3_)
+    private static NonNullList<Ingredient> deserializeIngredients(String[] p_192402_0_, Map<String, Ingredient> p_192402_1_, int p_192402_2_, int p_192402_3_)
     {
-        NonNullList<Ingredient> nonnulllist = NonNullList.<Ingredient>func_191197_a(p_192402_2_ * p_192402_3_, Ingredient.field_193370_a);
+        NonNullList<Ingredient> nonnulllist = NonNullList.<Ingredient>withSize(p_192402_2_ * p_192402_3_, Ingredient.EMPTY);
         Set<String> set = Sets.newHashSet(p_192402_1_.keySet());
         set.remove(" ");
 
@@ -198,7 +201,7 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
     }
 
     @VisibleForTesting
-    static String[] func_194134_a(String... p_194134_0_)
+    static String[] shrink(String... p_194134_0_)
     {
         int i = Integer.MAX_VALUE;
         int j = 0;
@@ -208,8 +211,8 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         for (int i1 = 0; i1 < p_194134_0_.length; ++i1)
         {
             String s = p_194134_0_[i1];
-            i = Math.min(i, func_194135_a(s));
-            int j1 = func_194136_b(s);
+            i = Math.min(i, firstNonSpace(s));
+            int j1 = lastNonSpace(s);
             j = Math.max(j, j1);
 
             if (j1 < 0)
@@ -244,11 +247,11 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         }
     }
 
-    private static int func_194135_a(String p_194135_0_)
+    private static int firstNonSpace(String str)
     {
         int i;
 
-        for (i = 0; i < p_194135_0_.length() && p_194135_0_.charAt(i) == ' '; ++i)
+        for (i = 0; i < str.length() && str.charAt(i) == ' '; ++i)
         {
             ;
         }
@@ -256,11 +259,11 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         return i;
     }
 
-    private static int func_194136_b(String p_194136_0_)
+    private static int lastNonSpace(String str)
     {
         int i;
 
-        for (i = p_194136_0_.length() - 1; i >= 0 && p_194136_0_.charAt(i) == ' '; --i)
+        for (i = str.length() - 1; i >= 0 && str.charAt(i) == ' '; --i)
         {
             ;
         }
@@ -268,7 +271,7 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         return i;
     }
 
-    private static String[] func_192407_a(JsonArray p_192407_0_)
+    private static String[] patternFromJson(JsonArray p_192407_0_)
     {
         String[] astring = new String[p_192407_0_.size()];
 
@@ -303,7 +306,7 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         }
     }
 
-    private static Map<String, Ingredient> func_192408_a(JsonObject p_192408_0_)
+    private static Map<String, Ingredient> deserializeKey(JsonObject p_192408_0_)
     {
         Map<String, Ingredient> map = Maps.<String, Ingredient>newHashMap();
 
@@ -319,20 +322,20 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
                 throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
             }
 
-            map.put(entry.getKey(), func_193361_a(entry.getValue()));
+            map.put(entry.getKey(), deserializeIngredient(entry.getValue()));
         }
 
-        map.put(" ", Ingredient.field_193370_a);
+        map.put(" ", Ingredient.EMPTY);
         return map;
     }
 
-    public static Ingredient func_193361_a(@Nullable JsonElement p_193361_0_)
+    public static Ingredient deserializeIngredient(@Nullable JsonElement p_193361_0_)
     {
         if (p_193361_0_ != null && !p_193361_0_.isJsonNull())
         {
             if (p_193361_0_.isJsonObject())
             {
-                return Ingredient.func_193369_a(func_192405_a(p_193361_0_.getAsJsonObject(), false));
+                return Ingredient.fromStacks(deserializeItem(p_193361_0_.getAsJsonObject(), false));
             }
             else if (!p_193361_0_.isJsonArray())
             {
@@ -352,10 +355,10 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
 
                     for (int i = 0; i < jsonarray.size(); ++i)
                     {
-                        aitemstack[i] = func_192405_a(JsonUtils.getJsonObject(jsonarray.get(i), "item"), false);
+                        aitemstack[i] = deserializeItem(JsonUtils.getJsonObject(jsonarray.get(i), "item"), false);
                     }
 
-                    return Ingredient.func_193369_a(aitemstack);
+                    return Ingredient.fromStacks(aitemstack);
                 }
             }
         }
@@ -365,7 +368,7 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         }
     }
 
-    public static ItemStack func_192405_a(JsonObject p_192405_0_, boolean p_192405_1_)
+    public static ItemStack deserializeItem(JsonObject p_192405_0_, boolean useCount)
     {
         String s = JsonUtils.getString(p_192405_0_, "item");
         Item item = Item.REGISTRY.getObject(new ResourceLocation(s));
@@ -381,7 +384,7 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
         else
         {
             int i = JsonUtils.getInt(p_192405_0_, "data", 0);
-            int j = p_192405_1_ ? JsonUtils.getInt(p_192405_0_, "count", 1) : 1;
+            int j = useCount ? JsonUtils.getInt(p_192405_0_, "count", 1) : 1;
             return new ItemStack(item, j, i);
         }
     }
@@ -390,11 +393,11 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
     @Override
     public int getRecipeWidth()
     {
-        return this.func_192403_f();
+        return this.getWidth();
     }
     @Override
     public int getRecipeHeight()
     {
-        return this.func_192404_g();
+        return this.getHeight();
     }
 }

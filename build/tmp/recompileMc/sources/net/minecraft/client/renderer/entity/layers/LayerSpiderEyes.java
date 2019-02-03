@@ -41,9 +41,9 @@ public class LayerSpiderEyes<T extends EntitySpider> implements LayerRenderer<T>
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+        Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
         this.spiderRenderer.getMainModel().render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-        Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
+        Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
         i = entitylivingbaseIn.getBrightnessForRender();
         j = i % 65536;
         k = i / 65536;

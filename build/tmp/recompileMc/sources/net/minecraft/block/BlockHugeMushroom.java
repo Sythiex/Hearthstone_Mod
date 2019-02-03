@@ -41,7 +41,7 @@ public class BlockHugeMushroom extends Block
     /**
      * Get the MapColor for this Block and the given BlockState
      */
-    public MapColor getMapColor(IBlockState state, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
         switch ((BlockHugeMushroom.EnumType)state.getValue(VARIANT))
         {
@@ -52,7 +52,7 @@ public class BlockHugeMushroom extends Block
             case STEM:
                 return MapColor.SAND;
             default:
-                return super.getMapColor(state, p_180659_2_, p_180659_3_);
+                return super.getMapColor(state, worldIn, pos);
         }
     }
 
@@ -73,7 +73,7 @@ public class BlockHugeMushroom extends Block
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         return this.getDefaultState();
     }

@@ -129,10 +129,10 @@ public class TextureAtlasSprite
     /**
      * The opposite of getInterpolatedU. Takes the return value of that method and returns the input to it.
      */
-    public float getUnInterpolatedU(float p_188537_1_)
+    public float getUnInterpolatedU(float u)
     {
         float f = this.maxU - this.minU;
-        return (p_188537_1_ - this.minU) / f * 16.0F;
+        return (u - this.minU) / f * 16.0F;
     }
 
     /**
@@ -349,7 +349,7 @@ public class TextureAtlasSprite
                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Generating mipmaps for frame");
                     CrashReportCategory crashreportcategory = crashreport.makeCategory("Frame being iterated");
                     crashreportcategory.addCrashSection("Frame index", Integer.valueOf(i));
-                    crashreportcategory.setDetail("Frame sizes", new ICrashReportDetail<String>()
+                    crashreportcategory.addDetail("Frame sizes", new ICrashReportDetail<String>()
                     {
                         public String call() throws Exception
                         {

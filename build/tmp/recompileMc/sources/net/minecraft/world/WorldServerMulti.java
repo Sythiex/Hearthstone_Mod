@@ -64,19 +64,19 @@ public class WorldServerMulti extends WorldServer
         this.mapStorage = this.delegate.getMapStorage();
         this.worldScoreboard = this.delegate.getScoreboard();
         this.lootTable = this.delegate.getLootTableManager();
-        this.field_191951_C = this.delegate.func_191952_z();
+        this.advancementManager = this.delegate.getAdvancementManager();
         String s = VillageCollection.fileNameForProvider(this.provider);
         VillageCollection villagecollection = (VillageCollection)this.perWorldStorage.getOrLoadData(VillageCollection.class, s);
 
         if (villagecollection == null)
         {
-            this.villageCollectionObj = new VillageCollection(this);
-            this.perWorldStorage.setData(s, this.villageCollectionObj);
+            this.villageCollection = new VillageCollection(this);
+            this.perWorldStorage.setData(s, this.villageCollection);
         }
         else
         {
-            this.villageCollectionObj = villagecollection;
-            this.villageCollectionObj.setWorldsForAll(this);
+            this.villageCollection = villagecollection;
+            this.villageCollection.setWorldsForAll(this);
         }
 
         this.initCapabilities();

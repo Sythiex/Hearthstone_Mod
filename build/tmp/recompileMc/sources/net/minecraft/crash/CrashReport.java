@@ -30,7 +30,7 @@ public class CrashReport
     /** The Throwable that is the "cause" for this crash and Crash Report. */
     private final Throwable cause;
     /** Category of crash */
-    private final CrashReportCategory theReportCategory = new CrashReportCategory(this, "System Details");
+    private final CrashReportCategory systemDetailsCategory = new CrashReportCategory(this, "System Details");
     /** Holds the keys and values of all crash report sections. */
     private final List<CrashReportCategory> crashReportSections = Lists.<CrashReportCategory>newArrayList();
     /** File of crash report. */
@@ -52,35 +52,35 @@ public class CrashReport
      */
     private void populateEnvironment()
     {
-        this.theReportCategory.setDetail("Minecraft Version", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("Minecraft Version", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return "1.12.2";
             }
         });
-        this.theReportCategory.setDetail("Operating System", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("Operating System", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version");
             }
         });
-        this.theReportCategory.setDetail("Java Version", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("Java Version", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return System.getProperty("java.version") + ", " + System.getProperty("java.vendor");
             }
         });
-        this.theReportCategory.setDetail("Java VM Version", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("Java VM Version", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor");
             }
         });
-        this.theReportCategory.setDetail("Memory", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("Memory", new ICrashReportDetail<String>()
         {
             public String call()
             {
@@ -94,7 +94,7 @@ public class CrashReport
                 return k + " bytes (" + j1 + " MB) / " + j + " bytes (" + i1 + " MB) up to " + i + " bytes (" + l + " MB)";
             }
         });
-        this.theReportCategory.setDetail("JVM Flags", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("JVM Flags", new ICrashReportDetail<String>()
         {
             public String call()
             {
@@ -119,14 +119,14 @@ public class CrashReport
                 return String.format("%d total; %s", i, stringbuilder.toString());
             }
         });
-        this.theReportCategory.setDetail("IntCache", new ICrashReportDetail<String>()
+        this.systemDetailsCategory.addDetail("IntCache", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return IntCache.getCacheSizes();
             }
         });
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().enhanceCrashReport(this, this.theReportCategory);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().enhanceCrashReport(this, this.systemDetailsCategory);
     }
 
     /**
@@ -176,7 +176,7 @@ public class CrashReport
             builder.append("\n\n");
         }
 
-        this.theReportCategory.appendToStringBuilder(builder);
+        this.systemDetailsCategory.appendToStringBuilder(builder);
     }
 
     /**
@@ -231,7 +231,6 @@ public class CrashReport
     {
         StringBuilder stringbuilder = new StringBuilder();
         stringbuilder.append("---- Minecraft Crash Report ----\n");
-        net.minecraftforge.fml.common.asm.transformers.BlamingTransformer.onCrash(stringbuilder);
         net.minecraftforge.fml.relauncher.CoreModManager.onCrash(stringbuilder);
         stringbuilder.append("// ");
         stringbuilder.append(getWittyComment());
@@ -307,7 +306,7 @@ public class CrashReport
 
     public CrashReportCategory getCategory()
     {
-        return this.theReportCategory;
+        return this.systemDetailsCategory;
     }
 
     /**

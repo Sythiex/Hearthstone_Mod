@@ -54,7 +54,7 @@ public class GuiFlatPresets extends GuiScreen
         this.presetsTitle = I18n.format("createWorld.customize.presets.title");
         this.presetsShare = I18n.format("createWorld.customize.presets.share");
         this.listText = I18n.format("createWorld.customize.presets.list");
-        this.export = new GuiTextField(2, this.fontRendererObj, 50, 40, this.width - 100, 20);
+        this.export = new GuiTextField(2, this.fontRenderer, 50, 40, this.width - 100, 20);
         this.list = new GuiFlatPresets.ListSlot();
         this.export.setMaxStringLength(1230);
         this.export.setText(this.parentScreen.getPreset());
@@ -124,9 +124,9 @@ public class GuiFlatPresets extends GuiScreen
     {
         this.drawDefaultBackground();
         this.list.drawScreen(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRendererObj, this.presetsTitle, this.width / 2, 8, 16777215);
-        this.drawString(this.fontRendererObj, this.presetsShare, 50, 30, 10526880);
-        this.drawString(this.fontRendererObj, this.listText, 50, 70, 10526880);
+        this.drawCenteredString(this.fontRenderer, this.presetsTitle, this.width / 2, 8, 16777215);
+        this.drawString(this.fontRenderer, this.presetsShare, 50, 30, 10526880);
+        this.drawString(this.fontRenderer, this.listText, 50, 70, 10526880);
         this.export.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -275,11 +275,11 @@ public class GuiFlatPresets extends GuiScreen
         {
         }
 
-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+        protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks)
         {
-            GuiFlatPresets.LayerItem guiflatpresets$layeritem = GuiFlatPresets.FLAT_WORLD_PRESETS.get(p_192637_1_);
-            this.renderIcon(p_192637_2_, p_192637_3_, guiflatpresets$layeritem.icon, guiflatpresets$layeritem.iconMetadata);
-            GuiFlatPresets.this.fontRendererObj.drawString(guiflatpresets$layeritem.name, p_192637_2_ + 18 + 5, p_192637_3_ + 6, 16777215);
+            GuiFlatPresets.LayerItem guiflatpresets$layeritem = GuiFlatPresets.FLAT_WORLD_PRESETS.get(slotIndex);
+            this.renderIcon(xPos, yPos, guiflatpresets$layeritem.icon, guiflatpresets$layeritem.iconMetadata);
+            GuiFlatPresets.this.fontRenderer.drawString(guiflatpresets$layeritem.name, xPos + 18 + 5, yPos + 6, 16777215);
         }
     }
 }

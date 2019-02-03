@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,8 +43,8 @@ public class OredictItemPredicate extends ItemPredicate
     public OredictItemPredicate(JsonObject jsonObject) { this(JsonUtils.getString(jsonObject, "ore")); }
 
     @Override
-    public boolean func_192493_a(ItemStack stack)
+    public boolean test(ItemStack stack)
     {
-        return !stack.func_190926_b() && ArrayUtils.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID(ore));
+        return !stack.isEmpty() && ArrayUtils.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID(ore));
     }
 }

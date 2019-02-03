@@ -42,9 +42,9 @@ public class BlockPane extends Block
         this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
     {
-        if (!p_185477_7_)
+        if (!isActualState)
         {
             state = this.getActualState(state, worldIn, pos);
         }
@@ -116,7 +116,10 @@ public class BlockPane extends Block
      */
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
-        return state.withProperty(NORTH, Boolean.valueOf(this.func_193393_b(worldIn, worldIn.getBlockState(pos.north()), pos.north(), EnumFacing.SOUTH))).withProperty(SOUTH, Boolean.valueOf(this.func_193393_b(worldIn, worldIn.getBlockState(pos.south()), pos.south(), EnumFacing.NORTH))).withProperty(WEST, Boolean.valueOf(this.func_193393_b(worldIn, worldIn.getBlockState(pos.west()), pos.west(), EnumFacing.EAST))).withProperty(EAST, Boolean.valueOf(this.func_193393_b(worldIn, worldIn.getBlockState(pos.east()), pos.east(), EnumFacing.WEST)));
+        return state.withProperty(NORTH, canPaneConnectTo(worldIn, pos, EnumFacing.NORTH))
+                    .withProperty(SOUTH, canPaneConnectTo(worldIn, pos, EnumFacing.SOUTH))
+                    .withProperty(WEST,  canPaneConnectTo(worldIn, pos, EnumFacing.WEST))
+                    .withProperty(EAST,  canPaneConnectTo(worldIn, pos, EnumFacing.EAST));
     }
 
     /**
@@ -124,7 +127,7 @@ public class BlockPane extends Block
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return !this.canDrop ? Items.field_190931_a : super.getItemDropped(state, rand, fortune);
+        return !this.canDrop ? Items.AIR : super.getItemDropped(state, rand, fortune);
     }
 
     /**
@@ -146,14 +149,14 @@ public class BlockPane extends Block
         return blockAccess.getBlockState(pos.offset(side)).getBlock() == this ? false : super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 
-    public final boolean func_193393_b(IBlockAccess p_193393_1_, IBlockState p_193393_2_, BlockPos p_193393_3_, EnumFacing p_193393_4_)
+    public final boolean attachesTo(IBlockAccess p_193393_1_, IBlockState state, BlockPos pos, EnumFacing facing)
     {
-        Block block = p_193393_2_.getBlock();
-        BlockFaceShape blockfaceshape = p_193393_2_.func_193401_d(p_193393_1_, p_193393_3_, p_193393_4_);
-        return !func_193394_e(block) && blockfaceshape == BlockFaceShape.SOLID || blockfaceshape == BlockFaceShape.MIDDLE_POLE_THIN;
+        Block block = state.getBlock();
+        BlockFaceShape blockfaceshape = state.getBlockFaceShape(p_193393_1_, pos, facing);
+        return !isExcepBlockForAttachWithPiston(block) && blockfaceshape == BlockFaceShape.SOLID || blockfaceshape == BlockFaceShape.MIDDLE_POLE_THIN;
     }
 
-    protected static boolean func_193394_e(Block p_193394_0_)
+    protected static boolean isExcepBlockForAttachWithPiston(Block p_193394_0_)
     {
         return p_193394_0_ instanceof BlockShulkerBox || p_193394_0_ instanceof BlockLeaves || p_193394_0_ == Blocks.BEACON || p_193394_0_ == Blocks.CAULDRON || p_193394_0_ == Blocks.GLOWSTONE || p_193394_0_ == Blocks.ICE || p_193394_0_ == Blocks.SEA_LANTERN || p_193394_0_ == Blocks.PISTON || p_193394_0_ == Blocks.STICKY_PISTON || p_193394_0_ == Blocks.PISTON_HEAD || p_193394_0_ == Blocks.MELON_BLOCK || p_193394_0_ == Blocks.PUMPKIN || p_193394_0_ == Blocks.LIT_PUMPKIN || p_193394_0_ == Blocks.BARRIER;
     }
@@ -223,21 +226,30 @@ public class BlockPane extends Block
     @Override
     public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
     {
-        Block connector = world.getBlockState(pos.offset(facing)).getBlock();
-        return connector instanceof BlockPane;
+        BlockPos offset = pos.offset(facing);
+        return attachesTo(world, world.getBlockState(offset), offset, facing.getOpposite());
     }
 
     public boolean canPaneConnectTo(IBlockAccess world, BlockPos pos, EnumFacing dir)
     {
         BlockPos other = pos.offset(dir);
         IBlockState state = world.getBlockState(other);
-        return state.getBlock().canBeConnectedTo(world, other, dir.getOpposite()) || func_193393_b(world, state, other, dir.getOpposite());
+        return state.getBlock().canBeConnectedTo(world, other, dir.getOpposite()) || attachesTo(world, state, other, dir.getOpposite());
     }
 
     /* ======================================== FORGE END ======================================== */
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        return p_193383_4_ != EnumFacing.UP && p_193383_4_ != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THIN : BlockFaceShape.CENTER_SMALL;
+        return face != EnumFacing.UP && face != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THIN : BlockFaceShape.CENTER_SMALL;
     }
 }

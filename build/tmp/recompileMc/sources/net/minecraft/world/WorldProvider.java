@@ -23,16 +23,21 @@ public abstract class WorldProvider
 {
     public static final float[] MOON_PHASE_FACTORS = new float[] {1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
     /** world object being used */
-    protected World worldObj;
+    protected World world;
     private WorldType terrainType;
     private String generatorSettings;
     /** World chunk manager being used to generate chunks */
     protected BiomeProvider biomeProvider;
     /** States whether the Hell world provider is used(true) or if the normal world provider is used(false) */
-    protected boolean isHellWorld;
-    /** A boolean that tells if a world does not have a sky. Used in calculating weather and skylight */
-    protected boolean hasNoSky;
-    protected boolean field_191067_f;
+    protected boolean doesWaterVaporize;
+    /**
+     * Whether this dimension should be treated as the nether.
+     *  
+     * @see <a href="https://github.com/ModCoderPack/MCPBot-Issues/issues/330">https://github.com/ModCoderPack/MCPBot-
+     * Issues/issues/330</a>
+     */
+    protected boolean nether;
+    protected boolean hasSkyLight;
     /** Light to brightness conversion table */
     protected final float[] lightBrightnessTable = new float[16];
     /** Array for sunrise/sunset colors (RGBA) */
@@ -41,12 +46,12 @@ public abstract class WorldProvider
     /**
      * associate an existing world with a World provider, and setup its lightbrightness table
      */
-    public final void registerWorld(World worldIn)
+    public final void setWorld(World worldIn)
     {
-        this.worldObj = worldIn;
+        this.world = worldIn;
         this.terrainType = worldIn.getWorldInfo().getTerrainType();
         this.generatorSettings = worldIn.getWorldInfo().getGeneratorOptions();
-        this.createBiomeProvider();
+        this.init();
         this.generateLightBrightnessTable();
     }
 
@@ -65,17 +70,20 @@ public abstract class WorldProvider
     }
 
     /**
-     * creates a new world chunk manager for WorldProvider
+     * Creates a new {@link BiomeProvider} for the WorldProvider, and also sets the values of {@link #hasSkylight} and
+     * {@link #hasNoSky} appropriately.
+     *  
+     * Note that subclasses generally override this method without calling the parent version.
      */
-    protected void createBiomeProvider()
+    protected void init()
     {
-        this.field_191067_f = true;
-        this.biomeProvider = this.terrainType.getBiomeProvider(worldObj);
+        this.hasSkyLight = true;
+        this.biomeProvider = this.terrainType.getBiomeProvider(world);
     }
 
     public IChunkGenerator createChunkGenerator()
     {
-        return this.terrainType.getChunkGenerator(worldObj, generatorSettings);
+        return this.terrainType.getChunkGenerator(world, generatorSettings);
     }
 
     /**
@@ -85,13 +93,13 @@ public abstract class WorldProvider
     {
         BlockPos blockpos = new BlockPos(x, 0, z);
 
-        if (this.worldObj.getBiome(blockpos).ignorePlayerSpawnSuitability())
+        if (this.world.getBiome(blockpos).ignorePlayerSpawnSuitability())
         {
             return true;
         }
         else
         {
-            return this.worldObj.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
+            return this.world.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
         }
     }
 
@@ -166,7 +174,7 @@ public abstract class WorldProvider
     public Vec3d getFogColor(float p_76562_1_, float p_76562_2_)
     {
         float f = MathHelper.cos(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
-        f = MathHelper.clamp_float(f, 0.0F, 1.0F);
+        f = MathHelper.clamp(f, 0.0F, 1.0F);
         float f1 = 0.7529412F;
         float f2 = 0.84705883F;
         float f3 = 1.0F;
@@ -207,7 +215,7 @@ public abstract class WorldProvider
 
     public int getAverageGroundLevel()
     {
-        return this.terrainType.getMinimumSpawnHeight(this.worldObj);
+        return this.terrainType.getMinimumSpawnHeight(this.world);
     }
 
     /**
@@ -237,17 +245,17 @@ public abstract class WorldProvider
 
     public boolean doesWaterVaporize()
     {
-        return this.isHellWorld;
+        return this.doesWaterVaporize;
     }
 
-    public boolean func_191066_m()
+    public boolean hasSkyLight()
     {
-        return this.field_191067_f;
+        return this.hasSkyLight;
     }
 
-    public boolean getHasNoSky()
+    public boolean isNether()
     {
-        return this.hasNoSky;
+        return this.nether;
     }
 
     public float[] getLightBrightnessTable()
@@ -287,15 +295,17 @@ public abstract class WorldProvider
      * EXA: DIM1, DIM-1
      * @return The sub-folder name to save this world's chunks to.
      */
+    @Nullable
     public String getSaveFolder()
     {
         return (dimensionId == 0 ? null : "DIM" + dimensionId);
     }
 
     /**
-     * The dimensions movement factor. Relative to normal overworld.
-     * It is applied to the players position when they transfer dimensions.
-     * Exa: Nether movement is 8.0
+     * The dimension's movement factor.
+     * Whenever a player or entity changes dimension from world A to world B, their coordinates are multiplied by
+     * worldA.provider.getMovementFactor() / worldB.provider.getMovementFactor()
+     * Example: Overworld factor is 1, nether factor is 8. Traveling from overworld to nether multiplies coordinates by 1/8.
      * @return The movement factor
      */
     public double getMovementFactor()
@@ -307,6 +317,23 @@ public abstract class WorldProvider
         return 1.0;
     }
 
+    /**
+     * If this method returns true, then chunks received by the client will
+     * have {@link net.minecraft.world.chunk.Chunk#resetRelightChecks} called
+     * on them, queuing lighting checks for all air blocks in the chunk (and
+     * any adjacent light-emitting blocks).
+     *
+     * Returning true here is recommended if the chunk generator used also
+     * does this for newly generated chunks.
+     *
+     * @return true if lighting checks should be performed
+     */
+    public boolean shouldClientCheckLighting()
+    {
+        return !(this instanceof WorldProviderSurface);
+    }
+
+    @Nullable
     @SideOnly(Side.CLIENT)
     public net.minecraftforge.client.IRenderHandler getSkyRenderer()
     {
@@ -319,6 +346,7 @@ public abstract class WorldProvider
         this.skyRenderer = skyRenderer;
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public net.minecraftforge.client.IRenderHandler getCloudRenderer()
     {
@@ -331,6 +359,7 @@ public abstract class WorldProvider
         cloudRenderer = renderer;
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public net.minecraftforge.client.IRenderHandler getWeatherRenderer()
     {
@@ -359,18 +388,18 @@ public abstract class WorldProvider
 
     public BlockPos getRandomizedSpawnPoint()
     {
-        BlockPos ret = this.worldObj.getSpawnPoint();
+        BlockPos ret = this.world.getSpawnPoint();
 
-        boolean isAdventure = worldObj.getWorldInfo().getGameType() == GameType.ADVENTURE;
-        int spawnFuzz = this.worldObj instanceof WorldServer ? terrainType.getSpawnFuzz((WorldServer)this.worldObj, this.worldObj.getMinecraftServer()) : 1;
-        int border = MathHelper.floor_double(worldObj.getWorldBorder().getClosestDistance(ret.getX(), ret.getZ()));
+        boolean isAdventure = world.getWorldInfo().getGameType() == GameType.ADVENTURE;
+        int spawnFuzz = this.world instanceof WorldServer ? terrainType.getSpawnFuzz((WorldServer)this.world, this.world.getMinecraftServer()) : 1;
+        int border = MathHelper.floor(world.getWorldBorder().getClosestDistance(ret.getX(), ret.getZ()));
         if (border < spawnFuzz) spawnFuzz = border;
 
-        if (!getHasNoSky() && !isAdventure && spawnFuzz != 0)
+        if (!isNether() && !isAdventure && spawnFuzz != 0)
         {
             if (spawnFuzz < 2) spawnFuzz = 2;
             int spawnFuzzHalf = spawnFuzz / 2;
-            ret = worldObj.getTopSolidOrLiquidBlock(ret.add(spawnFuzzHalf - worldObj.rand.nextInt(spawnFuzz), 0, spawnFuzzHalf - worldObj.rand.nextInt(spawnFuzz)));
+            ret = world.getTopSolidOrLiquidBlock(ret.add(spawnFuzzHalf - world.rand.nextInt(spawnFuzz), 0, spawnFuzzHalf - world.rand.nextInt(spawnFuzz)));
         }
 
         return ret;
@@ -409,19 +438,52 @@ public abstract class WorldProvider
      * Note that this method is always called before the world load event.
      * @return initial holder for capabilities on the world
      */
+    @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities() {
         return null;
     }
+
+    /**
+     * Called on the client to get the music type to play when in this world type.
+     * At the time of calling, the client player and world are guaranteed to be non-null
+     * @return null to use vanilla logic, otherwise a MusicType to play in this world
+     */
+    @Nullable
+    @SideOnly(Side.CLIENT)
+    public net.minecraft.client.audio.MusicTicker.MusicType getMusicType()
+    {
+        return null;
+    }
+
+    /**
+     * Determines if the player can sleep in this world (or if the bed should explode for example).
+     *
+     * @param player The player that is attempting to sleep
+     * @param pos The location where the player tries to sleep at (the position of the clicked on bed for example)
+     * @return the result of a player trying to sleep at the given location
+     */
+    public WorldSleepResult canSleepAt(net.minecraft.entity.player.EntityPlayer player, BlockPos pos)
+    {
+        return (this.canRespawnHere() && this.world.getBiome(pos) != net.minecraft.init.Biomes.HELL) ? WorldSleepResult.ALLOW : WorldSleepResult.BED_EXPLODES;
+    }
+
+    public static enum WorldSleepResult
+    {
+        ALLOW,
+        DENY,
+        BED_EXPLODES;
+    }
+
     /*======================================= Start Moved From World =========================================*/
 
     public Biome getBiomeForCoords(BlockPos pos)
     {
-        return worldObj.getBiomeForCoordsBody(pos);
+        return world.getBiomeForCoordsBody(pos);
     }
 
     public boolean isDaytime()
     {
-        return worldObj.getSkylightSubtracted() < 4;
+        return world.getSkylightSubtracted() < 4;
     }
 
     /**
@@ -434,7 +496,7 @@ public abstract class WorldProvider
      * */
     public float getSunBrightnessFactor(float par1)
     {
-        return worldObj.getSunBrightnessFactor(par1);
+        return world.getSunBrightnessFactor(par1);
     }
 
     /**
@@ -444,19 +506,19 @@ public abstract class WorldProvider
      * */
     public float getCurrentMoonPhaseFactor()
     {
-        return worldObj.getCurrentMoonPhaseFactorBody();
+        return world.getCurrentMoonPhaseFactorBody();
     }
 
     @SideOnly(Side.CLIENT)
     public Vec3d getSkyColor(net.minecraft.entity.Entity cameraEntity, float partialTicks)
     {
-        return worldObj.getSkyColorBody(cameraEntity, partialTicks);
+        return world.getSkyColorBody(cameraEntity, partialTicks);
     }
 
     @SideOnly(Side.CLIENT)
     public Vec3d getCloudColor(float partialTicks)
     {
-        return worldObj.getCloudColorBody(partialTicks);
+        return world.getCloudColorBody(partialTicks);
     }
 
     /**
@@ -465,7 +527,7 @@ public abstract class WorldProvider
     @SideOnly(Side.CLIENT)
     public float getSunBrightness(float par1)
     {
-        return worldObj.getSunBrightnessBody(par1);
+        return world.getSunBrightnessBody(par1);
     }
 
     /**
@@ -474,68 +536,68 @@ public abstract class WorldProvider
     @SideOnly(Side.CLIENT)
     public float getStarBrightness(float par1)
     {
-        return worldObj.getStarBrightnessBody(par1);
+        return world.getStarBrightnessBody(par1);
     }
 
     public void setAllowedSpawnTypes(boolean allowHostile, boolean allowPeaceful)
     {
-        worldObj.spawnHostileMobs = allowHostile;
-        worldObj.spawnPeacefulMobs = allowPeaceful;
+        world.spawnHostileMobs = allowHostile;
+        world.spawnPeacefulMobs = allowPeaceful;
     }
 
     public void calculateInitialWeather()
     {
-        worldObj.calculateInitialWeatherBody();
+        world.calculateInitialWeatherBody();
     }
 
     public void updateWeather()
     {
-        worldObj.updateWeatherBody();
+        world.updateWeatherBody();
     }
 
     public boolean canBlockFreeze(BlockPos pos, boolean byWater)
     {
-        return worldObj.canBlockFreezeBody(pos, byWater);
+        return world.canBlockFreezeBody(pos, byWater);
     }
 
     public boolean canSnowAt(BlockPos pos, boolean checkLight)
     {
-        return worldObj.canSnowAtBody(pos, checkLight);
+        return world.canSnowAtBody(pos, checkLight);
     }
     public void setWorldTime(long time)
     {
-        worldObj.worldInfo.setWorldTime(time);
+        world.worldInfo.setWorldTime(time);
     }
 
     public long getSeed()
     {
-        return worldObj.worldInfo.getSeed();
+        return world.worldInfo.getSeed();
     }
 
     public long getWorldTime()
     {
-        return worldObj.worldInfo.getWorldTime();
+        return world.worldInfo.getWorldTime();
     }
 
     public BlockPos getSpawnPoint()
     {
-        net.minecraft.world.storage.WorldInfo info = worldObj.worldInfo;
+        net.minecraft.world.storage.WorldInfo info = world.worldInfo;
         return new BlockPos(info.getSpawnX(), info.getSpawnY(), info.getSpawnZ());
     }
 
     public void setSpawnPoint(BlockPos pos)
     {
-        worldObj.worldInfo.setSpawn(pos);
+        world.worldInfo.setSpawn(pos);
     }
 
     public boolean canMineBlock(net.minecraft.entity.player.EntityPlayer player, BlockPos pos)
     {
-        return worldObj.canMineBlockBody(player, pos);
+        return world.canMineBlockBody(player, pos);
     }
 
     public boolean isBlockHighHumidity(BlockPos pos)
     {
-        return worldObj.getBiome(pos).isHighHumidity();
+        return world.getBiome(pos).isHighHumidity();
     }
 
     public int getHeight()
@@ -545,20 +607,20 @@ public abstract class WorldProvider
 
     public int getActualHeight()
     {
-        return hasNoSky ? 128 : 256;
+        return nether ? 128 : 256;
     }
 
     public double getHorizon()
     {
-        return worldObj.worldInfo.getTerrainType().getHorizon(worldObj);
+        return world.worldInfo.getTerrainType().getHorizon(world);
     }
 
     public void resetRainAndThunder()
     {
-        worldObj.worldInfo.setRainTime(0);
-        worldObj.worldInfo.setRaining(false);
-        worldObj.worldInfo.setThunderTime(0);
-        worldObj.worldInfo.setThundering(false);
+        world.worldInfo.setRainTime(0);
+        world.worldInfo.setRaining(false);
+        world.worldInfo.setThunderTime(0);
+        world.worldInfo.setThundering(false);
     }
 
     public boolean canDoLightning(net.minecraft.world.chunk.Chunk chunk)

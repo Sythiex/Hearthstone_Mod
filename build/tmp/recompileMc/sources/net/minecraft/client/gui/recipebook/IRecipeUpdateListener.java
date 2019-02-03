@@ -8,5 +8,5 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public interface IRecipeUpdateListener
 {
-    void func_193001_a(List<IRecipe> p_193001_1_);
+    void recipesShown(List<IRecipe> recipes);
 }

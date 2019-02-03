@@ -103,34 +103,39 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerItem(itm, 0, identifier);
     }
 
-    private void func_191961_a(IBakedModel p_191961_1_, ItemStack p_191961_2_)
+    private void renderModel(IBakedModel model, ItemStack stack)
     {
-        this.func_191967_a(p_191961_1_, -1, p_191961_2_);
+        this.renderModel(model, -1, stack);
     }
 
-    private void func_191965_a(IBakedModel p_191965_1_, int p_191965_2_)
+    private void renderModel(IBakedModel model, int color)
     {
-        this.func_191967_a(p_191965_1_, p_191965_2_, ItemStack.field_190927_a);
+        this.renderModel(model, color, ItemStack.EMPTY);
     }
 
-    private void func_191967_a(IBakedModel p_191967_1_, int p_191967_2_, ItemStack p_191967_3_)
+    private void renderModel(IBakedModel model, int color, ItemStack stack)
     {
+        if (net.minecraftforge.common.ForgeModContainer.allowEmissiveItems)
+        {
+            net.minecraftforge.client.ForgeHooksClient.renderLitItem(this, model, color, stack);
+            return;
+        }
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.ITEM);
 
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            this.func_191970_a(bufferbuilder, p_191967_1_.getQuads((IBlockState)null, enumfacing, 0L), p_191967_2_, p_191967_3_);
+            this.renderQuads(bufferbuilder, model.getQuads((IBlockState)null, enumfacing, 0L), color, stack);
         }
 
-        this.func_191970_a(bufferbuilder, p_191967_1_.getQuads((IBlockState)null, (EnumFacing)null, 0L), p_191967_2_, p_191967_3_);
+        this.renderQuads(bufferbuilder, model.getQuads((IBlockState)null, (EnumFacing)null, 0L), color, stack);
         tessellator.draw();
     }
 
     public void renderItem(ItemStack stack, IBakedModel model)
     {
-        if (!stack.func_190926_b())
+        if (!stack.isEmpty())
         {
             GlStateManager.pushMatrix();
             GlStateManager.translate(-0.5F, -0.5F, -0.5F);
@@ -139,15 +144,15 @@ public class RenderItem implements IResourceManagerReloadListener
             {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableRescaleNormal();
-                TileEntityItemStackRenderer.instance.renderByItem(stack);
+                stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
             }
             else
             {
-                this.func_191961_a(model, stack);
+                this.renderModel(model, stack);
 
                 if (stack.hasEffect())
                 {
-                    this.func_191966_a(model);
+                    this.renderEffect(model);
                 }
             }
 
@@ -155,7 +160,7 @@ public class RenderItem implements IResourceManagerReloadListener
         }
     }
 
-    private void func_191966_a(IBakedModel p_191966_1_)
+    private void renderEffect(IBakedModel model)
     {
         GlStateManager.depthMask(false);
         GlStateManager.depthFunc(514);
@@ -168,14 +173,14 @@ public class RenderItem implements IResourceManagerReloadListener
         float f = (float)(Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
         GlStateManager.translate(f, 0.0F, 0.0F);
         GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
-        this.func_191965_a(p_191966_1_, -8372020);
+        this.renderModel(model, -8372020);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
         GlStateManager.scale(8.0F, 8.0F, 8.0F);
         float f1 = (float)(Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
         GlStateManager.translate(-f1, 0.0F, 0.0F);
         GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
-        this.func_191965_a(p_191966_1_, -8372020);
+        this.renderModel(model, -8372020);
         GlStateManager.popMatrix();
         GlStateManager.matrixMode(5888);
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -191,26 +196,26 @@ public class RenderItem implements IResourceManagerReloadListener
         renderer.putNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
     }
 
-    private void func_191969_a(BufferBuilder p_191969_1_, BakedQuad p_191969_2_, int p_191969_3_)
+    private void renderQuad(BufferBuilder renderer, BakedQuad quad, int color)
     {
-        p_191969_1_.addVertexData(p_191969_2_.getVertexData());
-        p_191969_1_.putColor4(p_191969_3_);
-        this.putQuadNormal(p_191969_1_, p_191969_2_);
+        renderer.addVertexData(quad.getVertexData());
+        renderer.putColor4(color);
+        this.putQuadNormal(renderer, quad);
     }
 
-    private void func_191970_a(BufferBuilder p_191970_1_, List<BakedQuad> p_191970_2_, int p_191970_3_, ItemStack p_191970_4_)
+    public void renderQuads(BufferBuilder renderer, List<BakedQuad> quads, int color, ItemStack stack)
     {
-        boolean flag = p_191970_3_ == -1 && !p_191970_4_.func_190926_b();
+        boolean flag = color == -1 && !stack.isEmpty();
         int i = 0;
 
-        for (int j = p_191970_2_.size(); i < j; ++i)
+        for (int j = quads.size(); i < j; ++i)
         {
-            BakedQuad bakedquad = p_191970_2_.get(i);
-            int k = p_191970_3_;
+            BakedQuad bakedquad = quads.get(i);
+            int k = color;
 
             if (flag && bakedquad.hasTintIndex())
             {
-                k = this.itemColors.getColorFromItemstack(p_191970_4_, bakedquad.getTintIndex());
+                k = this.itemColors.colorMultiplier(stack, bakedquad.getTintIndex());
 
                 if (EntityRenderer.anaglyphEnable)
                 {
@@ -220,7 +225,7 @@ public class RenderItem implements IResourceManagerReloadListener
                 k = k | -16777216;
             }
 
-            net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(p_191970_1_, bakedquad, k);
+            net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
         }
     }
 
@@ -232,7 +237,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType cameraTransformType)
     {
-        if (!stack.func_190926_b())
+        if (!stack.isEmpty())
         {
             IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null);
             this.renderItemModel(stack, ibakedmodel, cameraTransformType, false);
@@ -247,16 +252,16 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItem(ItemStack stack, EntityLivingBase entitylivingbaseIn, ItemCameraTransforms.TransformType transform, boolean leftHanded)
     {
-        if (!stack.func_190926_b() && entitylivingbaseIn != null)
+        if (!stack.isEmpty() && entitylivingbaseIn != null)
         {
-            IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, entitylivingbaseIn.worldObj, entitylivingbaseIn);
+            IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, entitylivingbaseIn.world, entitylivingbaseIn);
             this.renderItemModel(stack, ibakedmodel, transform, leftHanded);
         }
     }
 
     protected void renderItemModel(ItemStack stack, IBakedModel bakedmodel, ItemCameraTransforms.TransformType transform, boolean leftHanded)
     {
-        if (!stack.func_190926_b())
+        if (!stack.isEmpty())
         {
             this.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             this.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
@@ -289,10 +294,10 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItemIntoGUI(ItemStack stack, int x, int y)
     {
-        this.func_191962_a(stack, x, y, this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null));
+        this.renderItemModelIntoGUI(stack, x, y, this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null));
     }
 
-    protected void func_191962_a(ItemStack p_191962_1_, int p_191962_2_, int p_191962_3_, IBakedModel p_191962_4_)
+    protected void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel)
     {
         GlStateManager.pushMatrix();
         this.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -303,9 +308,9 @@ public class RenderItem implements IResourceManagerReloadListener
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.setupGuiTransform(p_191962_2_, p_191962_3_, p_191962_4_.isGui3d());
-        p_191962_4_ = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(p_191962_4_, ItemCameraTransforms.TransformType.GUI, false);
-        this.renderItem(p_191962_1_, p_191962_4_);
+        this.setupGuiTransform(x, y, bakedmodel.isGui3d());
+        bakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
+        this.renderItem(stack, bakedmodel);
         GlStateManager.disableAlpha();
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableLighting();
@@ -333,45 +338,46 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItemAndEffectIntoGUI(ItemStack stack, int xPosition, int yPosition)
     {
-        this.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().thePlayer, stack, xPosition, yPosition);
+        this.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, stack, xPosition, yPosition);
     }
 
     public void renderItemAndEffectIntoGUI(@Nullable EntityLivingBase p_184391_1_, final ItemStack p_184391_2_, int p_184391_3_, int p_184391_4_)
     {
-        if (!p_184391_2_.func_190926_b())
+        if (!p_184391_2_.isEmpty())
         {
             this.zLevel += 50.0F;
 
             try
             {
-                this.func_191962_a(p_184391_2_, p_184391_3_, p_184391_4_, this.getItemModelWithOverrides(p_184391_2_, (World)null, p_184391_1_));
+                this.renderItemModelIntoGUI(p_184391_2_, p_184391_3_, p_184391_4_, this.getItemModelWithOverrides(p_184391_2_, (World)null, p_184391_1_));
             }
             catch (Throwable throwable)
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering item");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being rendered");
-                crashreportcategory.setDetail("Item Type", new ICrashReportDetail<String>()
+                crashreportcategory.addDetail("Item Type", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
                         return String.valueOf((Object)p_184391_2_.getItem());
                     }
                 });
-                crashreportcategory.setDetail("Item Aux", new ICrashReportDetail<String>()
+                crashreportcategory.addDetail("Registry Name", () -> String.valueOf(p_184391_2_.getItem().getRegistryName()));
+                crashreportcategory.addDetail("Item Aux", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
                         return String.valueOf(p_184391_2_.getMetadata());
                     }
                 });
-                crashreportcategory.setDetail("Item NBT", new ICrashReportDetail<String>()
+                crashreportcategory.addDetail("Item NBT", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
                         return String.valueOf((Object)p_184391_2_.getTagCompound());
                     }
                 });
-                crashreportcategory.setDetail("Item Foil", new ICrashReportDetail<String>()
+                crashreportcategory.addDetail("Item Foil", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
@@ -395,11 +401,11 @@ public class RenderItem implements IResourceManagerReloadListener
      */
     public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text)
     {
-        if (!stack.func_190926_b())
+        if (!stack.isEmpty())
         {
-            if (stack.func_190916_E() != 1 || text != null)
+            if (stack.getCount() != 1 || text != null)
             {
-                String s = text == null ? String.valueOf(stack.func_190916_E()) : text;
+                String s = text == null ? String.valueOf(stack.getCount()) : text;
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
                 GlStateManager.disableBlend();
@@ -433,7 +439,7 @@ public class RenderItem implements IResourceManagerReloadListener
                 GlStateManager.enableDepth();
             }
 
-            EntityPlayerSP entityplayersp = Minecraft.getMinecraft().thePlayer;
+            EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
             float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
 
             if (f3 > 0.0F)
@@ -443,7 +449,7 @@ public class RenderItem implements IResourceManagerReloadListener
                 GlStateManager.disableTexture2D();
                 Tessellator tessellator1 = Tessellator.getInstance();
                 BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
-                this.draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor_float(16.0F * (1.0F - f3)), 16, MathHelper.ceiling_float_int(16.0F * f3), 255, 255, 255, 127);
+                this.draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
                 GlStateManager.enableTexture2D();
                 GlStateManager.enableLighting();
                 GlStateManager.enableDepth();
@@ -771,44 +777,44 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerBlock(Blocks.RED_NETHER_BRICK, "red_nether_brick");
         this.registerBlock(Blocks.BONE_BLOCK, "bone_block");
         this.registerBlock(Blocks.STRUCTURE_VOID, "structure_void");
-        this.registerBlock(Blocks.field_190976_dk, "observer");
-        this.registerBlock(Blocks.field_190977_dl, "white_shulker_box");
-        this.registerBlock(Blocks.field_190978_dm, "orange_shulker_box");
-        this.registerBlock(Blocks.field_190979_dn, "magenta_shulker_box");
-        this.registerBlock(Blocks.field_190980_do, "light_blue_shulker_box");
-        this.registerBlock(Blocks.field_190981_dp, "yellow_shulker_box");
-        this.registerBlock(Blocks.field_190982_dq, "lime_shulker_box");
-        this.registerBlock(Blocks.field_190983_dr, "pink_shulker_box");
-        this.registerBlock(Blocks.field_190984_ds, "gray_shulker_box");
-        this.registerBlock(Blocks.field_190985_dt, "silver_shulker_box");
-        this.registerBlock(Blocks.field_190986_du, "cyan_shulker_box");
-        this.registerBlock(Blocks.field_190987_dv, "purple_shulker_box");
-        this.registerBlock(Blocks.field_190988_dw, "blue_shulker_box");
-        this.registerBlock(Blocks.field_190989_dx, "brown_shulker_box");
-        this.registerBlock(Blocks.field_190990_dy, "green_shulker_box");
-        this.registerBlock(Blocks.field_190991_dz, "red_shulker_box");
-        this.registerBlock(Blocks.field_190975_dA, "black_shulker_box");
-        this.registerBlock(Blocks.field_192427_dB, "white_glazed_terracotta");
-        this.registerBlock(Blocks.field_192428_dC, "orange_glazed_terracotta");
-        this.registerBlock(Blocks.field_192429_dD, "magenta_glazed_terracotta");
-        this.registerBlock(Blocks.field_192430_dE, "light_blue_glazed_terracotta");
-        this.registerBlock(Blocks.field_192431_dF, "yellow_glazed_terracotta");
-        this.registerBlock(Blocks.field_192432_dG, "lime_glazed_terracotta");
-        this.registerBlock(Blocks.field_192433_dH, "pink_glazed_terracotta");
-        this.registerBlock(Blocks.field_192434_dI, "gray_glazed_terracotta");
-        this.registerBlock(Blocks.field_192435_dJ, "silver_glazed_terracotta");
-        this.registerBlock(Blocks.field_192436_dK, "cyan_glazed_terracotta");
-        this.registerBlock(Blocks.field_192437_dL, "purple_glazed_terracotta");
-        this.registerBlock(Blocks.field_192438_dM, "blue_glazed_terracotta");
-        this.registerBlock(Blocks.field_192439_dN, "brown_glazed_terracotta");
-        this.registerBlock(Blocks.field_192440_dO, "green_glazed_terracotta");
-        this.registerBlock(Blocks.field_192441_dP, "red_glazed_terracotta");
-        this.registerBlock(Blocks.field_192442_dQ, "black_glazed_terracotta");
+        this.registerBlock(Blocks.OBSERVER, "observer");
+        this.registerBlock(Blocks.WHITE_SHULKER_BOX, "white_shulker_box");
+        this.registerBlock(Blocks.ORANGE_SHULKER_BOX, "orange_shulker_box");
+        this.registerBlock(Blocks.MAGENTA_SHULKER_BOX, "magenta_shulker_box");
+        this.registerBlock(Blocks.LIGHT_BLUE_SHULKER_BOX, "light_blue_shulker_box");
+        this.registerBlock(Blocks.YELLOW_SHULKER_BOX, "yellow_shulker_box");
+        this.registerBlock(Blocks.LIME_SHULKER_BOX, "lime_shulker_box");
+        this.registerBlock(Blocks.PINK_SHULKER_BOX, "pink_shulker_box");
+        this.registerBlock(Blocks.GRAY_SHULKER_BOX, "gray_shulker_box");
+        this.registerBlock(Blocks.SILVER_SHULKER_BOX, "silver_shulker_box");
+        this.registerBlock(Blocks.CYAN_SHULKER_BOX, "cyan_shulker_box");
+        this.registerBlock(Blocks.PURPLE_SHULKER_BOX, "purple_shulker_box");
+        this.registerBlock(Blocks.BLUE_SHULKER_BOX, "blue_shulker_box");
+        this.registerBlock(Blocks.BROWN_SHULKER_BOX, "brown_shulker_box");
+        this.registerBlock(Blocks.GREEN_SHULKER_BOX, "green_shulker_box");
+        this.registerBlock(Blocks.RED_SHULKER_BOX, "red_shulker_box");
+        this.registerBlock(Blocks.BLACK_SHULKER_BOX, "black_shulker_box");
+        this.registerBlock(Blocks.WHITE_GLAZED_TERRACOTTA, "white_glazed_terracotta");
+        this.registerBlock(Blocks.ORANGE_GLAZED_TERRACOTTA, "orange_glazed_terracotta");
+        this.registerBlock(Blocks.MAGENTA_GLAZED_TERRACOTTA, "magenta_glazed_terracotta");
+        this.registerBlock(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA, "light_blue_glazed_terracotta");
+        this.registerBlock(Blocks.YELLOW_GLAZED_TERRACOTTA, "yellow_glazed_terracotta");
+        this.registerBlock(Blocks.LIME_GLAZED_TERRACOTTA, "lime_glazed_terracotta");
+        this.registerBlock(Blocks.PINK_GLAZED_TERRACOTTA, "pink_glazed_terracotta");
+        this.registerBlock(Blocks.GRAY_GLAZED_TERRACOTTA, "gray_glazed_terracotta");
+        this.registerBlock(Blocks.SILVER_GLAZED_TERRACOTTA, "silver_glazed_terracotta");
+        this.registerBlock(Blocks.CYAN_GLAZED_TERRACOTTA, "cyan_glazed_terracotta");
+        this.registerBlock(Blocks.PURPLE_GLAZED_TERRACOTTA, "purple_glazed_terracotta");
+        this.registerBlock(Blocks.BLUE_GLAZED_TERRACOTTA, "blue_glazed_terracotta");
+        this.registerBlock(Blocks.BROWN_GLAZED_TERRACOTTA, "brown_glazed_terracotta");
+        this.registerBlock(Blocks.GREEN_GLAZED_TERRACOTTA, "green_glazed_terracotta");
+        this.registerBlock(Blocks.RED_GLAZED_TERRACOTTA, "red_glazed_terracotta");
+        this.registerBlock(Blocks.BLACK_GLAZED_TERRACOTTA, "black_glazed_terracotta");
 
         for (EnumDyeColor enumdyecolor : EnumDyeColor.values())
         {
-            this.registerBlock(Blocks.field_192443_dR, enumdyecolor.getMetadata(), enumdyecolor.func_192396_c() + "_concrete");
-            this.registerBlock(Blocks.field_192444_dS, enumdyecolor.getMetadata(), enumdyecolor.func_192396_c() + "_concrete_powder");
+            this.registerBlock(Blocks.CONCRETE, enumdyecolor.getMetadata(), enumdyecolor.getDyeColorName() + "_concrete");
+            this.registerBlock(Blocks.CONCRETE_POWDER, enumdyecolor.getMetadata(), enumdyecolor.getDyeColorName() + "_concrete_powder");
         }
 
         this.registerBlock(Blocks.CHEST, "chest");
@@ -972,7 +978,7 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerItem(Items.BEETROOT, "beetroot");
         this.registerItem(Items.BEETROOT_SEEDS, "beetroot_seeds");
         this.registerItem(Items.BEETROOT_SOUP, "beetroot_soup");
-        this.registerItem(Items.field_190929_cY, "totem");
+        this.registerItem(Items.TOTEM_OF_UNDYING, "totem");
         this.registerItem(Items.POTIONITEM, "bottle_drinkable");
         this.registerItem(Items.SPLASH_POTION, "bottle_splash");
         this.registerItem(Items.LINGERING_POTION, "bottle_lingering");
@@ -1051,8 +1057,8 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerItem(Items.ELYTRA, "elytra");
         this.registerItem(Items.CHORUS_FRUIT, "chorus_fruit");
         this.registerItem(Items.CHORUS_FRUIT_POPPED, "chorus_fruit_popped");
-        this.registerItem(Items.field_190930_cZ, "shulker_shell");
-        this.registerItem(Items.field_191525_da, "iron_nugget");
+        this.registerItem(Items.SHULKER_SHELL, "shulker_shell");
+        this.registerItem(Items.IRON_NUGGET, "iron_nugget");
         this.registerItem(Items.RECORD_13, "record_13");
         this.registerItem(Items.RECORD_CAT, "record_cat");
         this.registerItem(Items.RECORD_BLOCKS, "record_blocks");
@@ -1067,7 +1073,7 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerItem(Items.RECORD_WAIT, "record_wait");
         this.registerItem(Items.PRISMARINE_SHARD, "prismarine_shard");
         this.registerItem(Items.PRISMARINE_CRYSTALS, "prismarine_crystals");
-        this.registerItem(Items.field_192397_db, "knowledge_book");
+        this.registerItem(Items.KNOWLEDGE_BOOK, "knowledge_book");
         this.itemModelMesher.register(Items.ENCHANTED_BOOK, new ItemMeshDefinition()
         {
             public ModelResourceLocation getModelLocation(ItemStack stack)

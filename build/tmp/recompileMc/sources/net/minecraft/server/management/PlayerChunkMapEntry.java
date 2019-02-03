@@ -36,7 +36,7 @@ public class PlayerChunkMapEntry
     {
         public void run()
         {
-            PlayerChunkMapEntry.this.chunk = PlayerChunkMapEntry.this.playerChunkMap.getWorldServer().getChunkProvider().loadChunk(PlayerChunkMapEntry.this.pos.chunkXPos, PlayerChunkMapEntry.this.pos.chunkZPos);
+            PlayerChunkMapEntry.this.chunk = PlayerChunkMapEntry.this.playerChunkMap.getWorldServer().getChunkProvider().loadChunk(PlayerChunkMapEntry.this.pos.x, PlayerChunkMapEntry.this.pos.z);
             PlayerChunkMapEntry.this.loading = false;
         }
     };
@@ -58,7 +58,7 @@ public class PlayerChunkMapEntry
     {
         if (this.players.contains(player))
         {
-            LOGGER.debug("Failed to add player. {} already is in chunk {}, {}", player, Integer.valueOf(this.pos.chunkXPos), Integer.valueOf(this.pos.chunkZPos));
+            LOGGER.debug("Failed to add player. {} already is in chunk {}, {}", player, Integer.valueOf(this.pos.x), Integer.valueOf(this.pos.z));
         }
         else
         {
@@ -71,9 +71,9 @@ public class PlayerChunkMapEntry
 
             if (this.sentToPlayers)
             {
-                this.sendNearbySpecialEntities(player);
+                this.sendToPlayer(player);
                 // chunk watch event - the chunk is ready
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.pos, player));
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, player));
             }
         }
     }
@@ -89,7 +89,7 @@ public class PlayerChunkMapEntry
 
                 if (this.players.isEmpty())
                 {
-                    if (this.loading) net.minecraftforge.common.chunkio.ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.getWorldServer(), this.pos.chunkXPos, this.pos.chunkZPos, this.loadedRunnable);
+                    if (this.loading) net.minecraftforge.common.chunkio.ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.getWorldServer(), this.pos.x, this.pos.z, this.loadedRunnable);
                     this.playerChunkMap.removeEntry(this);
                 }
 
@@ -98,12 +98,12 @@ public class PlayerChunkMapEntry
 
             if (this.sentToPlayers)
             {
-                player.connection.sendPacket(new SPacketUnloadChunk(this.pos.chunkXPos, this.pos.chunkZPos));
+                player.connection.sendPacket(new SPacketUnloadChunk(this.pos.x, this.pos.z));
             }
 
             this.players.remove(player);
 
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(this.pos, player));
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(this.chunk, player));
 
             if (this.players.isEmpty())
             {
@@ -127,18 +127,18 @@ public class PlayerChunkMapEntry
         {
             if (canGenerate)
             {
-                this.chunk = this.playerChunkMap.getWorldServer().getChunkProvider().provideChunk(this.pos.chunkXPos, this.pos.chunkZPos);
+                this.chunk = this.playerChunkMap.getWorldServer().getChunkProvider().provideChunk(this.pos.x, this.pos.z);
             }
             else
             {
-                this.chunk = this.playerChunkMap.getWorldServer().getChunkProvider().loadChunk(this.pos.chunkXPos, this.pos.chunkZPos);
+                this.chunk = this.playerChunkMap.getWorldServer().getChunkProvider().loadChunk(this.pos.x, this.pos.z);
             }
 
             return this.chunk != null;
         }
     }
 
-    public boolean sentToPlayers()
+    public boolean sendToPlayers()
     {
         if (this.sentToPlayers)
         {
@@ -157,6 +157,7 @@ public class PlayerChunkMapEntry
             this.changes = 0;
             this.changedSectionFilter = 0;
             this.sentToPlayers = true;
+            if (this.players.isEmpty()) return true; // Forge: fix MC-120780
             Packet<?> packet = new SPacketChunkData(this.chunk, 65535);
 
             for (EntityPlayerMP entityplayermp : this.players)
@@ -164,7 +165,7 @@ public class PlayerChunkMapEntry
                 entityplayermp.connection.sendPacket(packet);
                 this.playerChunkMap.getWorldServer().getEntityTracker().sendLeashedEntitiesInChunk(entityplayermp, this.chunk);
                 // chunk watch event - delayed to here as the chunk wasn't ready in addPlayer
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.pos, entityplayermp));
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, entityplayermp));
             }
 
             return true;
@@ -172,12 +173,10 @@ public class PlayerChunkMapEntry
     }
 
     /**
-     * Send packets to player for:
-     *  - nearby tile entities
-     *  - nearby entities that are leashed
-     *  - nearby entities with
+     * Fully resyncs this chunk's blocks, tile entities, and entity attachments (passengers and leashes) to all tracking
+     * players
      */
-    public void sendNearbySpecialEntities(EntityPlayerMP player)
+    public void sendToPlayer(EntityPlayerMP player)
     {
         if (this.sentToPlayers)
         {
@@ -204,7 +203,7 @@ public class PlayerChunkMapEntry
         {
             if (this.changes == 0)
             {
-                this.playerChunkMap.addEntry(this);
+                this.playerChunkMap.entryChanged(this);
             }
 
             this.changedSectionFilter |= 1 << (y >> 4);
@@ -247,9 +246,9 @@ public class PlayerChunkMapEntry
             {
                 if (this.changes == 1)
                 {
-                    int i = (this.changedBlocks[0] >> 12 & 15) + this.pos.chunkXPos * 16;
+                    int i = (this.changedBlocks[0] >> 12 & 15) + this.pos.x * 16;
                     int j = this.changedBlocks[0] & 255;
-                    int k = (this.changedBlocks[0] >> 8 & 15) + this.pos.chunkZPos * 16;
+                    int k = (this.changedBlocks[0] >> 8 & 15) + this.pos.z * 16;
                     BlockPos blockpos = new BlockPos(i, j, k);
                     this.sendPacket(new SPacketBlockChange(this.playerChunkMap.getWorldServer(), blockpos));
                     net.minecraft.block.state.IBlockState state = this.playerChunkMap.getWorldServer().getBlockState(blockpos);
@@ -271,9 +270,9 @@ public class PlayerChunkMapEntry
                 //{// Forge: Send only the tile entities that are updated, Adding this brace lets us keep the indent and the patch small
                     for (int l = 0; l < this.changes; ++l)
                     {
-                        int i1 = (this.changedBlocks[l] >> 12 & 15) + this.pos.chunkXPos * 16;
+                        int i1 = (this.changedBlocks[l] >> 12 & 15) + this.pos.x * 16;
                         int j1 = this.changedBlocks[l] & 255;
-                        int k1 = (this.changedBlocks[l] >> 8 & 15) + this.pos.chunkZPos * 16;
+                        int k1 = (this.changedBlocks[l] >> 8 & 15) + this.pos.z * 16;
                         BlockPos blockpos1 = new BlockPos(i1, j1, k1);
                         net.minecraft.block.state.IBlockState state = this.playerChunkMap.getWorldServer().getBlockState(blockpos1);
 
@@ -356,5 +355,10 @@ public class PlayerChunkMapEntry
         }
 
         return d0;
+    }
+
+    public List<EntityPlayerMP> getWatchingPlayers()
+    {
+        return isSentToPlayers() ? java.util.Collections.unmodifiableList(players) : java.util.Collections.emptyList();
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,11 +71,11 @@ public final class AnimationItemOverrideList extends ItemOverrideList
             // TODO: caching?
             if(world == null && entity != null)
             {
-                world = entity.worldObj;
+                world = entity.world;
             }
             if(world == null)
             {
-                world = Minecraft.getMinecraft().theWorld;
+                world = Minecraft.getMinecraft().world;
             }
             IModelState state = asm.apply(Animation.getWorldTime(world, Animation.getPartialTickTime())).getLeft();
             return model.bake(new ModelStateComposition(state, this.state), format, bakedTextureGetter);

@@ -27,7 +27,7 @@ public class PhaseTakeoff extends PhaseBase
     {
         if (!this.firstTick && this.currentPath != null)
         {
-            BlockPos blockpos = this.dragon.worldObj.getTopSolidOrLiquidBlock(WorldGenEndPodium.END_PODIUM_LOCATION);
+            BlockPos blockpos = this.dragon.world.getTopSolidOrLiquidBlock(WorldGenEndPodium.END_PODIUM_LOCATION);
             double d0 = this.dragon.getDistanceSqToCenter(blockpos);
 
             if (d0 > 100.0D)
@@ -56,7 +56,7 @@ public class PhaseTakeoff extends PhaseBase
     {
         int i = this.dragon.initPathPoints();
         Vec3d vec3d = this.dragon.getHeadLookVec(1.0F);
-        int j = this.dragon.getNearestPpIdx(-vec3d.xCoord * 40.0D, 105.0D, -vec3d.zCoord * 40.0D);
+        int j = this.dragon.getNearestPpIdx(-vec3d.x * 40.0D, 105.0D, -vec3d.z * 40.0D);
 
         if (this.dragon.getFightManager() != null && this.dragon.getFightManager().getNumAliveCrystals() > 0)
         {
@@ -91,15 +91,15 @@ public class PhaseTakeoff extends PhaseBase
 
         while (true)
         {
-            d0 = vec3d.yCoord + (double)(this.dragon.getRNG().nextFloat() * 20.0F);
+            d0 = vec3d.y + (double)(this.dragon.getRNG().nextFloat() * 20.0F);
 
-            if (d0 >= vec3d.yCoord)
+            if (d0 >= vec3d.y)
             {
                 break;
             }
         }
 
-        this.targetLocation = new Vec3d(vec3d.xCoord, d0, vec3d.zCoord);
+        this.targetLocation = new Vec3d(vec3d.x, d0, vec3d.z);
     }
 
     /**
@@ -111,7 +111,7 @@ public class PhaseTakeoff extends PhaseBase
         return this.targetLocation;
     }
 
-    public PhaseList<PhaseTakeoff> getPhaseList()
+    public PhaseList<PhaseTakeoff> getType()
     {
         return PhaseList.TAKEOFF;
     }

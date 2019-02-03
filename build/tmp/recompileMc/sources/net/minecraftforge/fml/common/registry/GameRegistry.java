@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -113,7 +113,7 @@ public class GameRegistry
         entitySelectorFactories.add(factory);
         for (String s : arguments)
         {
-            EntitySelector.func_190826_c(s);
+            EntitySelector.addArgument(s);
         }
     }
 
@@ -205,7 +205,7 @@ public class GameRegistry
 
     public static void addShapelessRecipe(ResourceLocation name, ResourceLocation group, @Nonnull ItemStack output, Ingredient... params)
     {
-        NonNullList<Ingredient> lst = NonNullList.func_191196_a();
+        NonNullList<Ingredient> lst = NonNullList.create();
         for (Ingredient i : params)
             lst.add(i);
         register(new ShapelessRecipes(group == null ? "" : group.toString(), output, lst).setRegistryName(name));
@@ -226,9 +226,17 @@ public class GameRegistry
         FurnaceRecipes.instance().addSmeltingRecipe(input, output, xp);
     }
 
+    @Deprecated //TODO: Remove in 1.13, Use ResourceLocation version.
     public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String key)
     {
-        TileEntity.func_190560_a(key, tileEntityClass);
+        // As return is ignored for compatibility, always check namespace
+        GameData.checkPrefix(new ResourceLocation(key).toString(), true);
+        TileEntity.register(key, tileEntityClass);
+    }
+
+    public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, ResourceLocation key)
+    {
+        registerTileEntity(tileEntityClass, key.toString());
     }
 
     /**
@@ -298,21 +306,21 @@ public class GameRegistry
          *
          * @return The registry name
          */
-        public String value();
+        String value();
 
         /**
          * The metadata or damage value for the itemstack, defaults to 0.
          *
          * @return the metadata value
          */
-        public int meta() default 0;
+        int meta() default 0;
 
         /**
          * The string serialized nbt value for the itemstack. Defaults to empty for no nbt.
          *
          * @return a nbt string
          */
-        public String nbt() default "";
+        String nbt() default "";
     }
 
     /**
@@ -338,7 +346,7 @@ public class GameRegistry
         if (item == null)
         {
             FMLLog.log.trace("Unable to find item with name {}", itemName);
-            return ItemStack.field_190927_a;
+            return ItemStack.EMPTY;
         }
         ItemStack is = new ItemStack(item, stackSize, meta);
         if (!Strings.isNullOrEmpty(nbtString))

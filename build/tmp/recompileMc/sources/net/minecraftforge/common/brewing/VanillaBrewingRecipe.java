@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,16 +61,16 @@ public class VanillaBrewingRecipe implements IBrewingRecipe {
     @Nonnull
     public ItemStack getOutput(@Nonnull ItemStack input, @Nonnull ItemStack ingredient)
     {
-        if (!input.func_190926_b() && !ingredient.func_190926_b() && isIngredient(ingredient))
+        if (!input.isEmpty() && !ingredient.isEmpty() && isIngredient(ingredient))
         {
             ItemStack result = PotionHelper.doReaction(ingredient, input);
             if (result != input)
             {
                 return result;
             }
-            return ItemStack.field_190927_a;
+            return ItemStack.EMPTY;
         }
 
-        return ItemStack.field_190927_a;
+        return ItemStack.EMPTY;
     }
 }

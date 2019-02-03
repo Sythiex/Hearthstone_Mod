@@ -21,7 +21,7 @@ public class TileEntityEnderChest extends TileEntity implements ITickable
     {
         if (++this.ticksSinceSync % 20 * 4 == 0)
         {
-            this.worldObj.addBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.numPlayersUsing);
+            this.world.addBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.numPlayersUsing);
         }
 
         this.prevLidAngle = this.lidAngle;
@@ -34,7 +34,7 @@ public class TileEntityEnderChest extends TileEntity implements ITickable
         {
             double d0 = (double)i + 0.5D;
             double d1 = (double)k + 0.5D;
-            this.worldObj.playSound((EntityPlayer)null, d0, (double)j + 0.5D, d1, SoundEvents.BLOCK_ENDERCHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            this.world.playSound((EntityPlayer)null, d0, (double)j + 0.5D, d1, SoundEvents.BLOCK_ENDERCHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
         }
 
         if (this.numPlayersUsing == 0 && this.lidAngle > 0.0F || this.numPlayersUsing > 0 && this.lidAngle < 1.0F)
@@ -61,7 +61,7 @@ public class TileEntityEnderChest extends TileEntity implements ITickable
             {
                 double d3 = (double)i + 0.5D;
                 double d2 = (double)k + 0.5D;
-                this.worldObj.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d2, SoundEvents.BLOCK_ENDERCHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+                this.world.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d2, SoundEvents.BLOCK_ENDERCHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
             }
 
             if (this.lidAngle < 0.0F)
@@ -96,18 +96,18 @@ public class TileEntityEnderChest extends TileEntity implements ITickable
     public void openChest()
     {
         ++this.numPlayersUsing;
-        this.worldObj.addBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.numPlayersUsing);
+        this.world.addBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.numPlayersUsing);
     }
 
     public void closeChest()
     {
         --this.numPlayersUsing;
-        this.worldObj.addBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.numPlayersUsing);
+        this.world.addBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.numPlayersUsing);
     }
 
     public boolean canBeUsed(EntityPlayer player)
     {
-        if (this.worldObj.getTileEntity(this.pos) != this)
+        if (this.world.getTileEntity(this.pos) != this)
         {
             return false;
         }

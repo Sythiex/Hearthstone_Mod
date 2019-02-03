@@ -23,9 +23,17 @@ public class BlockRailPowered extends BlockRailBase
     });
     public static final PropertyBool POWERED = PropertyBool.create("powered");
 
+    private final boolean isActivator;
+
     protected BlockRailPowered()
     {
+        this(false);
+    }
+
+    protected BlockRailPowered(boolean isActivator)
+    {
         super(true);
+        this.isActivator = isActivator;
         this.setDefaultState(this.blockState.getBaseState().withProperty(SHAPE, BlockRailBase.EnumRailDirection.NORTH_SOUTH).withProperty(POWERED, Boolean.valueOf(false)));
     }
 
@@ -146,7 +154,7 @@ public class BlockRailPowered extends BlockRailBase
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getBlock() != this)
+        if (!(iblockstate.getBlock() instanceof BlockRailPowered) || isActivator != ((BlockRailPowered)iblockstate.getBlock()).isActivator)
         {
             return false;
         }
@@ -179,19 +187,19 @@ public class BlockRailPowered extends BlockRailBase
         }
     }
 
-    protected void updateState(IBlockState p_189541_1_, World p_189541_2_, BlockPos p_189541_3_, Block p_189541_4_)
+    protected void updateState(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        boolean flag = ((Boolean)p_189541_1_.getValue(POWERED)).booleanValue();
-        boolean flag1 = p_189541_2_.isBlockPowered(p_189541_3_) || this.findPoweredRailSignal(p_189541_2_, p_189541_3_, p_189541_1_, true, 0) || this.findPoweredRailSignal(p_189541_2_, p_189541_3_, p_189541_1_, false, 0);
+        boolean flag = ((Boolean)state.getValue(POWERED)).booleanValue();
+        boolean flag1 = worldIn.isBlockPowered(pos) || this.findPoweredRailSignal(worldIn, pos, state, true, 0) || this.findPoweredRailSignal(worldIn, pos, state, false, 0);
 
         if (flag1 != flag)
         {
-            p_189541_2_.setBlockState(p_189541_3_, p_189541_1_.withProperty(POWERED, Boolean.valueOf(flag1)), 3);
-            p_189541_2_.notifyNeighborsOfStateChange(p_189541_3_.down(), this, false);
+            worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(flag1)), 3);
+            worldIn.notifyNeighborsOfStateChange(pos.down(), this, false);
 
-            if (((BlockRailBase.EnumRailDirection)p_189541_1_.getValue(SHAPE)).isAscending())
+            if (((BlockRailBase.EnumRailDirection)state.getValue(SHAPE)).isAscending())
             {
-                p_189541_2_.notifyNeighborsOfStateChange(p_189541_3_.up(), this, false);
+                worldIn.notifyNeighborsOfStateChange(pos.up(), this, false);
             }
         }
     }

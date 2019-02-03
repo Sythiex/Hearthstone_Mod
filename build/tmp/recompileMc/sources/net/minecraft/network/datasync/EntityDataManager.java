@@ -39,7 +39,7 @@ public class EntityDataManager
 
     public static <T> DataParameter<T> createKey(Class <? extends Entity > clazz, DataSerializer<T> serializer)
     {
-        if (LOGGER.isDebugEnabled())
+        if (true || LOGGER.isDebugEnabled()) //Forge: This is very useful for mods that register keys on classes that are not their own
         {
             try
             {
@@ -47,7 +47,9 @@ public class EntityDataManager
 
                 if (!oclass.equals(clazz))
                 {
-                    LOGGER.debug("defineId called for: {} from {}", clazz, oclass, new RuntimeException());
+                    //Forge: log at warn, mods should not add to classes that they don't own, and only add stacktrace when in debug is enabled as it is mostly not needed and consumes time
+                    if (LOGGER.isDebugEnabled()) LOGGER.warn("defineId called for: {} from {}", clazz, oclass, new RuntimeException());
+                    else LOGGER.warn("defineId called for: {} from {}", clazz, oclass);
                 }
             }
             catch (ClassNotFoundException var5)
@@ -209,7 +211,7 @@ public class EntityDataManager
                         list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
                     }
 
-                    list.add(dataentry.func_192735_d());
+                    list.add(dataentry.copy());
                 }
             }
 
@@ -246,7 +248,7 @@ public class EntityDataManager
                 list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
             }
 
-            list.add(dataentry.func_192735_d());
+            list.add(dataentry.copy());
         }
 
         this.lock.readLock().unlock();
@@ -265,7 +267,7 @@ public class EntityDataManager
         else
         {
             buf.writeByte(dataparameter.getId());
-            buf.writeVarIntToBuffer(i);
+            buf.writeVarInt(i);
             dataparameter.getSerializer().write(buf, entry.getValue());
         }
     }
@@ -283,7 +285,7 @@ public class EntityDataManager
                 list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
             }
 
-            int j = buf.readVarIntFromBuffer();
+            int j = buf.readVarInt();
             DataSerializer<?> dataserializer = DataSerializers.getSerializer(j);
 
             if (dataserializer == null)
@@ -379,9 +381,9 @@ public class EntityDataManager
                 this.dirty = dirtyIn;
             }
 
-            public EntityDataManager.DataEntry<T> func_192735_d()
+            public EntityDataManager.DataEntry<T> copy()
             {
-                return new EntityDataManager.DataEntry<T>(this.key, this.key.getSerializer().func_192717_a(this.value));
+                return new EntityDataManager.DataEntry<T>(this.key, this.key.getSerializer().copyValue(this.value));
             }
         }
 }

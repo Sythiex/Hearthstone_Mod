@@ -23,9 +23,9 @@ public class ItemLead extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        Block block = playerIn.getBlockState(worldIn).getBlock();
+        Block block = worldIn.getBlockState(pos).getBlock();
 
         if (!(block instanceof BlockFence))
         {
@@ -33,9 +33,9 @@ public class ItemLead extends Item
         }
         else
         {
-            if (!playerIn.isRemote)
+            if (!worldIn.isRemote)
             {
-                attachToFence(stack, playerIn, worldIn);
+                attachToFence(player, worldIn, pos);
             }
 
             return EnumActionResult.SUCCESS;
@@ -53,14 +53,14 @@ public class ItemLead extends Item
 
         for (EntityLiving entityliving : worldIn.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB((double)i - 7.0D, (double)j - 7.0D, (double)k - 7.0D, (double)i + 7.0D, (double)j + 7.0D, (double)k + 7.0D)))
         {
-            if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player)
+            if (entityliving.getLeashed() && entityliving.getLeashHolder() == player)
             {
                 if (entityleashknot == null)
                 {
                     entityleashknot = EntityLeashKnot.createKnot(worldIn, fence);
                 }
 
-                entityliving.setLeashedToEntity(entityleashknot, true);
+                entityliving.setLeashHolder(entityleashknot, true);
                 flag = true;
             }
         }

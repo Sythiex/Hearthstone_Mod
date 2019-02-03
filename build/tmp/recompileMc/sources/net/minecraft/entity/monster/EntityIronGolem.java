@@ -45,7 +45,7 @@ public class EntityIronGolem extends EntityGolem
     /** deincrements, and a distance-to-home check is done at 0 */
     private int homeCheckTimer;
     @Nullable
-    Village villageObj;
+    Village village;
     private int attackTimer;
     private int holdRoseTick;
 
@@ -87,16 +87,16 @@ public class EntityIronGolem extends EntityGolem
         if (--this.homeCheckTimer <= 0)
         {
             this.homeCheckTimer = 70 + this.rand.nextInt(50);
-            this.villageObj = this.worldObj.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
+            this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
 
-            if (this.villageObj == null)
+            if (this.village == null)
             {
                 this.detachHome();
             }
             else
             {
-                BlockPos blockpos = this.villageObj.getCenter();
-                this.setHomePosAndDistance(blockpos, (int)((float)this.villageObj.getVillageRadius() * 0.6F));
+                BlockPos blockpos = this.village.getCenter();
+                this.setHomePosAndDistance(blockpos, (int)((float)this.village.getVillageRadius() * 0.6F));
             }
         }
 
@@ -149,14 +149,14 @@ public class EntityIronGolem extends EntityGolem
 
         if (this.motionX * this.motionX + this.motionZ * this.motionZ > 2.500000277905201E-7D && this.rand.nextInt(5) == 0)
         {
-            int i = MathHelper.floor_double(this.posX);
-            int j = MathHelper.floor_double(this.posY - 0.20000000298023224D);
-            int k = MathHelper.floor_double(this.posZ);
-            IBlockState iblockstate = this.worldObj.getBlockState(new BlockPos(i, j, k));
+            int i = MathHelper.floor(this.posX);
+            int j = MathHelper.floor(this.posY - 0.20000000298023224D);
+            int k = MathHelper.floor(this.posZ);
+            IBlockState iblockstate = this.world.getBlockState(new BlockPos(i, j, k));
 
             if (iblockstate.getMaterial() != Material.AIR)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, this.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, 4.0D * ((double)this.rand.nextFloat() - 0.5D), 0.5D, ((double)this.rand.nextFloat() - 0.5D) * 4.0D, Block.getStateId(iblockstate));
+                this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, this.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, 4.0D * ((double)this.rand.nextFloat() - 0.5D), 0.5D, ((double)this.rand.nextFloat() - 0.5D) * 4.0D, Block.getStateId(iblockstate));
             }
         }
     }
@@ -202,7 +202,7 @@ public class EntityIronGolem extends EntityGolem
     public boolean attackEntityAsMob(Entity entityIn)
     {
         this.attackTimer = 10;
-        this.worldObj.setEntityState(this, (byte)4);
+        this.world.setEntityState(this, (byte)4);
         boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float)(7 + this.rand.nextInt(15)));
 
         if (flag)
@@ -215,6 +215,9 @@ public class EntityIronGolem extends EntityGolem
         return flag;
     }
 
+    /**
+     * Handler for {@link World#setEntityState}
+     */
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {
@@ -239,7 +242,7 @@ public class EntityIronGolem extends EntityGolem
 
     public Village getVillage()
     {
-        return this.villageObj;
+        return this.village;
     }
 
     @SideOnly(Side.CLIENT)
@@ -253,16 +256,16 @@ public class EntityIronGolem extends EntityGolem
         if (p_70851_1_)
         {
             this.holdRoseTick = 400;
-            this.worldObj.setEntityState(this, (byte)11);
+            this.world.setEntityState(this, (byte)11);
         }
         else
         {
             this.holdRoseTick = 0;
-            this.worldObj.setEntityState(this, (byte)34);
+            this.world.setEntityState(this, (byte)34);
         }
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_IRONGOLEM_HURT;
     }
@@ -312,9 +315,9 @@ public class EntityIronGolem extends EntityGolem
      */
     public void onDeath(DamageSource cause)
     {
-        if (!this.isPlayerCreated() && this.attackingPlayer != null && this.villageObj != null)
+        if (!this.isPlayerCreated() && this.attackingPlayer != null && this.village != null)
         {
-            this.villageObj.modifyPlayerReputation(this.attackingPlayer.getUniqueID(), -5);
+            this.village.modifyPlayerReputation(this.attackingPlayer.getUniqueID(), -5);
         }
 
         super.onDeath(cause);

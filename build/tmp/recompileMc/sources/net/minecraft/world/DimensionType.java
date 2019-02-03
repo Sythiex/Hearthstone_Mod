@@ -91,7 +91,7 @@ public enum DimensionType
     }
     //TODO: Unregister? There is no way to really delete a enum value...
 
-    public static DimensionType func_193417_a(String p_193417_0_)
+    public static DimensionType byName(String p_193417_0_)
     {
         for (DimensionType dimensiontype : values())
         {

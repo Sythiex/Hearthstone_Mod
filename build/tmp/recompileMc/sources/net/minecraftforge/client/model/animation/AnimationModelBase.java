@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -92,7 +92,7 @@ public class AnimationModelBase<T extends Entity> extends ModelBase implements I
         builder.setTranslation(-0.5, -1.5, -0.5);
 
         lighter.setParent(new VertexBufferConsumer(builder));
-        lighter.setWorld(entity.worldObj);
+        lighter.setWorld(entity.world);
         lighter.setState(Blocks.AIR.getDefaultState());
         lighter.setBlockPos(pos);
         boolean empty = true;

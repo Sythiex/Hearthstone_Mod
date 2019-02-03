@@ -18,7 +18,7 @@ public class CommandTrigger extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "trigger";
     }
@@ -34,7 +34,7 @@ public class CommandTrigger extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.trigger.usage";
     }
@@ -68,7 +68,7 @@ public class CommandTrigger extends CommandBase
                 entityplayermp = (EntityPlayerMP)entity;
             }
 
-            Scoreboard scoreboard = server.worldServerForDimension(0).getScoreboard();
+            Scoreboard scoreboard = server.getWorld(0).getScoreboard();
             ScoreObjective scoreobjective = scoreboard.getObjective(args[0]);
 
             if (scoreobjective != null && scoreobjective.getCriteria() == IScoreCriteria.TRIGGER)
@@ -122,11 +122,11 @@ public class CommandTrigger extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
         if (args.length == 1)
         {
-            Scoreboard scoreboard = server.worldServerForDimension(0).getScoreboard();
+            Scoreboard scoreboard = server.getWorld(0).getScoreboard();
             List<String> list = Lists.<String>newArrayList();
 
             for (ScoreObjective scoreobjective : scoreboard.getScoreObjectives())

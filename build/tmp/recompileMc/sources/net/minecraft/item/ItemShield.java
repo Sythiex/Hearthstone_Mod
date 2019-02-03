@@ -40,7 +40,7 @@ public class ItemShield extends Item
     {
         if (stack.getSubCompound("BlockEntityTag") != null)
         {
-            EnumDyeColor enumdyecolor = TileEntityBanner.func_190616_d(stack);
+            EnumDyeColor enumdyecolor = TileEntityBanner.getColor(stack);
             return I18n.translateToLocal("item.shield." + enumdyecolor.getUnlocalizedName() + ".name");
         }
         else
@@ -53,7 +53,7 @@ public class ItemShield extends Item
      * allows items to add custom lines of information to the mouseover description
      */
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced)
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         ItemBanner.appendHoverTextFromTileEntityTag(stack, tooltip);
     }
@@ -77,15 +77,18 @@ public class ItemShield extends Item
     /**
      * Called when the equipped item is right clicked.
      */
-    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        ItemStack itemstack = worldIn.getHeldItem(playerIn);
-        worldIn.setActiveHand(playerIn);
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        playerIn.setActiveHand(handIn);
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
     }
 
     /**
      * Return whether this item is repairable in an anvil.
+     *  
+     * @param toRepair the {@code ItemStack} being repaired
+     * @param repair the {@code ItemStack} being used to perform the repair
      */
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
     {

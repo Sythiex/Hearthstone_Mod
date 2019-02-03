@@ -23,15 +23,15 @@ import org.apache.logging.log4j.Logger;
 public class TextureManager implements ITickable, IResourceManagerReloadListener
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final ResourceLocation field_194008_a = new ResourceLocation("");
+    public static final ResourceLocation RESOURCE_LOCATION_EMPTY = new ResourceLocation("");
     private final Map<ResourceLocation, ITextureObject> mapTextureObjects = Maps.<ResourceLocation, ITextureObject>newHashMap();
     private final List<ITickable> listTickables = Lists.<ITickable>newArrayList();
     private final Map<String, Integer> mapTextureCounters = Maps.<String, Integer>newHashMap();
-    private final IResourceManager theResourceManager;
+    private final IResourceManager resourceManager;
 
     public TextureManager(IResourceManager resourceManager)
     {
-        this.theResourceManager = resourceManager;
+        this.resourceManager = resourceManager;
     }
 
     public void bindTexture(ResourceLocation resource)
@@ -66,11 +66,11 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
 
         try
         {
-            textureObj.loadTexture(this.theResourceManager);
+            textureObj.loadTexture(this.resourceManager);
         }
         catch (IOException ioexception)
         {
-            if (textureLocation != field_194008_a)
+            if (textureLocation != RESOURCE_LOCATION_EMPTY)
             {
                 LOGGER.warn("Failed to load texture: {}", textureLocation, ioexception);
             }
@@ -85,7 +85,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Registering texture");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Resource location being registered");
             crashreportcategory.addCrashSection("Resource location", textureLocation);
-            crashreportcategory.setDetail("Texture object class", new ICrashReportDetail<String>()
+            crashreportcategory.addDetail("Texture object class", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {

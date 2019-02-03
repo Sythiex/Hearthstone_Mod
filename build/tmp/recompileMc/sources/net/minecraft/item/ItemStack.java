@@ -52,16 +52,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public final class ItemStack implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
-    public static final ItemStack field_190927_a = new ItemStack((Item)null);
+    public static final ItemStack EMPTY = new ItemStack((Item)null);
     public static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
     /** Size of the stack. */
     private int stackSize;
     /** Number of animation frames to go when receiving an item (by walking into it, for example). */
     private int animationsToGo;
     private final Item item;
-    /** A NBTTagMap containing data about an ItemStack. Can only be used for non stackable items */
+    /** An NBTTagCompound containing data about an ItemStack. */
     private NBTTagCompound stackTagCompound;
-    private boolean field_190928_g;
+    private boolean isEmpty;
     int itemDamage;
     /** Item frame this stack is on, or null if not on an item frame. */
     private EntityItemFrame itemFrame;
@@ -112,43 +112,43 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
             this.itemDamage = 0;
         }
 
-        this.func_190923_F();
+        this.updateEmptyState();
         this.forgeInit();
     }
 
-    private void func_190923_F()
+    private void updateEmptyState()
     {
-        this.field_190928_g = this.func_190926_b();
+        this.isEmpty = this.isEmpty();
     }
 
-    public ItemStack(NBTTagCompound p_i47263_1_)
+    public ItemStack(NBTTagCompound compound)
     {
-        this.capNBT = p_i47263_1_.hasKey("ForgeCaps") ? p_i47263_1_.getCompoundTag("ForgeCaps") : null;
-        this.item = p_i47263_1_.hasKey("id", 8) ? Item.getByNameOrId(p_i47263_1_.getString("id")) : Item.getItemFromBlock(Blocks.AIR); //Forge fix tons of NumberFormatExceptions that are caused by deserializing EMPTY ItemStacks.
-        this.stackSize = p_i47263_1_.getByte("Count");
-        this.itemDamage = Math.max(0, p_i47263_1_.getShort("Damage"));
+        this.capNBT = compound.hasKey("ForgeCaps") ? compound.getCompoundTag("ForgeCaps") : null;
+        this.item = compound.hasKey("id", 8) ? Item.getByNameOrId(compound.getString("id")) : Items.AIR; //Forge fix tons of NumberFormatExceptions that are caused by deserializing EMPTY ItemStacks.
+        this.stackSize = compound.getByte("Count");
+        this.itemDamage = Math.max(0, compound.getShort("Damage"));
 
-        if (p_i47263_1_.hasKey("tag", 10))
+        if (compound.hasKey("tag", 10))
         {
-            this.stackTagCompound = p_i47263_1_.getCompoundTag("tag");
+            this.stackTagCompound = compound.getCompoundTag("tag");
 
             if (this.item != null)
             {
-                this.item.updateItemStackNBT(p_i47263_1_);
+                this.item.updateItemStackNBT(compound);
             }
         }
 
-        this.func_190923_F();
+        this.updateEmptyState();
         this.forgeInit();
     }
 
-    public boolean func_190926_b()
+    public boolean isEmpty()
     {
-        if (this == field_190927_a)
+        if (this == EMPTY)
         {
             return true;
         }
-        else if (this.getItemRaw() != null && this.getItemRaw() != Item.getItemFromBlock(Blocks.AIR))
+        else if (this.getItemRaw() != null && this.getItemRaw() != Items.AIR)
         {
             if (this.stackSize <= 0)
             {
@@ -178,8 +178,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     {
         int i = Math.min(amount, this.stackSize);
         ItemStack itemstack = this.copy();
-        itemstack.func_190920_e(i);
-        this.func_190918_g(i);
+        itemstack.setCount(i);
+        this.shrink(i);
         return itemstack;
     }
 
@@ -188,7 +188,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public Item getItem()
     {
-        return this.field_190928_g || this.delegate == null ? Item.getItemFromBlock(Blocks.AIR) : this.delegate.get();
+        return this.isEmpty || this.delegate == null ? Items.AIR : this.delegate.get();
     }
 
     /**
@@ -221,9 +221,9 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return enumactionresult;
     }
 
-    public float getStrVsBlock(IBlockState blockIn)
+    public float getDestroySpeed(IBlockState blockIn)
     {
-        return this.getItem().getStrVsBlock(this, blockIn);
+        return this.getItem().getDestroySpeed(this, blockIn);
     }
 
     /**
@@ -287,7 +287,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean isItemStackDamageable()
     {
-        if (this.field_190928_g)
+        if (this.isEmpty)
         {
             return false;
         }
@@ -343,7 +343,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      * getMaxDamage(). Returns false otherwise or if the ItemStack can't be damaged or if all points of damage are
      * negated.
      */
-    public boolean attemptDamageItem(int amount, Random rand, @Nullable EntityPlayerMP p_96631_3_)
+    public boolean attemptDamageItem(int amount, Random rand, @Nullable EntityPlayerMP damager)
     {
         if (!this.isItemStackDamageable())
         {
@@ -372,9 +372,9 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 }
             }
 
-            if (p_96631_3_ != null && amount != 0)
+            if (damager != null && amount != 0)
             {
-                CriteriaTriggers.field_193132_s.func_193158_a(p_96631_3_, this, this.itemDamage + amount);
+                CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(damager, this, this.itemDamage + amount);
             }
 
             setItemDamage(getItemDamage() + amount); //Redirect through Item's callback if applicable.
@@ -394,7 +394,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 if (this.attemptDamageItem(amount, entityIn.getRNG(), entityIn instanceof EntityPlayerMP ? (EntityPlayerMP)entityIn : null))
                 {
                     entityIn.renderBrokenItemStack(this);
-                    this.func_190918_g(1);
+                    this.shrink(1);
 
                     if (entityIn instanceof EntityPlayer)
                     {
@@ -454,7 +454,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     public ItemStack copy()
     {
         ItemStack itemstack = new ItemStack(this.item, this.stackSize, this.itemDamage, this.capabilities != null ? this.capabilities.serializeNBT() : null);
-        itemstack.func_190915_d(this.func_190921_D());
+        itemstack.setAnimationsToGo(this.getAnimationsToGo());
 
         if (this.stackTagCompound != null)
         {
@@ -466,11 +466,11 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
     public static boolean areItemStackTagsEqual(ItemStack stackA, ItemStack stackB)
     {
-        if (stackA.func_190926_b() && stackB.func_190926_b())
+        if (stackA.isEmpty() && stackB.isEmpty())
         {
             return true;
         }
-        else if (!stackA.func_190926_b() && !stackB.func_190926_b())
+        else if (!stackA.isEmpty() && !stackB.isEmpty())
         {
             if (stackA.stackTagCompound == null && stackB.stackTagCompound != null)
             {
@@ -492,13 +492,13 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public static boolean areItemStacksEqual(ItemStack stackA, ItemStack stackB)
     {
-        if (stackA.func_190926_b() && stackB.func_190926_b())
+        if (stackA.isEmpty() && stackB.isEmpty())
         {
             return true;
         }
         else
         {
-            return !stackA.func_190926_b() && !stackB.func_190926_b() ? stackA.isItemStackEqual(stackB) : false;
+            return !stackA.isEmpty() && !stackB.isEmpty() ? stackA.isItemStackEqual(stackB) : false;
         }
     }
 
@@ -540,7 +540,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         }
         else
         {
-            return !stackA.func_190926_b() && !stackB.func_190926_b() ? stackA.isItemEqual(stackB) : false;
+            return !stackA.isEmpty() && !stackB.isEmpty() ? stackA.isItemEqual(stackB) : false;
         }
     }
 
@@ -552,7 +552,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         }
         else
         {
-            return !stackA.func_190926_b() && !stackB.func_190926_b() ? stackA.isItemEqualIgnoreDurability(stackB) : false;
+            return !stackA.isEmpty() && !stackB.isEmpty() ? stackA.isItemEqualIgnoreDurability(stackB) : false;
         }
     }
 
@@ -562,7 +562,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean isItemEqual(ItemStack other)
     {
-        return !other.func_190926_b() && this.item == other.item && this.itemDamage == other.itemDamage;
+        return !other.isEmpty() && this.item == other.item && this.itemDamage == other.itemDamage;
     }
 
     public boolean isItemEqualIgnoreDurability(ItemStack stack)
@@ -573,7 +573,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         }
         else
         {
-            return !stack.func_190926_b() && this.item == stack.item;
+            return !stack.isEmpty() && this.item == stack.item;
         }
     }
 
@@ -633,7 +633,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean hasTagCompound()
     {
-        return !this.field_190928_g && this.stackTagCompound != null;
+        return !this.isEmpty && this.stackTagCompound != null;
     }
 
     /**
@@ -645,16 +645,16 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return this.stackTagCompound;
     }
 
-    public NBTTagCompound func_190925_c(String p_190925_1_)
+    public NBTTagCompound getOrCreateSubCompound(String key)
     {
-        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(p_190925_1_, 10))
+        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(key, 10))
         {
-            return this.stackTagCompound.getCompoundTag(p_190925_1_);
+            return this.stackTagCompound.getCompoundTag(key);
         }
         else
         {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
-            this.setTagInfo(p_190925_1_, nbttagcompound);
+            this.setTagInfo(key, nbttagcompound);
             return nbttagcompound;
         }
     }
@@ -668,11 +668,11 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return this.stackTagCompound != null && this.stackTagCompound.hasKey(key, 10) ? this.stackTagCompound.getCompoundTag(key) : null;
     }
 
-    public void func_190919_e(String p_190919_1_)
+    public void removeSubCompound(String key)
     {
-        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(p_190919_1_, 10))
+        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(key, 10))
         {
-            this.stackTagCompound.removeTag(p_190919_1_);
+            this.stackTagCompound.removeTag(key);
         }
     }
 
@@ -712,15 +712,15 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return this.getItem().getItemStackDisplayName(this);
     }
 
-    public ItemStack func_190924_f(String p_190924_1_)
+    public ItemStack setTranslatableName(String p_190924_1_)
     {
-        this.func_190925_c("display").setString("LocName", p_190924_1_);
+        this.getOrCreateSubCompound("display").setString("LocName", p_190924_1_);
         return this;
     }
 
     public ItemStack setStackDisplayName(String displayName)
     {
-        this.func_190925_c("display").setString("Name", displayName);
+        this.getOrCreateSubCompound("display").setString("Name", displayName);
         return this;
     }
 
@@ -737,7 +737,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
             if (nbttagcompound.hasNoTags())
             {
-                this.func_190919_e("display");
+                this.removeSubCompound("display");
             }
         }
 
@@ -772,7 +772,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         s = s + TextFormatting.RESET;
 
-        if (advanced.func_194127_a())
+        if (advanced.isAdvanced())
         {
             String s1 = "";
 
@@ -808,7 +808,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if ((i1 & 32) == 0)
         {
-            this.getItem().addInformation(this, playerIn == null ? null : playerIn.worldObj, list, advanced);
+            this.getItem().addInformation(this, playerIn == null ? null : playerIn.world, list, advanced);
         }
 
         if (this.hasTagCompound())
@@ -837,7 +837,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
                 if (nbttagcompound1.hasKey("color", 3))
                 {
-                    if (advanced.func_194127_a())
+                    if (advanced.isAdvanced())
                     {
                         list.add(I18n.translateToLocalFormatted("item.color", String.format("#%06X", nbttagcompound1.getInteger("color"))));
                     }
@@ -975,7 +975,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
             }
         }
 
-        if (advanced.func_194127_a())
+        if (advanced.isAdvanced())
         {
             if (this.isItemDamaged())
             {
@@ -1010,7 +1010,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean isItemEnchantable()
     {
-        if (!this.getItem().isItemTool(this))
+        if (!this.getItem().isEnchantable(this))
         {
             return false;
         }
@@ -1067,6 +1067,13 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         this.stackTagCompound.setTag(key, value);
     }
 
+    /**
+     * Returns whether this stack is always allowed to edit the world. Forces {@link
+     * net.minecraft.entity.player.EntityPlayer#canPlayerEdit EntityPlayer#canPlayerEdit} to return {@code true}.
+     * 
+     * @return whether this stack ignores other restrictions on how a player can modify the world.
+     * @see Item#canItemEditBlocks
+     */
     public boolean canEditBlocks()
     {
         return this.getItem().canItemEditBlocks();
@@ -1094,7 +1101,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     @Nullable
     public EntityItemFrame getItemFrame()
     {
-        return this.field_190928_g ? null : this.itemFrame;
+        return this.isEmpty ? null : this.itemFrame;
     }
 
     /**
@@ -1188,7 +1195,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         ITextComponent itextcomponent = (new TextComponentString("[")).appendSibling(textcomponentstring).appendText("]");
 
-        if (!this.field_190928_g)
+        if (!this.isEmpty)
         {
             NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
             itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -1229,6 +1236,14 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         }
     }
 
+    /**
+     * Returns whether this stack is explicitly allowed to be used on the given block via the {@code "CanPlaceOn"} NBT
+     * tag.
+     * 
+     * @return whether the {@code "CanPlaceOn"} tag contains the given block.
+     *  
+     * @param blockIn the block the NBT is being tested for
+     */
     public boolean canPlaceOn(Block blockIn)
     {
         if (blockIn == this.canPlaceOnCacheBlock)
@@ -1260,48 +1275,48 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         }
     }
 
-    public int func_190921_D()
+    public int getAnimationsToGo()
     {
         return this.animationsToGo;
     }
 
-    public void func_190915_d(int p_190915_1_)
+    public void setAnimationsToGo(int animations)
     {
-        this.animationsToGo = p_190915_1_;
+        this.animationsToGo = animations;
     }
 
-    public int func_190916_E()
+    public int getCount()
     {
-        return this.field_190928_g ? 0 : this.stackSize;
+        return this.isEmpty ? 0 : this.stackSize;
     }
 
-    public void func_190920_e(int p_190920_1_)
+    public void setCount(int size)
     {
-        this.stackSize = p_190920_1_;
-        this.func_190923_F();
+        this.stackSize = size;
+        this.updateEmptyState();
     }
 
-    public void func_190917_f(int p_190917_1_)
+    public void grow(int quantity)
     {
-        this.func_190920_e(this.stackSize + p_190917_1_);
+        this.setCount(this.stackSize + quantity);
     }
 
-    public void func_190918_g(int p_190918_1_)
+    public void shrink(int quantity)
     {
-        this.func_190917_f(-p_190918_1_);
+        this.grow(-quantity);
     }
 
     @Override
     public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
-        return this.field_190928_g  || this.capabilities == null ? false : this.capabilities.hasCapability(capability, facing);
+        return this.isEmpty  || this.capabilities == null ? false : this.capabilities.hasCapability(capability, facing);
     }
 
     @Override
     @Nullable
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
-        return this.field_190928_g  || this.capabilities == null ? null : this.capabilities.getCapability(capability, facing);
+        return this.isEmpty  || this.capabilities == null ? null : this.capabilities.getCapability(capability, facing);
     }
 
     public void deserializeNBT(NBTTagCompound nbt)
@@ -1357,6 +1372,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      * Internal call to get the actual item, not the delegate.
      * In all other methods, FML replaces calls to this.item with the item delegate.
      */
+    @Nullable
     private Item getItemRaw()
     {
         return this.item;
@@ -1369,10 +1385,10 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public static boolean areItemStacksEqualUsingNBTShareTag(ItemStack stackA, ItemStack stackB)
     {
-        if (stackA.func_190926_b())
-            return stackB.func_190926_b();
+        if (stackA.isEmpty())
+            return stackB.isEmpty();
         else
-            return !stackB.func_190926_b() && stackA.isItemStackEqualUsingNBTShareTag(stackB);
+            return !stackB.isEmpty() && stackA.isItemStackEqualUsingNBTShareTag(stackB);
     }
 
     /**
@@ -1398,5 +1414,19 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
             return shareTagB == null;
         else
             return shareTagB != null && shareTagA.equals(shareTagB);
+    }
+
+    /**
+     *
+     * Should this item, when held, allow sneak-clicks to pass through to the underlying block?
+     *
+     * @param world The world
+     * @param pos Block position in world
+     * @param player The Player that is wielding the item
+     * @return
+     */
+    public boolean doesSneakBypassUse(net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
+    {
+        return this.isEmpty() || this.getItem().doesSneakBypassUse(this, world, pos, player);
     }
 }

@@ -26,7 +26,7 @@ public class BlockStaticLiquid extends BlockLiquid
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!this.checkForMixing(worldIn, pos, state))
         {
@@ -62,17 +62,17 @@ public class BlockStaticLiquid extends BlockLiquid
                             return;
                         }
 
-                        Block block = worldIn.getBlockState(blockpos).getBlock();
+                        IBlockState block = worldIn.getBlockState(blockpos);
 
-                        if (block.blockMaterial == Material.AIR)
+                        if (block.getBlock().isAir(block, worldIn, blockpos))
                         {
                             if (this.isSurroundingBlockFlammable(worldIn, blockpos))
                             {
-                                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
+                                worldIn.setBlockState(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos, pos, Blocks.FIRE.getDefaultState()));
                                 return;
                             }
                         }
-                        else if (block.blockMaterial.blocksMovement())
+                        else if (block.getMaterial().blocksMovement())
                         {
                             return;
                         }
@@ -91,7 +91,7 @@ public class BlockStaticLiquid extends BlockLiquid
 
                         if (worldIn.isAirBlock(blockpos1.up()) && this.getCanBlockBurn(worldIn, blockpos1))
                         {
-                            worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
+                            worldIn.setBlockState(blockpos1.up(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos1.up(), pos, Blocks.FIRE.getDefaultState()));
                         }
                     }
                 }

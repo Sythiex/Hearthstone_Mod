@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,7 +49,7 @@ public class AnvilUpdateEvent extends Event
     {
         this.left = left;
         this.right = right;
-        this.output = ItemStack.field_190927_a;
+        this.output = ItemStack.EMPTY;
         this.name = name;
         this.setCost(cost);
         this.setMaterialCost(0);

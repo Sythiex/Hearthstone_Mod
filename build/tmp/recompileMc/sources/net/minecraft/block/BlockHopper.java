@@ -62,7 +62,7 @@ public class BlockHopper extends BlockContainer
         return FULL_BLOCK_AABB;
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
     {
         addCollisionBoxToList(pos, entityBox, collidingBoxes, BASE_AABB);
         addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_AABB);
@@ -75,7 +75,7 @@ public class BlockHopper extends BlockContainer
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         EnumFacing enumfacing = facing.getOpposite();
 
@@ -108,15 +108,15 @@ public class BlockHopper extends BlockContainer
 
             if (tileentity instanceof TileEntityHopper)
             {
-                ((TileEntityHopper)tileentity).func_190575_a(stack.getDisplayName());
+                ((TileEntityHopper)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
 
     /**
-     * Checks if an IBlockState represents a block that is opaque and a full cube.
+     * Determines if the block is solid enough on the top side to support other blocks, like redstone components.
      */
-    public boolean isFullyOpaque(IBlockState state)
+    public boolean isTopSolid(IBlockState state)
     {
         return true;
     }
@@ -129,7 +129,10 @@ public class BlockHopper extends BlockContainer
         this.updateState(worldIn, pos, state);
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
+    /**
+     * Called when the block is right clicked by a player.
+     */
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -154,7 +157,7 @@ public class BlockHopper extends BlockContainer
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         this.updateState(worldIn, pos, state);
     }
@@ -290,8 +293,17 @@ public class BlockHopper extends BlockContainer
         return new BlockStateContainer(this, new IProperty[] {FACING, ENABLED});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        return p_193383_4_ == EnumFacing.UP ? BlockFaceShape.BOWL : BlockFaceShape.UNDEFINED;
+        return face == EnumFacing.UP ? BlockFaceShape.BOWL : BlockFaceShape.UNDEFINED;
     }
 }

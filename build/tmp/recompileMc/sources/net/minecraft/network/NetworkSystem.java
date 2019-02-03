@@ -86,6 +86,7 @@ public class NetworkSystem
      */
     public void addLanEndpoint(InetAddress address, int port) throws IOException
     {
+        if (address instanceof java.net.Inet6Address) System.setProperty("java.net.preferIPv4Stack", "false");
         synchronized (this.endpoints)
         {
             Class <? extends ServerSocketChannel > oclass;
@@ -201,7 +202,7 @@ public class NetworkSystem
                             {
                                 CrashReport crashreport = CrashReport.makeCrashReport(exception, "Ticking memory connection");
                                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Ticking connection");
-                                crashreportcategory.setDetail("Connection", new ICrashReportDetail<String>()
+                                crashreportcategory.addDetail("Connection", new ICrashReportDetail<String>()
                                 {
                                     public String call() throws Exception
                                     {

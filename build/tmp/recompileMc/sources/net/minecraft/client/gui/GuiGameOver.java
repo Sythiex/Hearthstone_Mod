@@ -17,9 +17,9 @@ public class GuiGameOver extends GuiScreen
     private int enableButtonsTimer;
     private final ITextComponent causeOfDeath;
 
-    public GuiGameOver(@Nullable ITextComponent p_i46598_1_)
+    public GuiGameOver(@Nullable ITextComponent causeOfDeathIn)
     {
-        this.causeOfDeath = p_i46598_1_;
+        this.causeOfDeath = causeOfDeathIn;
     }
 
     /**
@@ -31,7 +31,7 @@ public class GuiGameOver extends GuiScreen
         this.buttonList.clear();
         this.enableButtonsTimer = 0;
 
-        if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled())
+        if (this.mc.world.getWorldInfo().isHardcoreModeEnabled())
         {
             this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 72, I18n.format("deathScreen.spectate")));
             this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 96, I18n.format("deathScreen." + (this.mc.isIntegratedServerRunning() ? "deleteWorld" : "leaveServer"))));
@@ -69,12 +69,12 @@ public class GuiGameOver extends GuiScreen
         switch (button.id)
         {
             case 0:
-                this.mc.thePlayer.respawnPlayer();
+                this.mc.player.respawnPlayer();
                 this.mc.displayGuiScreen((GuiScreen)null);
                 break;
             case 1:
 
-                if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled())
+                if (this.mc.world.getWorldInfo().isHardcoreModeEnabled())
                 {
                     this.mc.displayGuiScreen(new GuiMainMenu());
                 }
@@ -91,9 +91,9 @@ public class GuiGameOver extends GuiScreen
     {
         if (result)
         {
-            if (this.mc.theWorld != null)
+            if (this.mc.world != null)
             {
-                this.mc.theWorld.sendQuittingDisconnectingPacket();
+                this.mc.world.sendQuittingDisconnectingPacket();
             }
 
             this.mc.loadWorld((WorldClient)null);
@@ -101,7 +101,7 @@ public class GuiGameOver extends GuiScreen
         }
         else
         {
-            this.mc.thePlayer.respawnPlayer();
+            this.mc.player.respawnPlayer();
             this.mc.displayGuiScreen((GuiScreen)null);
         }
     }
@@ -111,21 +111,21 @@ public class GuiGameOver extends GuiScreen
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        boolean flag = this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled();
+        boolean flag = this.mc.world.getWorldInfo().isHardcoreModeEnabled();
         this.drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
         GlStateManager.pushMatrix();
         GlStateManager.scale(2.0F, 2.0F, 2.0F);
-        this.drawCenteredString(this.fontRendererObj, I18n.format(flag ? "deathScreen.title.hardcore" : "deathScreen.title"), this.width / 2 / 2, 30, 16777215);
+        this.drawCenteredString(this.fontRenderer, I18n.format(flag ? "deathScreen.title.hardcore" : "deathScreen.title"), this.width / 2 / 2, 30, 16777215);
         GlStateManager.popMatrix();
 
         if (this.causeOfDeath != null)
         {
-            this.drawCenteredString(this.fontRendererObj, this.causeOfDeath.getFormattedText(), this.width / 2, 85, 16777215);
+            this.drawCenteredString(this.fontRenderer, this.causeOfDeath.getFormattedText(), this.width / 2, 85, 16777215);
         }
 
-        this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.score") + ": " + TextFormatting.YELLOW + this.mc.thePlayer.getScore(), this.width / 2, 100, 16777215);
+        this.drawCenteredString(this.fontRenderer, I18n.format("deathScreen.score") + ": " + TextFormatting.YELLOW + this.mc.player.getScore(), this.width / 2, 100, 16777215);
 
-        if (this.causeOfDeath != null && mouseY > 85 && mouseY < 85 + this.fontRendererObj.FONT_HEIGHT)
+        if (this.causeOfDeath != null && mouseY > 85 && mouseY < 85 + this.fontRenderer.FONT_HEIGHT)
         {
             ITextComponent itextcomponent = this.getClickedComponentAt(mouseX);
 
@@ -147,7 +147,7 @@ public class GuiGameOver extends GuiScreen
         }
         else
         {
-            int i = this.mc.fontRendererObj.getStringWidth(this.causeOfDeath.getFormattedText());
+            int i = this.mc.fontRenderer.getStringWidth(this.causeOfDeath.getFormattedText());
             int j = this.width / 2 - i / 2;
             int k = this.width / 2 + i / 2;
             int l = j;
@@ -156,7 +156,7 @@ public class GuiGameOver extends GuiScreen
             {
                 for (ITextComponent itextcomponent : this.causeOfDeath)
                 {
-                    l += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(itextcomponent.getUnformattedComponentText(), false));
+                    l += this.mc.fontRenderer.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(itextcomponent.getUnformattedComponentText(), false));
 
                     if (l > p_184870_1_)
                     {

@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016-2018.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.client.model;
 
 import javax.vecmath.Matrix3f;
@@ -14,7 +33,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.GameSettings;
@@ -36,7 +54,6 @@ public abstract class SimpleModelFontRenderer extends FontRenderer {
     public SimpleModelFontRenderer(GameSettings settings, ResourceLocation font, TextureManager manager, boolean isUnicode, Matrix4f matrix, VertexFormat format)
     {
         super(settings, font, manager, isUnicode);
-        manager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         this.matrix = new Matrix4f(matrix);
         Matrix3f nm = new Matrix3f();
         this.matrix.getRotationScale(nm);
@@ -176,6 +193,11 @@ public abstract class SimpleModelFontRenderer extends FontRenderer {
     }
 
     @Override public void enableAlpha()
+    {
+    }
+
+    @Override
+    protected void bindTexture(ResourceLocation location)
     {
     }
 

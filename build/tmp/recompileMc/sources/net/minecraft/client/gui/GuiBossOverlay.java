@@ -35,13 +35,13 @@ public class GuiBossOverlay extends Gui
             {
                 int k = i / 2 - 91;
                 net.minecraftforge.client.event.RenderGameOverlayEvent.BossInfo event =
-                        net.minecraftforge.client.ForgeHooksClient.bossBarRenderPre(scaledresolution, bossinfoclient, k, j, 10 + this.client.fontRendererObj.FONT_HEIGHT);
+                        net.minecraftforge.client.ForgeHooksClient.bossBarRenderPre(scaledresolution, bossinfoclient, k, j, 10 + this.client.fontRenderer.FONT_HEIGHT);
                 if (!event.isCanceled()) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 this.client.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
                 this.render(k, j, bossinfoclient);
                 String s = bossinfoclient.getName().getFormattedText();
-                this.client.fontRendererObj.drawStringWithShadow(s, (float)(i / 2 - this.client.fontRendererObj.getStringWidth(s) / 2), (float)(j - 9), 16777215);
+                this.client.fontRenderer.drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
                 }
                 j += event.getIncrement();
 

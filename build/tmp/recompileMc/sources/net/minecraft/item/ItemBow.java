@@ -73,7 +73,7 @@ public class ItemBow extends Item
                 }
             }
 
-            return ItemStack.field_190927_a;
+            return ItemStack.EMPTY;
         }
     }
 
@@ -94,12 +94,12 @@ public class ItemBow extends Item
             ItemStack itemstack = this.findAmmo(entityplayer);
 
             int i = this.getMaxItemUseDuration(stack) - timeLeft;
-            i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(stack, worldIn, entityplayer, i, !itemstack.func_190926_b() || flag);
+            i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(stack, worldIn, entityplayer, i, !itemstack.isEmpty() || flag);
             if (i < 0) return;
 
-            if (!itemstack.func_190926_b() || flag)
+            if (!itemstack.isEmpty() || flag)
             {
-                if (itemstack.func_190926_b())
+                if (itemstack.isEmpty())
                 {
                     itemstack = new ItemStack(Items.ARROW);
                 }
@@ -114,7 +114,7 @@ public class ItemBow extends Item
                     {
                         ItemArrow itemarrow = (ItemArrow)(itemstack.getItem() instanceof ItemArrow ? itemstack.getItem() : Items.ARROW);
                         EntityArrow entityarrow = itemarrow.createArrow(worldIn, itemstack, entityplayer);
-                        entityarrow.setAim(entityplayer, entityplayer.rotationPitch, entityplayer.rotationYaw, 0.0F, f * 3.0F, 1.0F);
+                        entityarrow.shoot(entityplayer, entityplayer.rotationPitch, entityplayer.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 
                         if (f == 1.0F)
                         {
@@ -147,16 +147,16 @@ public class ItemBow extends Item
                             entityarrow.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
                         }
 
-                        worldIn.spawnEntityInWorld(entityarrow);
+                        worldIn.spawnEntity(entityarrow);
                     }
 
                     worldIn.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
                     if (!flag1 && !entityplayer.capabilities.isCreativeMode)
                     {
-                        itemstack.func_190918_g(1);
+                        itemstack.shrink(1);
 
-                        if (itemstack.func_190926_b())
+                        if (itemstack.isEmpty())
                         {
                             entityplayer.inventory.deleteStack(itemstack);
                         }
@@ -203,21 +203,21 @@ public class ItemBow extends Item
     /**
      * Called when the equipped item is right clicked.
      */
-    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        ItemStack itemstack = worldIn.getHeldItem(playerIn);
-        boolean flag = !this.findAmmo(worldIn).func_190926_b();
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        boolean flag = !this.findAmmo(playerIn).isEmpty();
 
-        ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, itemStackIn, worldIn, playerIn, flag);
+        ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, flag);
         if (ret != null) return ret;
 
-        if (!worldIn.capabilities.isCreativeMode && !flag)
+        if (!playerIn.capabilities.isCreativeMode && !flag)
         {
             return flag ? new ActionResult(EnumActionResult.PASS, itemstack) : new ActionResult(EnumActionResult.FAIL, itemstack);
         }
         else
         {
-            worldIn.setActiveHand(playerIn);
+            playerIn.setActiveHand(handIn);
             return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
         }
     }

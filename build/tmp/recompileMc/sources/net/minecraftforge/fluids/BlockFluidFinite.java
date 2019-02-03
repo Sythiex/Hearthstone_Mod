@@ -1,7 +1,6 @@
-
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +21,7 @@ package net.minecraftforge.fluids;
 
 import java.util.Random;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -40,9 +40,14 @@ import javax.annotation.Nonnull;
  */
 public class BlockFluidFinite extends BlockFluidBase
 {
+    public BlockFluidFinite(Fluid fluid, Material material, MapColor mapColor)
+    {
+        super(fluid, material, mapColor);
+    }
+
     public BlockFluidFinite(Fluid fluid, Material material)
     {
-        super(fluid, material);
+        this(fluid, material, material.getMaterialMapColor());
     }
 
     @Override
@@ -256,14 +261,14 @@ public class BlockFluidFinite extends BlockFluidBase
         if (fluidStack.amount < closest)
         {
             // Figure out maximum level to match stack amount
-            closest = MathHelper.floor_float(quantaAmount * MathHelper.floor_float(fluidStack.amount / quantaAmount));
-            quanta = MathHelper.floor_float(closest / quantaAmount);
+            closest = MathHelper.floor(quantaAmount * MathHelper.floor(fluidStack.amount / quantaAmount));
+            quanta = MathHelper.floor(closest / quantaAmount);
         }
         if (existing.getBlock() == this)
         {
             int existingQuanta = existing.getValue(LEVEL) + 1;
             int missingQuanta = quantaPerBlock - existingQuanta;
-            closest = Math.min(closest, MathHelper.floor_float(missingQuanta * quantaAmount));
+            closest = Math.min(closest, MathHelper.floor(missingQuanta * quantaAmount));
             quanta = Math.min(quanta + existingQuanta, quantaPerBlock);
         }
 
@@ -283,7 +288,7 @@ public class BlockFluidFinite extends BlockFluidBase
     @Override
     public FluidStack drain(World world, BlockPos pos, boolean doDrain)
     {
-        final FluidStack fluidStack = new FluidStack(getFluid(), MathHelper.floor_float(getQuantaPercentage(world, pos) * Fluid.BUCKET_VOLUME));
+        final FluidStack fluidStack = new FluidStack(getFluid(), MathHelper.floor(getQuantaPercentage(world, pos) * Fluid.BUCKET_VOLUME));
 
         if (doDrain)
         {

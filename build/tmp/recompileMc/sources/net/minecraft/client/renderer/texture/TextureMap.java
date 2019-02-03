@@ -124,8 +124,9 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         {
             if(location.equals(loading))
             {
-                final String error = "circular model dependencies, stack: [" + com.google.common.base.Joiner.on(", ").join(loadingSprites) + "]";
+                final String error = "circular texture dependencies, stack: [" + com.google.common.base.Joiner.on(", ").join(loadingSprites) + "]";
                 net.minecraftforge.fml.client.FMLClientHandler.instance().trackBrokenTexture(resourcelocation, error);
+                return j;
             }
         }
         loadingSprites.addLast(location);
@@ -140,6 +141,8 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
                 TextureAtlasSprite depSprite = mapRegisteredSprites.get(dependency.toString());
                 j = loadTexture(stitcher, resourceManager, dependency, depSprite, bar, j, k);
             }
+            try
+            {
             if (textureatlassprite.hasCustomLoader(resourceManager, resourcelocation))
             {
                 if (textureatlassprite.load(resourceManager, resourcelocation, l -> mapRegisteredSprites.get(l.toString())))
@@ -148,12 +151,12 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
                 }
             }
             else
-            try
             {
                 PngSizeInfo pngsizeinfo = PngSizeInfo.makeFromResource(resourceManager.getResource(resourcelocation));
                 iresource = resourceManager.getResource(resourcelocation);
                 boolean flag = iresource.getMetadata("animation") != null;
                 textureatlassprite.loadSprite(pngsizeinfo, flag);
+            }
             }
             catch (RuntimeException runtimeexception)
             {
@@ -176,7 +179,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             if (j1 < k)
             {
                 // FORGE: do not lower the mipmap level, just log the problematic textures
-                LOGGER.warn("Texture {} with size {}x{} will have visual artifacts at mip level {}, it can only support level {}. Please report to the mod author that the texture should be some multiple of 16x16.", resourcelocation, Integer.valueOf(textureatlassprite.getIconWidth()), Integer.valueOf(textureatlassprite.getIconHeight()), Integer.valueOf(MathHelper.calculateLogBaseTwo(k)), Integer.valueOf(MathHelper.calculateLogBaseTwo(j1)));
+                LOGGER.warn("Texture {} with size {}x{} will have visual artifacts at mip level {}, it can only support level {}. Please report to the mod author that the texture should be some multiple of 16x16.", resourcelocation, Integer.valueOf(textureatlassprite.getIconWidth()), Integer.valueOf(textureatlassprite.getIconHeight()), Integer.valueOf(MathHelper.log2(k)), Integer.valueOf(MathHelper.log2(j1)));
             }
 
             if (generateMipmaps(resourceManager, textureatlassprite))
@@ -194,7 +197,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     {
         net.minecraftforge.fml.common.ProgressManager.pop(bar);
         int l = Math.min(j, k);
-        int i1 = MathHelper.calculateLogBaseTwo(l);
+        int i1 = MathHelper.log2(l);
 
         if (false) // FORGE: do not lower the mipmap level
         if (i1 < this.mipmapLevels)
@@ -303,21 +306,21 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Applying mipmap");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Sprite being mipmapped");
-            crashreportcategory.setDetail("Sprite name", new ICrashReportDetail<String>()
+            crashreportcategory.addDetail("Sprite name", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
                     return texture.getIconName();
                 }
             });
-            crashreportcategory.setDetail("Sprite size", new ICrashReportDetail<String>()
+            crashreportcategory.addDetail("Sprite size", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
                     return texture.getIconWidth() + " x " + texture.getIconHeight();
                 }
             });
-            crashreportcategory.setDetail("Sprite frames", new ICrashReportDetail<String>()
+            crashreportcategory.addDetail("Sprite frames", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {

@@ -30,22 +30,27 @@ public enum EnumDyeColor implements IStringSerializable
     private final int dyeDamage;
     private final String name;
     private final String unlocalizedName;
-    private final int field_193351_w;
-    private final float[] field_193352_x;
+    /** An int containing the corresponding RGB color for this dye color. */
+    private final int colorValue;
+    /**
+     * An array containing 3 floats ranging from 0.0 to 1.0: the red, green, and blue components of the corresponding
+     * color.
+     */
+    private final float[] colorComponentValues;
     private final TextFormatting chatColor;
 
-    private EnumDyeColor(int p_i47505_3_, int p_i47505_4_, String p_i47505_5_, String p_i47505_6_, int p_i47505_7_, TextFormatting p_i47505_8_)
+    private EnumDyeColor(int metaIn, int dyeDamageIn, String nameIn, String unlocalizedNameIn, int colorValueIn, TextFormatting chatColorIn)
     {
-        this.meta = p_i47505_3_;
-        this.dyeDamage = p_i47505_4_;
-        this.name = p_i47505_5_;
-        this.unlocalizedName = p_i47505_6_;
-        this.field_193351_w = p_i47505_7_;
-        this.chatColor = p_i47505_8_;
-        int i = (p_i47505_7_ & 16711680) >> 16;
-        int j = (p_i47505_7_ & 65280) >> 8;
-        int k = (p_i47505_7_ & 255) >> 0;
-        this.field_193352_x = new float[] {(float)i / 255.0F, (float)j / 255.0F, (float)k / 255.0F};
+        this.meta = metaIn;
+        this.dyeDamage = dyeDamageIn;
+        this.name = nameIn;
+        this.unlocalizedName = unlocalizedNameIn;
+        this.colorValue = colorValueIn;
+        this.chatColor = chatColorIn;
+        int i = (colorValueIn & 16711680) >> 16;
+        int j = (colorValueIn & 65280) >> 8;
+        int k = (colorValueIn & 255) >> 0;
+        this.colorComponentValues = new float[] {(float)i / 255.0F, (float)j / 255.0F, (float)k / 255.0F};
     }
 
     public int getMetadata()
@@ -59,7 +64,7 @@ public enum EnumDyeColor implements IStringSerializable
     }
 
     @SideOnly(Side.CLIENT)
-    public String func_192396_c()
+    public String getDyeColorName()
     {
         return this.name;
     }
@@ -69,15 +74,22 @@ public enum EnumDyeColor implements IStringSerializable
         return this.unlocalizedName;
     }
 
+    /**
+     * Gets the RGB color corresponding to this dye color.
+     */
     @SideOnly(Side.CLIENT)
-    public int func_193350_e()
+    public int getColorValue()
     {
-        return this.field_193351_w;
+        return this.colorValue;
     }
 
-    public float[] func_193349_f()
+    /**
+     * Gets an array containing 3 floats ranging from 0.0 to 1.0: the red, green, and blue components of the
+     * corresponding color.
+     */
+    public float[] getColorComponentValues()
     {
-        return this.field_193352_x;
+        return this.colorComponentValues;
     }
 
     public static EnumDyeColor byDyeDamage(int damage)

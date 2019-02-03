@@ -40,7 +40,7 @@ public class BlockModelRenderer
 
     public boolean renderModel(IBlockAccess worldIn, IBakedModel modelIn, IBlockState stateIn, BlockPos posIn, BufferBuilder buffer, boolean checkSides, long rand)
     {
-        boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getLightValue(worldIn, posIn) == 0 && modelIn.isAmbientOcclusion();
+        boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getLightValue(worldIn, posIn) == 0 && modelIn.isAmbientOcclusion(stateIn);
 
         try
         {
@@ -115,10 +115,10 @@ public class BlockModelRenderer
 
     private void renderQuadsSmooth(IBlockAccess blockAccessIn, IBlockState stateIn, BlockPos posIn, BufferBuilder buffer, List<BakedQuad> list, float[] quadBounds, BitSet bitSet, BlockModelRenderer.AmbientOcclusionFace aoFace)
     {
-        Vec3d vec3d = stateIn.func_191059_e(blockAccessIn, posIn);
-        double d0 = (double)posIn.getX() + vec3d.xCoord;
-        double d1 = (double)posIn.getY() + vec3d.yCoord;
-        double d2 = (double)posIn.getZ() + vec3d.zCoord;
+        Vec3d vec3d = stateIn.getOffset(blockAccessIn, posIn);
+        double d0 = (double)posIn.getX() + vec3d.x;
+        double d1 = (double)posIn.getY() + vec3d.y;
+        double d2 = (double)posIn.getZ() + vec3d.z;
         int i = 0;
 
         for (int j = list.size(); i < j; ++i)
@@ -237,10 +237,10 @@ public class BlockModelRenderer
 
     private void renderQuadsFlat(IBlockAccess blockAccessIn, IBlockState stateIn, BlockPos posIn, int brightnessIn, boolean ownBrightness, BufferBuilder buffer, List<BakedQuad> list, BitSet bitSet)
     {
-        Vec3d vec3d = stateIn.func_191059_e(blockAccessIn, posIn);
-        double d0 = (double)posIn.getX() + vec3d.xCoord;
-        double d1 = (double)posIn.getY() + vec3d.yCoord;
-        double d2 = (double)posIn.getZ() + vec3d.zCoord;
+        Vec3d vec3d = stateIn.getOffset(blockAccessIn, posIn);
+        double d0 = (double)posIn.getX() + vec3d.x;
+        double d1 = (double)posIn.getY() + vec3d.y;
+        double d2 = (double)posIn.getZ() + vec3d.z;
         int i = 0;
 
         for (int j = list.size(); i < j; ++i)

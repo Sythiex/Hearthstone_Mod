@@ -17,7 +17,7 @@ public class MapGenScatteredFeature extends MapGenStructure
 {
     private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND, Biomes.ICE_PLAINS, Biomes.COLD_TAIGA);
     /** contains possible spawns for scattered features */
-    private final List<Biome.SpawnListEntry> scatteredFeatureSpawnList;
+    private final List<Biome.SpawnListEntry> monsters;
     /** the maximum distance between scattered features */
     private int maxDistanceBetweenScatteredFeatures;
     /** the minimum distance between scattered features */
@@ -25,10 +25,10 @@ public class MapGenScatteredFeature extends MapGenStructure
 
     public MapGenScatteredFeature()
     {
-        this.scatteredFeatureSpawnList = Lists.<Biome.SpawnListEntry>newArrayList();
+        this.monsters = Lists.<Biome.SpawnListEntry>newArrayList();
         this.maxDistanceBetweenScatteredFeatures = 32;
         this.minDistanceBetweenScatteredFeatures = 8;
-        this.scatteredFeatureSpawnList.add(new Biome.SpawnListEntry(EntityWitch.class, 1, 1, 1));
+        this.monsters.add(new Biome.SpawnListEntry(EntityWitch.class, 1, 1, 1));
     }
 
     public MapGenScatteredFeature(Map<String, String> p_i2061_1_)
@@ -39,7 +39,7 @@ public class MapGenScatteredFeature extends MapGenStructure
         {
             if (((String)entry.getKey()).equals("distance"))
             {
-                this.maxDistanceBetweenScatteredFeatures = MathHelper.parseIntWithDefaultAndMax(entry.getValue(), this.maxDistanceBetweenScatteredFeatures, 9);
+                this.maxDistanceBetweenScatteredFeatures = MathHelper.getInt(entry.getValue(), this.maxDistanceBetweenScatteredFeatures, 9);
             }
         }
     }
@@ -66,7 +66,7 @@ public class MapGenScatteredFeature extends MapGenStructure
 
         int k = chunkX / this.maxDistanceBetweenScatteredFeatures;
         int l = chunkZ / this.maxDistanceBetweenScatteredFeatures;
-        Random random = this.worldObj.setRandomSeed(k, l, 14357617);
+        Random random = this.world.setRandomSeed(k, l, 14357617);
         k = k * this.maxDistanceBetweenScatteredFeatures;
         l = l * this.maxDistanceBetweenScatteredFeatures;
         k = k + random.nextInt(this.maxDistanceBetweenScatteredFeatures - 8);
@@ -74,7 +74,7 @@ public class MapGenScatteredFeature extends MapGenStructure
 
         if (i == k && j == l)
         {
-            Biome biome = this.worldObj.getBiomeProvider().getBiome(new BlockPos(i * 16 + 8, 0, j * 16 + 8));
+            Biome biome = this.world.getBiomeProvider().getBiome(new BlockPos(i * 16 + 8, 0, j * 16 + 8));
 
             if (biome == null)
             {
@@ -93,20 +93,20 @@ public class MapGenScatteredFeature extends MapGenStructure
         return false;
     }
 
-    public BlockPos getClosestStrongholdPos(World worldIn, BlockPos pos, boolean p_180706_3_)
+    public BlockPos getNearestStructurePos(World worldIn, BlockPos pos, boolean findUnexplored)
     {
-        this.worldObj = worldIn;
-        return func_191069_a(worldIn, this, pos, this.maxDistanceBetweenScatteredFeatures, 8, 14357617, false, 100, p_180706_3_);
+        this.world = worldIn;
+        return findNearestStructurePosBySpacing(worldIn, this, pos, this.maxDistanceBetweenScatteredFeatures, 8, 14357617, false, 100, findUnexplored);
     }
 
     protected StructureStart getStructureStart(int chunkX, int chunkZ)
     {
-        return new MapGenScatteredFeature.Start(this.worldObj, this.rand, chunkX, chunkZ);
+        return new MapGenScatteredFeature.Start(this.world, this.rand, chunkX, chunkZ);
     }
 
-    public boolean isSwampHut(BlockPos p_175798_1_)
+    public boolean isSwampHut(BlockPos pos)
     {
-        StructureStart structurestart = this.getStructureAt(p_175798_1_);
+        StructureStart structurestart = this.getStructureAt(pos);
 
         if (structurestart != null && structurestart instanceof MapGenScatteredFeature.Start && !structurestart.components.isEmpty())
         {
@@ -122,9 +122,9 @@ public class MapGenScatteredFeature extends MapGenStructure
     /**
      * returns possible spawns for scattered features
      */
-    public List<Biome.SpawnListEntry> getScatteredFeatureSpawnList()
+    public List<Biome.SpawnListEntry> getMonsters()
     {
-        return this.scatteredFeatureSpawnList;
+        return this.monsters;
     }
 
     public static class Start extends StructureStart

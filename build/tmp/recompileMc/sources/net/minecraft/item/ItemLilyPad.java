@@ -28,10 +28,10 @@ public class ItemLilyPad extends ItemColored
     /**
      * Called when the equipped item is right clicked.
      */
-    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        ItemStack itemstack = worldIn.getHeldItem(playerIn);
-        RayTraceResult raytraceresult = this.rayTrace(itemStackIn, worldIn, true);
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
 
         if (raytraceresult == null)
         {
@@ -43,39 +43,39 @@ public class ItemLilyPad extends ItemColored
             {
                 BlockPos blockpos = raytraceresult.getBlockPos();
 
-                if (!itemStackIn.isBlockModifiable(worldIn, blockpos) || !worldIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
+                if (!worldIn.isBlockModifiable(playerIn, blockpos) || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
                 {
                     return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                 }
 
                 BlockPos blockpos1 = blockpos.up();
-                IBlockState iblockstate = itemStackIn.getBlockState(blockpos);
+                IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-                if (iblockstate.getMaterial() == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && itemStackIn.isAirBlock(blockpos1))
+                if (iblockstate.getMaterial() == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1))
                 {
                     // special case for handling block placement with water lilies
-                    net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(itemStackIn, blockpos1);
-                    itemStackIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState());
-                    if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(worldIn, blocksnapshot, net.minecraft.util.EnumFacing.UP, playerIn).isCanceled())
+                    net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, blockpos1);
+                    worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState());
+                    if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(playerIn, blocksnapshot, net.minecraft.util.EnumFacing.UP, handIn).isCanceled())
                     {
                         blocksnapshot.restore(true, false);
                         return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                     }
 
-                    itemStackIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState(), 11);
+                    worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState(), 11);
 
-                    if (worldIn instanceof EntityPlayerMP)
+                    if (playerIn instanceof EntityPlayerMP)
                     {
-                        CriteriaTriggers.field_193137_x.func_193173_a((EntityPlayerMP)worldIn, blockpos1, itemstack);
+                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)playerIn, blockpos1, itemstack);
                     }
 
-                    if (!worldIn.capabilities.isCreativeMode)
+                    if (!playerIn.capabilities.isCreativeMode)
                     {
-                        itemstack.func_190918_g(1);
+                        itemstack.shrink(1);
                     }
 
-                    worldIn.addStat(StatList.getObjectUseStats(this));
-                    itemStackIn.playSound(worldIn, blockpos, SoundEvents.BLOCK_WATERLILY_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    playerIn.addStat(StatList.getObjectUseStats(this));
+                    worldIn.playSound(playerIn, blockpos, SoundEvents.BLOCK_WATERLILY_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
                 }
             }

@@ -24,15 +24,18 @@ public class EntityMinecartMobSpawner extends EntityMinecart
     {
         public void broadcastEvent(int id)
         {
-            EntityMinecartMobSpawner.this.worldObj.setEntityState(EntityMinecartMobSpawner.this, (byte)id);
+            EntityMinecartMobSpawner.this.world.setEntityState(EntityMinecartMobSpawner.this, (byte)id);
         }
         public World getSpawnerWorld()
         {
-            return EntityMinecartMobSpawner.this.worldObj;
+            return EntityMinecartMobSpawner.this.world;
         }
         public BlockPos getSpawnerPosition()
         {
             return new BlockPos(EntityMinecartMobSpawner.this);
+        }
+        public net.minecraft.entity.Entity getSpawnerEntity() {
+            return EntityMinecartMobSpawner.this;
         }
     };
 
@@ -55,9 +58,9 @@ public class EntityMinecartMobSpawner extends EntityMinecart
             {
                 String s = compound.getString("id");
 
-                if (EntityList.func_191306_a(EntityMinecartMobSpawner.class).equals(new ResourceLocation(s)))
+                if (EntityList.getKey(EntityMinecartMobSpawner.class).equals(new ResourceLocation(s)))
                 {
-                    compound.setString("id", TileEntity.func_190559_a(TileEntityMobSpawner.class).toString());
+                    compound.setString("id", TileEntity.getKey(TileEntityMobSpawner.class).toString());
                     fixer.process(FixTypes.BLOCK_ENTITY, compound, versionIn);
                     compound.setString("id", s);
                 }
@@ -95,6 +98,9 @@ public class EntityMinecartMobSpawner extends EntityMinecart
         this.mobSpawnerLogic.writeToNBT(compound);
     }
 
+    /**
+     * Handler for {@link World#setEntityState}
+     */
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {

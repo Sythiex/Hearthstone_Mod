@@ -24,15 +24,15 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
     private static final FloatBuffer PROJECTION = GLAllocation.createDirectFloatBuffer(16);
     private final FloatBuffer buffer = GLAllocation.createDirectFloatBuffer(16);
 
-    public void func_192841_a(TileEntityEndPortal p_192841_1_, double p_192841_2_, double p_192841_4_, double p_192841_6_, float p_192841_8_, int p_192841_9_, float p_192841_10_)
+    public void render(TileEntityEndPortal te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
         GlStateManager.disableLighting();
         RANDOM.setSeed(31100L);
         GlStateManager.getFloat(2982, MODELVIEW);
         GlStateManager.getFloat(2983, PROJECTION);
-        double d0 = p_192841_2_ * p_192841_2_ + p_192841_4_ * p_192841_4_ + p_192841_6_ * p_192841_6_;
-        int i = this.func_191286_a(d0);
-        float f = this.func_191287_c();
+        double d0 = x * x + y * y + z * z;
+        int i = this.getPasses(d0);
+        float f = this.getOffset();
         boolean flag = false;
 
         for (int j = 0; j < i; ++j)
@@ -52,7 +52,7 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
             {
                 this.bindTexture(END_PORTAL_TEXTURE);
                 flag = true;
-                Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+                Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
             }
 
             if (j == 1)
@@ -89,52 +89,52 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
             float f4 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f1;
             float f5 = (RANDOM.nextFloat() * 0.5F + 0.5F) * f1;
 
-            if (p_192841_1_.shouldRenderFace(EnumFacing.SOUTH))
+            if (te.shouldRenderFace(EnumFacing.SOUTH))
             {
-                bufferbuilder.pos(p_192841_2_, p_192841_4_, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_ + 1.0D, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_ + 1.0D, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y + 1.0D, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y + 1.0D, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
             }
 
-            if (p_192841_1_.shouldRenderFace(EnumFacing.NORTH))
+            if (te.shouldRenderFace(EnumFacing.NORTH))
             {
-                bufferbuilder.pos(p_192841_2_, p_192841_4_ + 1.0D, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_ + 1.0D, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y + 1.0D, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y + 1.0D, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y, z).color(f3, f4, f5, 1.0F).endVertex();
             }
 
-            if (p_192841_1_.shouldRenderFace(EnumFacing.EAST))
+            if (te.shouldRenderFace(EnumFacing.EAST))
             {
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_ + 1.0D, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_ + 1.0D, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y + 1.0D, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y + 1.0D, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y, z).color(f3, f4, f5, 1.0F).endVertex();
             }
 
-            if (p_192841_1_.shouldRenderFace(EnumFacing.WEST))
+            if (te.shouldRenderFace(EnumFacing.WEST))
             {
-                bufferbuilder.pos(p_192841_2_, p_192841_4_, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_ + 1.0D, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_ + 1.0D, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y + 1.0D, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y + 1.0D, z).color(f3, f4, f5, 1.0F).endVertex();
             }
 
-            if (p_192841_1_.shouldRenderFace(EnumFacing.DOWN))
+            if (te.shouldRenderFace(EnumFacing.DOWN))
             {
-                bufferbuilder.pos(p_192841_2_, p_192841_4_, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
             }
 
-            if (p_192841_1_.shouldRenderFace(EnumFacing.UP))
+            if (te.shouldRenderFace(EnumFacing.UP))
             {
-                bufferbuilder.pos(p_192841_2_, p_192841_4_ + (double)f, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_ + (double)f, p_192841_6_ + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_ + 1.0D, p_192841_4_ + (double)f, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
-                bufferbuilder.pos(p_192841_2_, p_192841_4_ + (double)f, p_192841_6_).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y + (double)f, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y + (double)f, z + 1.0D).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x + 1.0D, y + (double)f, z).color(f3, f4, f5, 1.0F).endVertex();
+                bufferbuilder.pos(x, y + (double)f, z).color(f3, f4, f5, 1.0F).endVertex();
             }
 
             tessellator.draw();
@@ -151,11 +151,11 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
 
         if (flag)
         {
-            Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
+            Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
         }
     }
 
-    protected int func_191286_a(double p_191286_1_)
+    protected int getPasses(double p_191286_1_)
     {
         int i;
 
@@ -199,7 +199,7 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
         return i;
     }
 
-    protected float func_191287_c()
+    protected float getOffset()
     {
         return 0.75F;
     }

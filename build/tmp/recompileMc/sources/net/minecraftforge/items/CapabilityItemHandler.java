@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,7 +47,7 @@ public class CapabilityItemHandler
                 for (int i = 0; i < size; i++)
                 {
                     ItemStack stack = instance.getStackInSlot(i);
-                    if (!stack.func_190926_b())
+                    if (!stack.isEmpty())
                     {
                         NBTTagCompound itemTag = new NBTTagCompound();
                         itemTag.setInteger("Slot", i);

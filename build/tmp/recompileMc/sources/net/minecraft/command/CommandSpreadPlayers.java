@@ -24,7 +24,7 @@ public class CommandSpreadPlayers extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "spreadplayers";
     }
@@ -40,7 +40,7 @@ public class CommandSpreadPlayers extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.spreadplayers.usage";
     }
@@ -69,7 +69,7 @@ public class CommandSpreadPlayers extends CommandBase
             {
                 String s = args[i++];
 
-                if (EntitySelector.hasArguments(s))
+                if (EntitySelector.isSelector(s))
                 {
                     List<Entity> list1 = EntitySelector.<Entity>matchEntities(sender, s, Entity.class);
 
@@ -101,8 +101,8 @@ public class CommandSpreadPlayers extends CommandBase
             }
             else
             {
-                sender.addChatMessage(new TextComponentTranslation("commands.spreadplayers.spreading." + (flag ? "teams" : "players"), new Object[] {list.size(), d3, d0, d1, d2}));
-                this.spread(sender, list, new CommandSpreadPlayers.Position(d0, d1), d2, d3, (list.get(0)).worldObj, flag);
+                sender.sendMessage(new TextComponentTranslation("commands.spreadplayers.spreading." + (flag ? "teams" : "players"), new Object[] {list.size(), d3, d0, d1, d2}));
+                this.spread(sender, list, new CommandSpreadPlayers.Position(d0, d1), d2, d3, (list.get(0)).world, flag);
             }
         }
     }
@@ -121,7 +121,7 @@ public class CommandSpreadPlayers extends CommandBase
 
         if (acommandspreadplayers$position.length > 1)
         {
-            sender.addChatMessage(new TextComponentTranslation("commands.spreadplayers.info." + (respectTeams ? "teams" : "players"), new Object[] {String.format("%.2f", d4), i}));
+            sender.sendMessage(new TextComponentTranslation("commands.spreadplayers.info." + (respectTeams ? "teams" : "players"), new Object[] {String.format("%.2f", d4), i}));
         }
     }
 
@@ -253,7 +253,7 @@ public class CommandSpreadPlayers extends CommandBase
                 commandspreadplayers$position = p_110671_3_[i++];
             }
 
-            entity.setPositionAndUpdate((double)((float)MathHelper.floor_double(commandspreadplayers$position.x) + 0.5F), (double)commandspreadplayers$position.getSpawnY(worldIn), (double)MathHelper.floor_double(commandspreadplayers$position.z) + 0.5D);
+            entity.setPositionAndUpdate((double)((float)MathHelper.floor(commandspreadplayers$position.x) + 0.5F), (double)commandspreadplayers$position.getSpawnY(worldIn), (double)MathHelper.floor(commandspreadplayers$position.z) + 0.5D);
             double d2 = Double.MAX_VALUE;
 
             for (CommandSpreadPlayers.Position commandspreadplayers$position1 : p_110671_3_)
@@ -289,9 +289,9 @@ public class CommandSpreadPlayers extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
-        return args.length >= 1 && args.length <= 2 ? getTabCompletionCoordinateXZ(args, 0, pos) : Collections.emptyList();
+        return args.length >= 1 && args.length <= 2 ? getTabCompletionCoordinateXZ(args, 0, targetPos) : Collections.emptyList();
     }
 
     static class Position
@@ -325,7 +325,7 @@ public class CommandSpreadPlayers extends CommandBase
 
             float getLength()
             {
-                return MathHelper.sqrt_double(this.x * this.x + this.z * this.z);
+                return MathHelper.sqrt(this.x * this.x + this.z * this.z);
             }
 
             public void moveAway(CommandSpreadPlayers.Position pos)
@@ -400,8 +400,8 @@ public class CommandSpreadPlayers extends CommandBase
 
             public void randomize(Random rand, double p_111097_2_, double p_111097_4_, double p_111097_6_, double p_111097_8_)
             {
-                this.x = MathHelper.getRandomDoubleInRange(rand, p_111097_2_, p_111097_6_);
-                this.z = MathHelper.getRandomDoubleInRange(rand, p_111097_4_, p_111097_8_);
+                this.x = MathHelper.nextDouble(rand, p_111097_2_, p_111097_6_);
+                this.z = MathHelper.nextDouble(rand, p_111097_4_, p_111097_8_);
             }
         }
 }

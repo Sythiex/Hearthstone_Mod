@@ -39,7 +39,7 @@ public class EntitySmallFireball extends EntityFireball
      */
     protected void onImpact(RayTraceResult result)
     {
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
             if (result.entityHit != null)
             {
@@ -60,16 +60,16 @@ public class EntitySmallFireball extends EntityFireball
 
                 if (this.shootingEntity != null && this.shootingEntity instanceof EntityLiving)
                 {
-                    flag1 = this.worldObj.getGameRules().getBoolean("mobGriefing");
+                    flag1 = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
                 }
 
                 if (flag1)
                 {
                     BlockPos blockpos = result.getBlockPos().offset(result.sideHit);
 
-                    if (this.worldObj.isAirBlock(blockpos))
+                    if (this.world.isAirBlock(blockpos))
                     {
-                        this.worldObj.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
+                        this.world.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                     }
                 }
             }

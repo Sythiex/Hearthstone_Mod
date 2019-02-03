@@ -24,7 +24,7 @@ public class EntityAIEatGrass extends EntityAIBase
     public EntityAIEatGrass(EntityLiving grassEaterEntityIn)
     {
         this.grassEaterEntity = grassEaterEntityIn;
-        this.entityWorld = grassEaterEntityIn.worldObj;
+        this.entityWorld = grassEaterEntityIn.world;
         this.setMutexBits(7);
     }
 
@@ -59,11 +59,11 @@ public class EntityAIEatGrass extends EntityAIBase
     {
         this.eatingGrassTimer = 40;
         this.entityWorld.setEntityState(this.grassEaterEntity, (byte)10);
-        this.grassEaterEntity.getNavigator().clearPathEntity();
+        this.grassEaterEntity.getNavigator().clearPath();
     }
 
     /**
-     * Resets the task
+     * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void resetTask()
     {
@@ -73,7 +73,7 @@ public class EntityAIEatGrass extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return this.eatingGrassTimer > 0;
     }
@@ -87,7 +87,7 @@ public class EntityAIEatGrass extends EntityAIBase
     }
 
     /**
-     * Updates the task
+     * Keep ticking a continuous task that has already been started
      */
     public void updateTask()
     {
@@ -99,7 +99,7 @@ public class EntityAIEatGrass extends EntityAIBase
 
             if (IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos)))
             {
-                if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
+                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity))
                 {
                     this.entityWorld.destroyBlock(blockpos, false);
                 }
@@ -112,7 +112,7 @@ public class EntityAIEatGrass extends EntityAIBase
 
                 if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.GRASS)
                 {
-                    if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
+                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity))
                     {
                         this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
                         this.entityWorld.setBlockState(blockpos1, Blocks.DIRT.getDefaultState(), 2);

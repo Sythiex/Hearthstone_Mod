@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -291,7 +291,7 @@ public final class Clips
             public TRSRTransformation apply(float time)
             {
                 float clipTime = input.apply(time);
-                return fromClip.apply(clipTime).slerp(toClip.apply(clipTime), MathHelper.clamp_float(progress.apply(time), 0, 1));
+                return fromClip.apply(clipTime).slerp(toClip.apply(clipTime), MathHelper.clamp(progress.apply(time), 0, 1));
             }
         };
     }

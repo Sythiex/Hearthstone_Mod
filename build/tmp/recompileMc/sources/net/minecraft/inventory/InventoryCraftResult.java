@@ -12,8 +12,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 public class InventoryCraftResult implements IInventory
 {
     /** A list of one item containing the result of the crafting formula */
-    private final NonNullList<ItemStack> stackResult = NonNullList.<ItemStack>func_191197_a(1, ItemStack.field_190927_a);
-    private IRecipe field_193057_b;
+    private final NonNullList<ItemStack> stackResult = NonNullList.<ItemStack>withSize(1, ItemStack.EMPTY);
+    private IRecipe recipeUsed;
 
     /**
      * Returns the number of slots in the inventory.
@@ -23,11 +23,11 @@ public class InventoryCraftResult implements IInventory
         return 1;
     }
 
-    public boolean func_191420_l()
+    public boolean isEmpty()
     {
         for (ItemStack itemstack : this.stackResult)
         {
-            if (!itemstack.func_190926_b())
+            if (!itemstack.isEmpty())
             {
                 return false;
             }
@@ -111,7 +111,7 @@ public class InventoryCraftResult implements IInventory
     /**
      * Don't rename this method to canInteractWith due to conflicts with Container
      */
-    public boolean isUseableByPlayer(EntityPlayer player)
+    public boolean isUsableByPlayer(EntityPlayer player)
     {
         return true;
     }
@@ -152,14 +152,14 @@ public class InventoryCraftResult implements IInventory
         this.stackResult.clear();
     }
 
-    public void func_193056_a(@Nullable IRecipe p_193056_1_)
+    public void setRecipeUsed(@Nullable IRecipe p_193056_1_)
     {
-        this.field_193057_b = p_193056_1_;
+        this.recipeUsed = p_193056_1_;
     }
 
     @Nullable
-    public IRecipe func_193055_i()
+    public IRecipe getRecipeUsed()
     {
-        return this.field_193057_b;
+        return this.recipeUsed;
     }
 }

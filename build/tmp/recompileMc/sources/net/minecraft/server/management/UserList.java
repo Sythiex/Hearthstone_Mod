@@ -199,7 +199,7 @@ public class UserList<K, V extends UserListEntry<K>>
             try
             {
                 bufferedreader = Files.newReader(this.saveFile, StandardCharsets.UTF_8);
-                collection = (Collection)JsonUtils.func_193841_a(this.gson, bufferedreader, USER_LIST_ENTRY_TYPE);
+                collection = (Collection)JsonUtils.fromJson(this.gson, bufferedreader, USER_LIST_ENTRY_TYPE);
             }
             finally
             {

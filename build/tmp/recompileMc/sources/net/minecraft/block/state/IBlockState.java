@@ -7,7 +7,7 @@ import net.minecraft.block.properties.IProperty;
 
 public interface IBlockState extends IBlockBehaviors, IBlockProperties
 {
-    Collection < IProperty<? >> getPropertyNames();
+    Collection < IProperty<? >> getPropertyKeys();
 
     /**
      * Get the value of the given Property for this BlockState

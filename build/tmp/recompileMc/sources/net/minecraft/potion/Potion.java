@@ -86,7 +86,7 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
         return this;
     }
 
-    public void performEffect(EntityLivingBase entityLivingBaseIn, int p_76394_2_)
+    public void performEffect(EntityLivingBase entityLivingBaseIn, int amplifier)
     {
         if (this == MobEffects.REGENERATION)
         {
@@ -99,34 +99,34 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
         {
             if (entityLivingBaseIn.getHealth() > 1.0F)
             {
-                entityLivingBaseIn.attackEntityFrom(DamageSource.magic, 1.0F);
+                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, 1.0F);
             }
         }
         else if (this == MobEffects.WITHER)
         {
-            entityLivingBaseIn.attackEntityFrom(DamageSource.wither, 1.0F);
+            entityLivingBaseIn.attackEntityFrom(DamageSource.WITHER, 1.0F);
         }
         else if (this == MobEffects.HUNGER && entityLivingBaseIn instanceof EntityPlayer)
         {
-            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.005F * (float)(p_76394_2_ + 1));
+            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.005F * (float)(amplifier + 1));
         }
         else if (this == MobEffects.SATURATION && entityLivingBaseIn instanceof EntityPlayer)
         {
-            if (!entityLivingBaseIn.worldObj.isRemote)
+            if (!entityLivingBaseIn.world.isRemote)
             {
-                ((EntityPlayer)entityLivingBaseIn).getFoodStats().addStats(p_76394_2_ + 1, 1.0F);
+                ((EntityPlayer)entityLivingBaseIn).getFoodStats().addStats(amplifier + 1, 1.0F);
             }
         }
         else if ((this != MobEffects.INSTANT_HEALTH || entityLivingBaseIn.isEntityUndead()) && (this != MobEffects.INSTANT_DAMAGE || !entityLivingBaseIn.isEntityUndead()))
         {
             if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead())
             {
-                entityLivingBaseIn.attackEntityFrom(DamageSource.magic, (float)(6 << p_76394_2_));
+                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)(6 << amplifier));
             }
         }
         else
         {
-            entityLivingBaseIn.heal((float)Math.max(4 << p_76394_2_, 0));
+            entityLivingBaseIn.heal((float)Math.max(4 << amplifier, 0));
         }
     }
 
@@ -140,7 +140,7 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
 
                 if (source == null)
                 {
-                    entityLivingBaseIn.attackEntityFrom(DamageSource.magic, (float)j);
+                    entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)j);
                 }
                 else
                 {
@@ -263,15 +263,15 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
     }
 
     @SideOnly(Side.CLIENT)
-    public static String getPotionDurationString(PotionEffect p_188410_0_, float p_188410_1_)
+    public static String getPotionDurationString(PotionEffect effect, float durationFactor)
     {
-        if (p_188410_0_.getIsPotionDurationMax())
+        if (effect.getIsPotionDurationMax())
         {
             return "**:**";
         }
         else
         {
-            int i = MathHelper.floor_float((float)p_188410_0_.getDuration() * p_188410_1_);
+            int i = MathHelper.floor((float)effect.getDuration() * durationFactor);
             return StringUtils.ticksToElapsedTime(i);
         }
     }
@@ -369,9 +369,27 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
      * @param y the y coordinate
      * @param effect the active PotionEffect
      * @param mc the Minecraft instance, for convenience
+     * @deprecated use {@link #renderInventoryEffect(PotionEffect, net.minecraft.client.gui.Gui, int, int, float)}
      */
     @SideOnly(Side.CLIENT)
+    @Deprecated // TODO: remove
     public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) { }
+
+    /**
+     * Called to draw the this Potion onto the player's inventory when it's active.
+     * This can be used to e.g. render Potion icons from your own texture.
+     *
+     * @param effect the active PotionEffect
+     * @param gui the gui instance
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z level
+     */
+    @SideOnly(Side.CLIENT)
+    public void renderInventoryEffect(PotionEffect effect, net.minecraft.client.gui.Gui gui, int x, int y, float z)
+    {
+        renderInventoryEffect(x, y, effect, net.minecraft.client.Minecraft.getMinecraft());
+    }
 
     /**
      * Called to draw the this Potion onto the player's ingame HUD when it's active.
@@ -381,9 +399,28 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
      * @param effect the active PotionEffect
      * @param mc the Minecraft instance, for convenience
      * @param alpha the alpha value, blinks when the potion is about to run out
+     * @deprecated use {@link #renderHUDEffect(PotionEffect, net.minecraft.client.gui.Gui, int, int, float, float)}
      */
     @SideOnly(Side.CLIENT)
+    @Deprecated // TODO: remove
     public void renderHUDEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc, float alpha) { }
+
+    /**
+     * Called to draw the this Potion onto the player's ingame HUD when it's active.
+     * This can be used to e.g. render Potion icons from your own texture.
+     *
+     * @param effect the active PotionEffect
+     * @param gui the gui instance
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z level
+     * @param alpha the alpha value, blinks when the potion is about to run out
+     */
+    @SideOnly(Side.CLIENT)
+    public void renderHUDEffect(PotionEffect effect, net.minecraft.client.gui.Gui gui, int x, int y, float z, float alpha)
+    {
+        renderHUDEffect(x, y, effect, net.minecraft.client.Minecraft.getMinecraft(), alpha);
+    }
 
     /**
      * Get a fresh list of items that can cure this Potion.

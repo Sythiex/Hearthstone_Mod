@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public interface IRecipeShownListener
 {
-    void func_192043_J_();
+    void recipesUpdated();
 
     GuiRecipeBook func_194310_f();
 }

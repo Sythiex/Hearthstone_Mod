@@ -85,7 +85,7 @@ public class EntityBlaze extends EntityMob
         return SoundEvents.ENTITY_BLAZE_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_BLAZE_HURT;
     }
@@ -120,16 +120,16 @@ public class EntityBlaze extends EntityMob
             this.motionY *= 0.6D;
         }
 
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             if (this.rand.nextInt(24) == 0 && !this.isSilent())
             {
-                this.worldObj.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, SoundEvents.ENTITY_BLAZE_BURN, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
+                this.world.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, SoundEvents.ENTITY_BLAZE_BURN, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
             }
 
             for (int i = 0; i < 2; ++i)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, 0.0D, 0.0D, 0.0D);
+                this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, 0.0D, 0.0D, 0.0D);
             }
         }
 
@@ -140,7 +140,7 @@ public class EntityBlaze extends EntityMob
     {
         if (this.isWet())
         {
-            this.attackEntityFrom(DamageSource.drown, 1.0F);
+            this.attackEntityFrom(DamageSource.DROWN, 1.0F);
         }
 
         --this.heightOffsetUpdateTime;
@@ -239,7 +239,7 @@ public class EntityBlaze extends EntityMob
             }
 
             /**
-             * Resets the task
+             * Reset the task's internal state. Called when this task is interrupted by another one
              */
             public void resetTask()
             {
@@ -247,13 +247,13 @@ public class EntityBlaze extends EntityMob
             }
 
             /**
-             * Updates the task
+             * Keep ticking a continuous task that has already been started
              */
             public void updateTask()
             {
                 --this.attackTime;
                 EntityLivingBase entitylivingbase = this.blaze.getAttackTarget();
-                double d0 = this.blaze.getDistanceSqToEntity(entitylivingbase);
+                double d0 = this.blaze.getDistanceSq(entitylivingbase);
 
                 if (d0 < 4.0D)
                 {
@@ -265,7 +265,7 @@ public class EntityBlaze extends EntityMob
 
                     this.blaze.getMoveHelper().setMoveTo(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 1.0D);
                 }
-                else if (d0 < this.func_191523_f() * this.func_191523_f())
+                else if (d0 < this.getFollowDistance() * this.getFollowDistance())
                 {
                     double d1 = entitylivingbase.posX - this.blaze.posX;
                     double d2 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (this.blaze.posY + (double)(this.blaze.height / 2.0F));
@@ -293,14 +293,14 @@ public class EntityBlaze extends EntityMob
 
                         if (this.attackStep > 1)
                         {
-                            float f = MathHelper.sqrt_float(MathHelper.sqrt_double(d0)) * 0.5F;
-                            this.blaze.worldObj.playEvent((EntityPlayer)null, 1018, new BlockPos((int)this.blaze.posX, (int)this.blaze.posY, (int)this.blaze.posZ), 0);
+                            float f = MathHelper.sqrt(MathHelper.sqrt(d0)) * 0.5F;
+                            this.blaze.world.playEvent((EntityPlayer)null, 1018, new BlockPos((int)this.blaze.posX, (int)this.blaze.posY, (int)this.blaze.posZ), 0);
 
                             for (int i = 0; i < 1; ++i)
                             {
-                                EntitySmallFireball entitysmallfireball = new EntitySmallFireball(this.blaze.worldObj, this.blaze, d1 + this.blaze.getRNG().nextGaussian() * (double)f, d2, d3 + this.blaze.getRNG().nextGaussian() * (double)f);
+                                EntitySmallFireball entitysmallfireball = new EntitySmallFireball(this.blaze.world, this.blaze, d1 + this.blaze.getRNG().nextGaussian() * (double)f, d2, d3 + this.blaze.getRNG().nextGaussian() * (double)f);
                                 entitysmallfireball.posY = this.blaze.posY + (double)(this.blaze.height / 2.0F) + 0.5D;
-                                this.blaze.worldObj.spawnEntityInWorld(entitysmallfireball);
+                                this.blaze.world.spawnEntity(entitysmallfireball);
                             }
                         }
                     }
@@ -309,14 +309,14 @@ public class EntityBlaze extends EntityMob
                 }
                 else
                 {
-                    this.blaze.getNavigator().clearPathEntity();
+                    this.blaze.getNavigator().clearPath();
                     this.blaze.getMoveHelper().setMoveTo(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 1.0D);
                 }
 
                 super.updateTask();
             }
 
-            private double func_191523_f()
+            private double getFollowDistance()
             {
                 IAttributeInstance iattributeinstance = this.blaze.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
                 return iattributeinstance == null ? 16.0D : iattributeinstance.getAttributeValue();

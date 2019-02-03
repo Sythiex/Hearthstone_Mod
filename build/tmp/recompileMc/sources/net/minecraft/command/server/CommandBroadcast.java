@@ -17,7 +17,7 @@ public class CommandBroadcast extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "say";
     }
@@ -33,7 +33,7 @@ public class CommandBroadcast extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.say.usage";
     }
@@ -46,7 +46,7 @@ public class CommandBroadcast extends CommandBase
         if (args.length > 0 && args[0].length() > 0)
         {
             ITextComponent itextcomponent = getChatComponentFromNthArg(sender, args, 0, true);
-            server.getPlayerList().sendChatMsg(new TextComponentTranslation("chat.type.announcement", new Object[] {sender.getDisplayName(), itextcomponent}));
+            server.getPlayerList().sendMessage(new TextComponentTranslation("chat.type.announcement", new Object[] {sender.getDisplayName(), itextcomponent}));
         }
         else
         {
@@ -57,8 +57,8 @@ public class CommandBroadcast extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
-        return args.length >= 1 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : Collections.emptyList();
+        return args.length >= 1 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Collections.emptyList();
     }
 }

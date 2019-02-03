@@ -190,7 +190,7 @@ public class EntityCreeper extends EntityMob
         super.onUpdate();
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_CREEPER_HURT;
     }
@@ -207,18 +207,18 @@ public class EntityCreeper extends EntityMob
     {
         super.onDeath(cause);
 
-        if (this.worldObj.getGameRules().getBoolean("doMobLoot"))
+        if (this.world.getGameRules().getBoolean("doMobLoot"))
         {
-            if (cause.getEntity() instanceof EntitySkeleton)
+            if (cause.getTrueSource() instanceof EntitySkeleton)
             {
                 int i = Item.getIdFromItem(Items.RECORD_13);
                 int j = Item.getIdFromItem(Items.RECORD_WAIT);
                 int k = i + this.rand.nextInt(j - i + 1);
                 this.dropItem(Item.getItemById(k), 1);
             }
-            else if (cause.getEntity() instanceof EntityCreeper && cause.getEntity() != this && ((EntityCreeper)cause.getEntity()).getPowered() && ((EntityCreeper)cause.getEntity()).isAIEnabled())
+            else if (cause.getTrueSource() instanceof EntityCreeper && cause.getTrueSource() != this && ((EntityCreeper)cause.getTrueSource()).getPowered() && ((EntityCreeper)cause.getTrueSource()).ableToCauseSkullDrop())
             {
-                ((EntityCreeper)cause.getEntity()).incrementDroppedSkulls();
+                ((EntityCreeper)cause.getTrueSource()).incrementDroppedSkulls();
                 this.entityDropItem(new ItemStack(Items.SKULL, 1, 4), 0.0F);
             }
         }
@@ -283,10 +283,10 @@ public class EntityCreeper extends EntityMob
 
         if (itemstack.getItem() == Items.FLINT_AND_STEEL)
         {
-            this.worldObj.playSound(player, this.posX, this.posY, this.posZ, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.rand.nextFloat() * 0.4F + 0.8F);
+            this.world.playSound(player, this.posX, this.posY, this.posZ, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.rand.nextFloat() * 0.4F + 0.8F);
             player.swingArm(hand);
 
-            if (!this.worldObj.isRemote)
+            if (!this.world.isRemote)
             {
                 this.ignite();
                 itemstack.damageItem(1, player);
@@ -302,24 +302,24 @@ public class EntityCreeper extends EntityMob
      */
     private void explode()
     {
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
-            boolean flag = this.worldObj.getGameRules().getBoolean("mobGriefing");
+            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this);
             float f = this.getPowered() ? 2.0F : 1.0F;
             this.dead = true;
-            this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, flag);
+            this.world.createExplosion(this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, flag);
             this.setDead();
-            this.func_190741_do();
+            this.spawnLingeringCloud();
         }
     }
 
-    private void func_190741_do()
+    private void spawnLingeringCloud()
     {
         Collection<PotionEffect> collection = this.getActivePotionEffects();
 
         if (!collection.isEmpty())
         {
-            EntityAreaEffectCloud entityareaeffectcloud = new EntityAreaEffectCloud(this.worldObj, this.posX, this.posY, this.posZ);
+            EntityAreaEffectCloud entityareaeffectcloud = new EntityAreaEffectCloud(this.world, this.posX, this.posY, this.posZ);
             entityareaeffectcloud.setRadius(2.5F);
             entityareaeffectcloud.setRadiusOnUse(-0.5F);
             entityareaeffectcloud.setWaitTime(10);
@@ -331,7 +331,7 @@ public class EntityCreeper extends EntityMob
                 entityareaeffectcloud.addEffect(new PotionEffect(potioneffect));
             }
 
-            this.worldObj.spawnEntityInWorld(entityareaeffectcloud);
+            this.world.spawnEntity(entityareaeffectcloud);
         }
     }
 
@@ -346,11 +346,13 @@ public class EntityCreeper extends EntityMob
     }
 
     /**
-     * Returns true if the newer Entity AI code should be run
+     * Returns true if an entity is able to drop its skull due to being blown up by this creeper.
+     *  
+     * Does not test if this creeper is charged; the caller must do that. However, does test the doMobLoot gamerule.
      */
-    public boolean isAIEnabled()
+    public boolean ableToCauseSkullDrop()
     {
-        return this.droppedSkulls < 1 && this.worldObj.getGameRules().getBoolean("doMobLoot");
+        return this.droppedSkulls < 1 && this.world.getGameRules().getBoolean("doMobLoot");
     }
 
     public void incrementDroppedSkulls()

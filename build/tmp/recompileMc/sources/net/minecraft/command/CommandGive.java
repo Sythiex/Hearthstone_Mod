@@ -19,7 +19,7 @@ public class CommandGive extends CommandBase
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
+    public String getName()
     {
         return "give";
     }
@@ -35,7 +35,7 @@ public class CommandGive extends CommandBase
     /**
      * Gets the usage string for the command.
      */
-    public String getCommandUsage(ICommandSender sender)
+    public String getUsage(ICommandSender sender)
     {
         return "commands.give.usage";
     }
@@ -75,13 +75,13 @@ public class CommandGive extends CommandBase
 
             if (flag)
             {
-                entityplayer.worldObj.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayer.getRNG().nextFloat() - entityplayer.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                entityplayer.world.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayer.getRNG().nextFloat() - entityplayer.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 entityplayer.inventoryContainer.detectAndSendChanges();
             }
 
-            if (flag && itemstack.func_190926_b())
+            if (flag && itemstack.isEmpty())
             {
-                itemstack.func_190920_e(1);
+                itemstack.setCount(1);
                 sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, i);
                 EntityItem entityitem1 = entityplayer.dropItem(itemstack, false);
 
@@ -92,7 +92,7 @@ public class CommandGive extends CommandBase
             }
             else
             {
-                sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, i - itemstack.func_190916_E());
+                sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, i - itemstack.getCount());
                 EntityItem entityitem = entityplayer.dropItem(itemstack, false);
 
                 if (entityitem != null)
@@ -109,11 +109,11 @@ public class CommandGive extends CommandBase
     /**
      * Get a list of options for when the user presses the TAB key
      */
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
         if (args.length == 1)
         {
-            return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
+            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         }
         else
         {

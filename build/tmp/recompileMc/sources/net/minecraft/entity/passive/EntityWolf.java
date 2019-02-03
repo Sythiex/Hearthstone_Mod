@@ -199,7 +199,7 @@ public class EntityWolf extends EntityTameable
         }
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_WOLF_HURT;
     }
@@ -231,15 +231,15 @@ public class EntityWolf extends EntityTameable
     {
         super.onLivingUpdate();
 
-        if (!this.worldObj.isRemote && this.isWet && !this.isShaking && !this.hasPath() && this.onGround)
+        if (!this.world.isRemote && this.isWet && !this.isShaking && !this.hasPath() && this.onGround)
         {
             this.isShaking = true;
             this.timeWolfIsShaking = 0.0F;
             this.prevTimeWolfIsShaking = 0.0F;
-            this.worldObj.setEntityState(this, (byte)8);
+            this.world.setEntityState(this, (byte)8);
         }
 
-        if (!this.worldObj.isRemote && this.getAttackTarget() == null && this.isAngry())
+        if (!this.world.isRemote && this.getAttackTarget() == null && this.isAngry())
         {
             this.setAngry(false);
         }
@@ -296,7 +296,7 @@ public class EntityWolf extends EntityTameable
                 {
                     float f1 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
                     float f2 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, this.posX + (double)f1, (double)(f + 0.8F), this.posZ + (double)f2, this.motionX, this.motionY, this.motionZ);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_SPLASH, this.posX + (double)f1, (double)(f + 0.8F), this.posZ + (double)f2, this.motionX, this.motionY, this.motionZ);
                 }
             }
         }
@@ -368,7 +368,7 @@ public class EntityWolf extends EntityTameable
         }
         else
         {
-            Entity entity = source.getEntity();
+            Entity entity = source.getTrueSource();
 
             if (this.aiSit != null)
             {
@@ -418,7 +418,7 @@ public class EntityWolf extends EntityTameable
 
         if (this.isTamed())
         {
-            if (!itemstack.func_190926_b())
+            if (!itemstack.isEmpty())
             {
                 if (itemstack.getItem() instanceof ItemFood)
                 {
@@ -428,7 +428,7 @@ public class EntityWolf extends EntityTameable
                     {
                         if (!player.capabilities.isCreativeMode)
                         {
-                            itemstack.func_190918_g(1);
+                            itemstack.shrink(1);
                         }
 
                         this.heal((float)itemfood.getHealAmount(itemstack));
@@ -445,7 +445,7 @@ public class EntityWolf extends EntityTameable
 
                         if (!player.capabilities.isCreativeMode)
                         {
-                            itemstack.func_190918_g(1);
+                            itemstack.shrink(1);
                         }
 
                         return true;
@@ -453,11 +453,11 @@ public class EntityWolf extends EntityTameable
                 }
             }
 
-            if (this.isOwner(player) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack))
+            if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack))
             {
                 this.aiSit.setSitting(!this.isSitting());
                 this.isJumping = false;
-                this.navigator.clearPathEntity();
+                this.navigator.clearPath();
                 this.setAttackTarget((EntityLivingBase)null);
             }
         }
@@ -465,25 +465,25 @@ public class EntityWolf extends EntityTameable
         {
             if (!player.capabilities.isCreativeMode)
             {
-                itemstack.func_190918_g(1);
+                itemstack.shrink(1);
             }
 
-            if (!this.worldObj.isRemote)
+            if (!this.world.isRemote)
             {
                 if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player))
                 {
-                    this.func_193101_c(player);
-                    this.navigator.clearPathEntity();
+                    this.setTamedBy(player);
+                    this.navigator.clearPath();
                     this.setAttackTarget((EntityLivingBase)null);
                     this.aiSit.setSitting(true);
                     this.setHealth(20.0F);
                     this.playTameEffect(true);
-                    this.worldObj.setEntityState(this, (byte)7);
+                    this.world.setEntityState(this, (byte)7);
                 }
                 else
                 {
                     this.playTameEffect(false);
-                    this.worldObj.setEntityState(this, (byte)6);
+                    this.world.setEntityState(this, (byte)6);
                 }
             }
 
@@ -493,6 +493,9 @@ public class EntityWolf extends EntityTameable
         return super.processInteract(player, hand);
     }
 
+    /**
+     * Handler for {@link World#setEntityState}
+     */
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {
@@ -575,7 +578,7 @@ public class EntityWolf extends EntityTameable
 
     public EntityWolf createChild(EntityAgeable ageable)
     {
-        EntityWolf entitywolf = new EntityWolf(this.worldObj);
+        EntityWolf entitywolf = new EntityWolf(this.world);
         UUID uuid = this.getOwnerId();
 
         if (uuid != null)
@@ -633,27 +636,27 @@ public class EntityWolf extends EntityTameable
         return ((Boolean)this.dataManager.get(BEGGING)).booleanValue();
     }
 
-    public boolean shouldAttackEntity(EntityLivingBase p_142018_1_, EntityLivingBase p_142018_2_)
+    public boolean shouldAttackEntity(EntityLivingBase target, EntityLivingBase owner)
     {
-        if (!(p_142018_1_ instanceof EntityCreeper) && !(p_142018_1_ instanceof EntityGhast))
+        if (!(target instanceof EntityCreeper) && !(target instanceof EntityGhast))
         {
-            if (p_142018_1_ instanceof EntityWolf)
+            if (target instanceof EntityWolf)
             {
-                EntityWolf entitywolf = (EntityWolf)p_142018_1_;
+                EntityWolf entitywolf = (EntityWolf)target;
 
-                if (entitywolf.isTamed() && entitywolf.getOwner() == p_142018_2_)
+                if (entitywolf.isTamed() && entitywolf.getOwner() == owner)
                 {
                     return false;
                 }
             }
 
-            if (p_142018_1_ instanceof EntityPlayer && p_142018_2_ instanceof EntityPlayer && !((EntityPlayer)p_142018_2_).canAttackPlayer((EntityPlayer)p_142018_1_))
+            if (target instanceof EntityPlayer && owner instanceof EntityPlayer && !((EntityPlayer)owner).canAttackPlayer((EntityPlayer)target))
             {
                 return false;
             }
             else
             {
-                return !(p_142018_1_ instanceof AbstractHorse) || !((AbstractHorse)p_142018_1_).isTame();
+                return !(target instanceof AbstractHorse) || !((AbstractHorse)target).isTame();
             }
         }
         else
@@ -669,12 +672,12 @@ public class EntityWolf extends EntityTameable
 
     class AIAvoidEntity<T extends Entity> extends EntityAIAvoidEntity<T>
     {
-        private final EntityWolf field_190856_d;
+        private final EntityWolf wolf;
 
-        public AIAvoidEntity(EntityWolf p_i47251_2_, Class<T> p_i47251_3_, float p_i47251_4_, double p_i47251_5_, double p_i47251_7_)
+        public AIAvoidEntity(EntityWolf wolfIn, Class<T> p_i47251_3_, float p_i47251_4_, double p_i47251_5_, double p_i47251_7_)
         {
-            super(p_i47251_2_, p_i47251_3_, p_i47251_4_, p_i47251_5_, p_i47251_7_);
-            this.field_190856_d = p_i47251_2_;
+            super(wolfIn, p_i47251_3_, p_i47251_4_, p_i47251_5_, p_i47251_7_);
+            this.wolf = wolfIn;
         }
 
         /**
@@ -684,7 +687,7 @@ public class EntityWolf extends EntityTameable
         {
             if (super.shouldExecute() && this.closestLivingEntity instanceof EntityLlama)
             {
-                return !this.field_190856_d.isTamed() && this.func_190854_a((EntityLlama)this.closestLivingEntity);
+                return !this.wolf.isTamed() && this.avoidLlama((EntityLlama)this.closestLivingEntity);
             }
             else
             {
@@ -692,9 +695,9 @@ public class EntityWolf extends EntityTameable
             }
         }
 
-        private boolean func_190854_a(EntityLlama p_190854_1_)
+        private boolean avoidLlama(EntityLlama p_190854_1_)
         {
-            return p_190854_1_.func_190707_dL() >= EntityWolf.this.rand.nextInt(5);
+            return p_190854_1_.getStrength() >= EntityWolf.this.rand.nextInt(5);
         }
 
         /**
@@ -707,7 +710,7 @@ public class EntityWolf extends EntityTameable
         }
 
         /**
-         * Updates the task
+         * Keep ticking a continuous task that has already been started
          */
         public void updateTask()
         {

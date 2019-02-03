@@ -19,14 +19,14 @@ public abstract class TileEntitySpecialRenderer<T extends TileEntity>
     protected static final ResourceLocation[] DESTROY_STAGES = new ResourceLocation[] {new ResourceLocation("textures/blocks/destroy_stage_0.png"), new ResourceLocation("textures/blocks/destroy_stage_1.png"), new ResourceLocation("textures/blocks/destroy_stage_2.png"), new ResourceLocation("textures/blocks/destroy_stage_3.png"), new ResourceLocation("textures/blocks/destroy_stage_4.png"), new ResourceLocation("textures/blocks/destroy_stage_5.png"), new ResourceLocation("textures/blocks/destroy_stage_6.png"), new ResourceLocation("textures/blocks/destroy_stage_7.png"), new ResourceLocation("textures/blocks/destroy_stage_8.png"), new ResourceLocation("textures/blocks/destroy_stage_9.png")};
     protected TileEntityRendererDispatcher rendererDispatcher;
 
-    public void func_192841_a(T p_192841_1_, double p_192841_2_, double p_192841_4_, double p_192841_6_, float p_192841_8_, int p_192841_9_, float p_192841_10_)
+    public void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
-        ITextComponent itextcomponent = p_192841_1_.getDisplayName();
+        ITextComponent itextcomponent = te.getDisplayName();
 
-        if (itextcomponent != null && this.rendererDispatcher.cameraHitResult != null && p_192841_1_.getPos().equals(this.rendererDispatcher.cameraHitResult.getBlockPos()))
+        if (itextcomponent != null && this.rendererDispatcher.cameraHitResult != null && te.getPos().equals(this.rendererDispatcher.cameraHitResult.getBlockPos()))
         {
             this.setLightmapDisabled(true);
-            this.drawNameplate(p_192841_1_, itextcomponent.getFormattedText(), p_192841_2_, p_192841_4_, p_192841_6_, 12);
+            this.drawNameplate(te, itextcomponent.getFormattedText(), x, y, z, 12);
             this.setLightmapDisabled(false);
         }
     }
@@ -63,7 +63,7 @@ public abstract class TileEntitySpecialRenderer<T extends TileEntity>
 
     protected World getWorld()
     {
-        return this.rendererDispatcher.worldObj;
+        return this.rendererDispatcher.world;
     }
 
     public void setRendererDispatcher(TileEntityRendererDispatcher rendererDispatcherIn)

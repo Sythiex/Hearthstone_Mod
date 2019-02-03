@@ -73,7 +73,7 @@ public class EntitySquid extends EntityWaterMob
         return SoundEvents.ENTITY_SQUID_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_SQUID_HURT;
     }
@@ -121,7 +121,7 @@ public class EntitySquid extends EntityWaterMob
 
         if ((double)this.squidRotation > (Math.PI * 2D))
         {
-            if (this.worldObj.isRemote)
+            if (this.world.isRemote)
             {
                 this.squidRotation = ((float)Math.PI * 2F);
             }
@@ -134,7 +134,7 @@ public class EntitySquid extends EntityWaterMob
                     this.rotationVelocity = 1.0F / (this.rand.nextFloat() + 1.0F) * 0.2F;
                 }
 
-                this.worldObj.setEntityState(this, (byte)19);
+                this.world.setEntityState(this, (byte)19);
             }
         }
 
@@ -162,14 +162,14 @@ public class EntitySquid extends EntityWaterMob
                 this.rotateSpeed *= 0.99F;
             }
 
-            if (!this.worldObj.isRemote)
+            if (!this.world.isRemote)
             {
                 this.motionX = (double)(this.randomMotionVecX * this.randomMotionSpeed);
                 this.motionY = (double)(this.randomMotionVecY * this.randomMotionSpeed);
                 this.motionZ = (double)(this.randomMotionVecZ * this.randomMotionSpeed);
             }
 
-            float f1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            float f1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             this.renderYawOffset += (-((float)MathHelper.atan2(this.motionX, this.motionZ)) * (180F / (float)Math.PI) - this.renderYawOffset) * 0.1F;
             this.rotationYaw = this.renderYawOffset;
             this.squidYaw = (float)((double)this.squidYaw + Math.PI * (double)this.rotateSpeed * 1.5D);
@@ -179,7 +179,7 @@ public class EntitySquid extends EntityWaterMob
         {
             this.tentacleAngle = MathHelper.abs(MathHelper.sin(this.squidRotation)) * (float)Math.PI * 0.25F;
 
-            if (!this.worldObj.isRemote)
+            if (!this.world.isRemote)
             {
                 this.motionX = 0.0D;
                 this.motionZ = 0.0D;
@@ -200,9 +200,9 @@ public class EntitySquid extends EntityWaterMob
         }
     }
 
-    public void func_191986_a(float p_191986_1_, float p_191986_2_, float p_191986_3_)
+    public void travel(float strafe, float vertical, float forward)
     {
-        this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
 
     /**
@@ -210,9 +210,12 @@ public class EntitySquid extends EntityWaterMob
      */
     public boolean getCanSpawnHere()
     {
-        return this.posY > 45.0D && this.posY < (double)this.worldObj.getSeaLevel() && super.getCanSpawnHere();
+        return this.posY > 45.0D && this.posY < (double)this.world.getSeaLevel() && super.getCanSpawnHere();
     }
 
+    /**
+     * Handler for {@link World#setEntityState}
+     */
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {
@@ -256,11 +259,11 @@ public class EntitySquid extends EntityWaterMob
             }
 
             /**
-             * Updates the task
+             * Keep ticking a continuous task that has already been started
              */
             public void updateTask()
             {
-                int i = this.squid.getAge();
+                int i = this.squid.getIdleTime();
 
                 if (i > 100)
                 {

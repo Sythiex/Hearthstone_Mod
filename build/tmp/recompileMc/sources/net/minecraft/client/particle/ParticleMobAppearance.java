@@ -46,8 +46,8 @@ public class ParticleMobAppearance extends Particle
 
         if (this.entity == null)
         {
-            EntityElderGuardian entityelderguardian = new EntityElderGuardian(this.worldObj);
-            entityelderguardian.func_190767_di();
+            EntityElderGuardian entityelderguardian = new EntityElderGuardian(this.world);
+            entityelderguardian.setGhost();
             this.entity = entityelderguardian;
         }
     }
@@ -55,7 +55,7 @@ public class ParticleMobAppearance extends Particle
     /**
      * Renders the particle
      */
-    public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
     {
         if (this.entity != null)
         {
@@ -81,7 +81,7 @@ public class ParticleMobAppearance extends Particle
             this.entity.rotationYawHead = 0.0F;
             this.entity.prevRotationYaw = 0.0F;
             this.entity.prevRotationYawHead = 0.0F;
-            rendermanager.doRenderEntity(this.entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, false);
+            rendermanager.renderEntity(this.entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, false);
             GlStateManager.popMatrix();
             GlStateManager.enableDepth();
         }

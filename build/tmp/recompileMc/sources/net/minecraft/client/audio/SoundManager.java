@@ -431,7 +431,7 @@ public class SoundManager
                         else
                         {
                             boolean flag = p_sound.canRepeat() && p_sound.getRepeatDelay() == 0;
-                            String s = MathHelper.getRandomUuid(ThreadLocalRandom.current()).toString();
+                            String s = MathHelper.getRandomUUID(ThreadLocalRandom.current()).toString();
                             ResourceLocation resourcelocation1 = sound.getSoundAsOggLocation();
 
                             if (sound.isStreaming())
@@ -466,12 +466,12 @@ public class SoundManager
 
     private float getClampedPitch(ISound soundIn)
     {
-        return MathHelper.clamp_float(soundIn.getPitch(), 0.5F, 2.0F);
+        return MathHelper.clamp(soundIn.getPitch(), 0.5F, 2.0F);
     }
 
     private float getClampedVolume(ISound soundIn)
     {
-        return MathHelper.clamp_float(soundIn.getVolume() * this.getVolume(soundIn.getCategory()), 0.0F, 1.0F);
+        return MathHelper.clamp(soundIn.getVolume() * this.getVolume(soundIn.getCategory()), 0.0F, 1.0F);
     }
 
     /**
@@ -549,6 +549,11 @@ public class SoundManager
      * Sets the listener of sounds
      */
     public void setListener(EntityPlayer player, float p_148615_2_)
+    {
+        setListener((net.minecraft.entity.Entity) player, p_148615_2_);
+    }
+
+    public void setListener(net.minecraft.entity.Entity player, float p_148615_2_)
     {
         if (this.loaded && player != null)
         {

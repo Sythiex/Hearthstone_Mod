@@ -190,7 +190,9 @@ public class Style
             return this;
         }
         /**
-         * Gets the equivalent text formatting code for this style, without the initial section sign (U+00A7) character.
+         * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
+         *  
+         * @return A formatted string that can be combined with text to produce this style.
          */
         @SideOnly(Side.CLIENT)
         public String getFormattingCode()
@@ -381,7 +383,9 @@ public class Style
     }
 
     /**
-     * Gets the equivalent text formatting code for this style, without the initial section sign (U+00A7) character.
+     * Gets the equivilent text formatting code(s) for this style, including all needed section sign characters.
+     *  
+     * @return A formatted string that can be combined with text to produce this style.
      */
     public String getFormattingCode()
     {

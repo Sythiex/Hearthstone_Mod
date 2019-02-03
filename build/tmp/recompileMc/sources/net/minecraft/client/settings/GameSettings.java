@@ -72,7 +72,7 @@ public class GameSettings
     private static final String[] AMBIENT_OCCLUSIONS = new String[] {"options.ao.off", "options.ao.min", "options.ao.max"};
     private static final String[] CLOUDS_TYPES = new String[] {"options.off", "options.clouds.fast", "options.clouds.fancy"};
     private static final String[] ATTACK_INDICATORS = new String[] {"options.off", "options.attack.crosshair", "options.attack.hotbar"};
-    public static final String[] field_193632_b = new String[] {"options.narrator.off", "options.narrator.all", "options.narrator.chat", "options.narrator.system"};
+    public static final String[] NARRATOR_MODES = new String[] {"options.narrator.off", "options.narrator.all", "options.narrator.chat", "options.narrator.system"};
     public float mouseSensitivity = 0.5F;
     public boolean invertMouse;
     public int renderDistanceChunks = -1;
@@ -121,7 +121,7 @@ public class GameSettings
     public boolean showSubtitles;
     public boolean realmsNotifications = true;
     public boolean autoJump = true;
-    public TutorialSteps field_193631_S = TutorialSteps.MOVEMENT;
+    public TutorialSteps tutorialStep = TutorialSteps.MOVEMENT;
     public KeyBinding keyBindForward = new KeyBinding("key.forward", 17, "key.categories.movement");
     public KeyBinding keyBindLeft = new KeyBinding("key.left", 30, "key.categories.movement");
     public KeyBinding keyBindBack = new KeyBinding("key.back", 31, "key.categories.movement");
@@ -143,10 +143,10 @@ public class GameSettings
     public KeyBinding keyBindSmoothCamera = new KeyBinding("key.smoothCamera", 0, "key.categories.misc");
     public KeyBinding keyBindFullscreen = new KeyBinding("key.fullscreen", 87, "key.categories.misc");
     public KeyBinding keyBindSpectatorOutlines = new KeyBinding("key.spectatorOutlines", 0, "key.categories.misc");
-    public KeyBinding field_194146_ao = new KeyBinding("key.advancements", 38, "key.categories.misc");
+    public KeyBinding keyBindAdvancements = new KeyBinding("key.advancements", 38, "key.categories.misc");
     public KeyBinding[] keyBindsHotbar = new KeyBinding[] {new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")};
-    public KeyBinding field_193629_ap = new KeyBinding("key.saveToolbarActivator", 46, "key.categories.creative");
-    public KeyBinding field_193630_aq = new KeyBinding("key.loadToolbarActivator", 45, "key.categories.creative");
+    public KeyBinding keyBindSaveToolbar = new KeyBinding("key.saveToolbarActivator", 46, "key.categories.creative");
+    public KeyBinding keyBindLoadToolbar = new KeyBinding("key.loadToolbarActivator", 45, "key.categories.creative");
     public KeyBinding[] keyBindings;
     protected Minecraft mc;
     private File optionsFile;
@@ -169,21 +169,21 @@ public class GameSettings
     public int guiScale;
     /** Determines amount of particles. 0 = All, 1 = Decreased, 2 = Minimal */
     public int particleSetting;
-    public int field_192571_R;
+    public int narrator;
     /** Game settings language */
     public String language;
     public boolean forceUnicodeFont;
 
-    public GameSettings(Minecraft mcIn, File optionsFileIn)
+    public GameSettings(Minecraft mcIn, File mcDataDir)
     {
         setForgeKeybindProperties();
-        this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.keyBindsHotbar);
+        this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
         this.fovSetting = 70.0F;
         this.language = "en_us";
         this.mc = mcIn;
-        this.optionsFile = new File(optionsFileIn, "options.txt");
+        this.optionsFile = new File(mcDataDir, "options.txt");
 
         if (mcIn.isJava64bit() && Runtime.getRuntime().maxMemory() >= 1000000000L)
         {
@@ -201,7 +201,7 @@ public class GameSettings
     public GameSettings()
     {
         setForgeKeybindProperties();
-        this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.keyBindsHotbar);
+        this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
         this.fovSetting = 70.0F;
@@ -324,7 +324,7 @@ public class GameSettings
                 this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
                 this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
-                this.needsResourceRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
+                this.needsBlockModelRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
             }
         }
 
@@ -342,7 +342,7 @@ public class GameSettings
     {
         if (settingsOption == GameSettings.Options.RENDER_DISTANCE)
         {
-            this.setOptionFloatValue(settingsOption, MathHelper.clamp_float((float)(this.renderDistanceChunks + value), settingsOption.getValueMin(), settingsOption.getValueMax()));
+            this.setOptionFloatValue(settingsOption, MathHelper.clamp((float)(this.renderDistanceChunks + value), settingsOption.getValueMin(), settingsOption.getValueMax()));
         }
 
         if (settingsOption == GameSettings.Options.MAIN_HAND)
@@ -378,7 +378,7 @@ public class GameSettings
         if (settingsOption == GameSettings.Options.FORCE_UNICODE_FONT)
         {
             this.forceUnicodeFont = !this.forceUnicodeFont;
-            this.mc.fontRendererObj.setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.forceUnicodeFont);
+            this.mc.fontRenderer.setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.forceUnicodeFont);
         }
 
         if (settingsOption == GameSettings.Options.FBO_ENABLE)
@@ -389,7 +389,7 @@ public class GameSettings
         if (settingsOption == GameSettings.Options.ANAGLYPH)
         {
             this.anaglyph = !this.anaglyph;
-            this.mc.refreshResources();
+            net.minecraftforge.fml.client.FMLClientHandler.instance().refreshResources(net.minecraftforge.client.resource.VanillaResourceType.TEXTURES);
         }
 
         if (settingsOption == GameSettings.Options.GRAPHICS)
@@ -488,16 +488,16 @@ public class GameSettings
 
         if (settingsOption == GameSettings.Options.NARRATOR)
         {
-            if (NarratorChatListener.field_193643_a.func_193640_a())
+            if (NarratorChatListener.INSTANCE.isActive())
             {
-                this.field_192571_R = (this.field_192571_R + value) % field_193632_b.length;
+                this.narrator = (this.narrator + value) % NARRATOR_MODES.length;
             }
             else
             {
-                this.field_192571_R = 0;
+                this.narrator = 0;
             }
 
-            NarratorChatListener.field_193643_a.func_193641_a(this.field_192571_R);
+            NarratorChatListener.INSTANCE.announceMode(this.narrator);
         }
 
         this.saveOptions();
@@ -621,9 +621,9 @@ public class GameSettings
      */
     public String getKeyBinding(GameSettings.Options settingOption)
     {
-        String s = I18n.format(settingOption.getEnumString()) + ": ";
+        String s = I18n.format(settingOption.getTranslation()) + ": ";
 
-        if (settingOption.getEnumFloat())
+        if (settingOption.isFloat())
         {
             float f1 = this.getOptionFloatValue(settingOption);
             float f = settingOption.normalizeValue(f1);
@@ -702,7 +702,7 @@ public class GameSettings
                 return f == 0.0F ? s + I18n.format("options.off") : s + (int)(f * 100.0F) + "%";
             }
         }
-        else if (settingOption.getEnumBoolean())
+        else if (settingOption.isBoolean())
         {
             boolean flag = this.getOptionOrdinalValue(settingOption);
             return flag ? s + I18n.format("options.on") : s + I18n.format("options.off");
@@ -749,7 +749,7 @@ public class GameSettings
         }
         else if (settingOption == GameSettings.Options.NARRATOR)
         {
-            return NarratorChatListener.field_193643_a.func_193640_a() ? s + getTranslation(field_193632_b, this.field_192571_R) : s + I18n.format("options.narrator.notavailable");
+            return NarratorChatListener.INSTANCE.isActive() ? s + getTranslation(NARRATOR_MODES, this.narrator) : s + I18n.format("options.narrator.notavailable");
         }
         else
         {
@@ -866,7 +866,7 @@ public class GameSettings
 
                     if ("tutorialStep".equals(s1))
                     {
-                        this.field_193631_S = TutorialSteps.func_193307_a(s2);
+                        this.tutorialStep = TutorialSteps.getTutorial(s2);
                     }
 
                     if ("ao".equals(s1))
@@ -919,7 +919,7 @@ public class GameSettings
 
                     if ("resourcePacks".equals(s1))
                     {
-                        this.resourcePacks = (List)JsonUtils.func_193840_a(GSON, s2, TYPE_LIST_STRING);
+                        this.resourcePacks = (List)JsonUtils.gsonDeserialize(GSON, s2, TYPE_LIST_STRING);
 
                         if (this.resourcePacks == null)
                         {
@@ -929,7 +929,7 @@ public class GameSettings
 
                     if ("incompatibleResourcePacks".equals(s1))
                     {
-                        this.incompatibleResourcePacks = (List)JsonUtils.func_193840_a(GSON, s2, TYPE_LIST_STRING);
+                        this.incompatibleResourcePacks = (List)JsonUtils.gsonDeserialize(GSON, s2, TYPE_LIST_STRING);
 
                         if (this.incompatibleResourcePacks == null)
                         {
@@ -1099,7 +1099,7 @@ public class GameSettings
 
                     if ("narrator".equals(s1))
                     {
-                        this.field_192571_R = Integer.parseInt(s2);
+                        this.narrator = Integer.parseInt(s2);
                     }
 
                     for (KeyBinding keybinding : this.keyBindings)
@@ -1251,8 +1251,8 @@ public class GameSettings
             printwriter.println("realmsNotifications:" + this.realmsNotifications);
             printwriter.println("enableWeakAttacks:" + this.enableWeakAttacks);
             printwriter.println("autoJump:" + this.autoJump);
-            printwriter.println("narrator:" + this.field_192571_R);
-            printwriter.println("tutorialStep:" + this.field_193631_S.func_193308_a());
+            printwriter.println("narrator:" + this.narrator);
+            printwriter.println("tutorialStep:" + this.tutorialStep.getName());
 
             for (KeyBinding keybinding : this.keyBindings)
             {
@@ -1298,7 +1298,7 @@ public class GameSettings
      */
     public void sendSettingsToServer()
     {
-        if (this.mc.thePlayer != null)
+        if (this.mc.player != null)
         {
             int i = 0;
 
@@ -1307,7 +1307,7 @@ public class GameSettings
                 i |= enumplayermodelparts.getPartMask();
             }
 
-            this.mc.thePlayer.connection.sendPacket(new CPacketClientSettings(this.language, this.renderDistanceChunks, this.chatVisibility, this.chatColours, i, this.mainHand));
+            this.mc.player.connection.sendPacket(new CPacketClientSettings(this.language, this.renderDistanceChunks, this.chatVisibility, this.chatColours, i, this.mainHand));
         }
     }
 
@@ -1404,18 +1404,18 @@ public class GameSettings
         AUTO_JUMP("options.autoJump", false, true),
         NARRATOR("options.narrator", false, false);
 
-        private final boolean enumFloat;
-        private final boolean enumBoolean;
-        private final String enumString;
+        private final boolean isFloat;
+        private final boolean isBoolean;
+        private final String translation;
         private final float valueStep;
         private float valueMin;
         private float valueMax;
 
-        public static GameSettings.Options getEnumOptions(int ordinal)
+        public static GameSettings.Options byOrdinal(int ordinal)
         {
             for (GameSettings.Options gamesettings$options : values())
             {
-                if (gamesettings$options.returnEnumOrdinal() == ordinal)
+                if (gamesettings$options.getOrdinal() == ordinal)
                 {
                     return gamesettings$options;
                 }
@@ -1424,39 +1424,42 @@ public class GameSettings
             return null;
         }
 
-        private Options(String str, boolean isFloat, boolean isBoolean)
+        private Options(String translation, boolean isFloat, boolean isBoolean)
         {
-            this(str, isFloat, isBoolean, 0.0F, 1.0F, 0.0F);
+            this(translation, isFloat, isBoolean, 0.0F, 1.0F, 0.0F);
         }
 
-        private Options(String str, boolean isFloat, boolean isBoolean, float valMin, float valMax, float valStep)
+        private Options(String translation, boolean isFloat, boolean isBoolean, float valMin, float valMax, float valStep)
         {
-            this.enumString = str;
-            this.enumFloat = isFloat;
-            this.enumBoolean = isBoolean;
+            this.translation = translation;
+            this.isFloat = isFloat;
+            this.isBoolean = isBoolean;
             this.valueMin = valMin;
             this.valueMax = valMax;
             this.valueStep = valStep;
         }
 
-        public boolean getEnumFloat()
+        public boolean isFloat()
         {
-            return this.enumFloat;
+            return this.isFloat;
         }
 
-        public boolean getEnumBoolean()
+        public boolean isBoolean()
         {
-            return this.enumBoolean;
+            return this.isBoolean;
         }
 
-        public int returnEnumOrdinal()
+        public int getOrdinal()
         {
             return this.ordinal();
         }
 
-        public String getEnumString()
+        /**
+         * GameSettings$Options.Options
+         */
+        public String getTranslation()
         {
-            return this.enumString;
+            return this.translation;
         }
 
         public float getValueMin()
@@ -1476,18 +1479,18 @@ public class GameSettings
 
         public float normalizeValue(float value)
         {
-            return MathHelper.clamp_float((this.snapToStepClamp(value) - this.valueMin) / (this.valueMax - this.valueMin), 0.0F, 1.0F);
+            return MathHelper.clamp((this.snapToStepClamp(value) - this.valueMin) / (this.valueMax - this.valueMin), 0.0F, 1.0F);
         }
 
         public float denormalizeValue(float value)
         {
-            return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp_float(value, 0.0F, 1.0F));
+            return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp(value, 0.0F, 1.0F));
         }
 
         public float snapToStepClamp(float value)
         {
             value = this.snapToStep(value);
-            return MathHelper.clamp_float(value, this.valueMin, this.valueMax);
+            return MathHelper.clamp(value, this.valueMin, this.valueMax);
         }
 
         private float snapToStep(float value)
@@ -1521,13 +1524,13 @@ public class GameSettings
     }
 
     // FORGE: fix for MC-64581 very laggy mipmap slider
-    private boolean needsResourceRefresh = false;
+    private boolean needsBlockModelRefresh = false;
     public void onGuiClosed()
     {
-        if (needsResourceRefresh)
+        if (needsBlockModelRefresh)
         {
-            this.mc.scheduleResourcesRefresh();
-            this.needsResourceRefresh = false;
+            net.minecraftforge.fml.client.FMLClientHandler.instance().scheduleResourcesRefresh(net.minecraftforge.client.resource.VanillaResourceType.MODELS);
+            this.needsBlockModelRefresh = false;
         }
     }
     /******* Forge End ***********/

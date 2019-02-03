@@ -56,6 +56,7 @@ public class BlockSapling extends BlockBush implements IGrowable
         {
             super.updateTick(worldIn, pos, state, rand);
 
+            if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
             if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0)
             {
                 this.grow(worldIn, pos, state, rand);
@@ -221,11 +222,11 @@ public class BlockSapling extends BlockBush implements IGrowable
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
     {
         for (BlockPlanks.EnumType blockplanks$enumtype : BlockPlanks.EnumType.values())
         {
-            tab.add(new ItemStack(this, 1, blockplanks$enumtype.getMetadata()));
+            items.add(new ItemStack(this, 1, blockplanks$enumtype.getMetadata()));
         }
     }
 

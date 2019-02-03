@@ -143,16 +143,16 @@ public class ModelPlayer extends ModelBiped
         }
     }
 
-    public void setInvisible(boolean invisible)
+    public void setVisible(boolean visible)
     {
-        super.setInvisible(invisible);
-        this.bipedLeftArmwear.showModel = invisible;
-        this.bipedRightArmwear.showModel = invisible;
-        this.bipedLeftLegwear.showModel = invisible;
-        this.bipedRightLegwear.showModel = invisible;
-        this.bipedBodyWear.showModel = invisible;
-        this.bipedCape.showModel = invisible;
-        this.bipedDeadmau5Head.showModel = invisible;
+        super.setVisible(visible);
+        this.bipedLeftArmwear.showModel = visible;
+        this.bipedRightArmwear.showModel = visible;
+        this.bipedLeftLegwear.showModel = visible;
+        this.bipedRightLegwear.showModel = visible;
+        this.bipedBodyWear.showModel = visible;
+        this.bipedCape.showModel = visible;
+        this.bipedDeadmau5Head.showModel = visible;
     }
 
     public void postRenderArm(float scale, EnumHandSide side)

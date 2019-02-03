@@ -75,7 +75,7 @@ public class EntitySpider extends EntityMob
     /**
      * Returns new PathNavigateGround instance
      */
-    protected PathNavigate getNewNavigator(World worldIn)
+    protected PathNavigate createNavigator(World worldIn)
     {
         return new PathNavigateClimber(this, worldIn);
     }
@@ -93,9 +93,9 @@ public class EntitySpider extends EntityMob
     {
         super.onUpdate();
 
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
-            this.setBesideClimbableBlock(this.isCollidedHorizontally);
+            this.setBesideClimbableBlock(this.collidedHorizontally);
         }
     }
 
@@ -111,7 +111,7 @@ public class EntitySpider extends EntityMob
         return SoundEvents.ENTITY_SPIDER_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_SPIDER_HURT;
     }
@@ -133,7 +133,8 @@ public class EntitySpider extends EntityMob
     }
 
     /**
-     * returns true if this entity is by a ladder, false otherwise
+     * Returns true if this entity should move as if it were on a ladder (either because it's actually on a ladder, or
+     * for AI reasons)
      */
     public boolean isOnLadder()
     {
@@ -157,7 +158,13 @@ public class EntitySpider extends EntityMob
 
     public boolean isPotionApplicable(PotionEffect potioneffectIn)
     {
-        return potioneffectIn.getPotion() == MobEffects.POISON ? false : super.isPotionApplicable(potioneffectIn);
+        if(potioneffectIn.getPotion() == MobEffects.POISON)
+        {
+        	net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent event = new net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent(this, potioneffectIn);
+        	net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+        	return event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
+        }	
+        return super.isPotionApplicable(potioneffectIn);
     }
 
     /**
@@ -198,12 +205,12 @@ public class EntitySpider extends EntityMob
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
 
-        if (this.worldObj.rand.nextInt(100) == 0)
+        if (this.world.rand.nextInt(100) == 0)
         {
-            EntitySkeleton entityskeleton = new EntitySkeleton(this.worldObj);
+            EntitySkeleton entityskeleton = new EntitySkeleton(this.world);
             entityskeleton.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
             entityskeleton.onInitialSpawn(difficulty, (IEntityLivingData)null);
-            this.worldObj.spawnEntityInWorld(entityskeleton);
+            this.world.spawnEntity(entityskeleton);
             entityskeleton.startRiding(this);
         }
 
@@ -211,9 +218,9 @@ public class EntitySpider extends EntityMob
         {
             livingdata = new EntitySpider.GroupData();
 
-            if (this.worldObj.getDifficulty() == EnumDifficulty.HARD && this.worldObj.rand.nextFloat() < 0.1F * difficulty.getClampedAdditionalDifficulty())
+            if (this.world.getDifficulty() == EnumDifficulty.HARD && this.world.rand.nextFloat() < 0.1F * difficulty.getClampedAdditionalDifficulty())
             {
-                ((EntitySpider.GroupData)livingdata).setRandomEffect(this.worldObj.rand);
+                ((EntitySpider.GroupData)livingdata).setRandomEffect(this.world.rand);
             }
         }
 
@@ -245,7 +252,7 @@ public class EntitySpider extends EntityMob
             /**
              * Returns whether an in-progress EntityAIBase should continue executing
              */
-            public boolean continueExecuting()
+            public boolean shouldContinueExecuting()
             {
                 float f = this.attacker.getBrightness();
 
@@ -256,7 +263,7 @@ public class EntitySpider extends EntityMob
                 }
                 else
                 {
-                    return super.continueExecuting();
+                    return super.shouldContinueExecuting();
                 }
             }
 

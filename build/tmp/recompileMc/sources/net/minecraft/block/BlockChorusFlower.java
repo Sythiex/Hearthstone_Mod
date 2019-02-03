@@ -41,7 +41,7 @@ public class BlockChorusFlower extends Block
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.field_190931_a;
+        return Items.AIR;
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
@@ -153,23 +153,23 @@ public class BlockChorusFlower extends Block
         }
     }
 
-    private void placeGrownFlower(World p_185602_1_, BlockPos p_185602_2_, int p_185602_3_)
+    private void placeGrownFlower(World worldIn, BlockPos pos, int age)
     {
-        p_185602_1_.setBlockState(p_185602_2_, this.getDefaultState().withProperty(AGE, Integer.valueOf(p_185602_3_)), 2);
-        p_185602_1_.playEvent(1033, p_185602_2_, 0);
+        worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, Integer.valueOf(age)), 2);
+        worldIn.playEvent(1033, pos, 0);
     }
 
-    private void placeDeadFlower(World p_185605_1_, BlockPos p_185605_2_)
+    private void placeDeadFlower(World worldIn, BlockPos pos)
     {
-        p_185605_1_.setBlockState(p_185605_2_, this.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
-        p_185605_1_.playEvent(1034, p_185605_2_, 0);
+        worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
+        worldIn.playEvent(1034, pos, 0);
     }
 
-    private static boolean areAllNeighborsEmpty(World p_185604_0_, BlockPos p_185604_1_, EnumFacing p_185604_2_)
+    private static boolean areAllNeighborsEmpty(World worldIn, BlockPos pos, EnumFacing excludingSide)
     {
         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
         {
-            if (enumfacing != p_185604_2_ && !p_185604_0_.isAirBlock(p_185604_1_.offset(enumfacing)))
+            if (enumfacing != excludingSide && !worldIn.isAirBlock(pos.offset(enumfacing)))
             {
                 return false;
             }
@@ -191,6 +191,9 @@ public class BlockChorusFlower extends Block
         return false;
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return super.canPlaceBlockAt(worldIn, pos) && this.canSurvive(worldIn, pos);
@@ -201,7 +204,7 @@ public class BlockChorusFlower extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (!this.canSurvive(worldIn, pos))
         {
@@ -248,15 +251,19 @@ public class BlockChorusFlower extends Block
         }
     }
 
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
         super.harvestBlock(worldIn, player, pos, state, te, stack);
         spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(this)));
     }
 
-    protected ItemStack createStackedBlock(IBlockState state)
+    protected ItemStack getSilkTouchDrop(IBlockState state)
     {
-        return ItemStack.field_190927_a;
+        return ItemStack.EMPTY;
     }
 
     @SideOnly(Side.CLIENT)
@@ -344,7 +351,16 @@ public class BlockChorusFlower extends Block
         }
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

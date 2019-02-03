@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,11 +45,13 @@ import com.google.gson.JsonParseException;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -64,18 +66,26 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBucket;
+import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTippedArrow;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.network.play.server.SPacketRecipeBook.State;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityNote;
@@ -111,15 +121,16 @@ import net.minecraftforge.event.DifficultyChangeEvent;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
-import net.minecraftforge.event.entity.ThrowableImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.event.entity.player.AnvilRepairEvent;
@@ -127,6 +138,7 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -134,10 +146,11 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher.ConnectionType;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
@@ -172,14 +185,23 @@ public class ForgeHooks
     {
         if (seedList.size() == 0)
         {
-            return ItemStack.field_190927_a; //Some bad mods hack in and empty our list, so lets not hard crash -.-
+            return ItemStack.EMPTY; //Some bad mods hack in and empty our list, so lets not hard crash -.-
         }
         SeedEntry entry = WeightedRandom.getRandomItem(rand, seedList);
-        if (entry == null || entry.seed.func_190926_b())
+        if (entry == null || entry.seed.isEmpty())
         {
-            return ItemStack.field_190927_a;
+            return ItemStack.EMPTY;
         }
         return entry.getStack(rand, fortune);
+    }
+
+    public static boolean canContinueUsing(@Nonnull ItemStack from, @Nonnull ItemStack to)
+    {
+        if (!from.isEmpty() && !to.isEmpty())
+        {
+            return from.getItem().canContinueUsing(from, to);
+        }
+        return false;
     }
 
     private static boolean toolInit = false;
@@ -196,7 +218,7 @@ public class ForgeHooks
 
         ItemStack stack = player.getHeldItemMainhand();
         String tool = block.getHarvestTool(state);
-        if (stack.func_190926_b() || tool == null)
+        if (stack.isEmpty() || tool == null)
         {
             return player.canHarvestBlock(state);
         }
@@ -215,7 +237,7 @@ public class ForgeHooks
         IBlockState state = world.getBlockState(pos);
         state = state.getBlock().getActualState(state, world, pos);
         String tool = state.getBlock().getHarvestTool(state);
-        if (stack.func_190926_b() || tool == null) return false;
+        if (stack.isEmpty() || tool == null) return false;
         return stack.getItem().getHarvestLevel(stack, tool, null, null) >= state.getBlock().getHarvestLevel(state);
     }
 
@@ -257,19 +279,19 @@ public class ForgeHooks
         }
         toolInit = true;
 
-        Set<Block> blocks = ReflectionHelper.getPrivateValue(ItemPickaxe.class, null, 0);
+        Set<Block> blocks = ObfuscationReflectionHelper.getPrivateValue(ItemPickaxe.class, null, "field_150915"+"_c");
         for (Block block : blocks)
         {
             block.setHarvestLevel("pickaxe", 0);
         }
 
-        blocks = ReflectionHelper.getPrivateValue(ItemSpade.class, null, 0);
+        blocks = ObfuscationReflectionHelper.getPrivateValue(ItemSpade.class, null, "field_150916"+"_c");
         for (Block block : blocks)
         {
             block.setHarvestLevel("shovel", 0);
         }
 
-        blocks = ReflectionHelper.getPrivateValue(ItemAxe.class, null, 0);
+        blocks = ObfuscationReflectionHelper.getPrivateValue(ItemAxe.class, null, "field_150917"+"_c");
         for (Block block : blocks)
         {
             block.setHarvestLevel("axe", 0);
@@ -317,7 +339,6 @@ public class ForgeHooks
                 return new ItemStack(Items.WHEAT_SEEDS, 1 + rand.nextInt(fortune * 2 + 1));
             }
         });
-        initTools();
     }
 
     /**
@@ -424,7 +445,7 @@ public class ForgeHooks
                 }
                 else
                 {
-                    ResourceLocation resourcelocation = EntityList.func_191301_a(this.objectMouseOver.entityHit);
+                    ResourceLocation resourcelocation = EntityList.getKey(this.objectMouseOver.entityHit);
 
                     if (resourcelocation == null || !EntityList.ENTITY_EGGS.containsKey(resourcelocation))
                     {
@@ -446,7 +467,7 @@ public class ForgeHooks
                 }
                 else if (this.objectMouseOver.typeOfHit == RayTraceResult.Type.ENTITY)
                 {
-                    s = EntityList.func_191301_a(this.objectMouseOver.entityHit).toString();
+                    s = EntityList.getKey(this.objectMouseOver.entityHit).toString();
                 }
 
                 LOGGER.warn("Picking on: [{}] {} gave null item", new Object[] {this.objectMouseOver.typeOfHit, s});
@@ -508,7 +529,7 @@ public class ForgeHooks
             result = target.entityHit.getPickedResult(target);
         }
 
-        if (result.func_190926_b())
+        if (result.isEmpty())
         {
             return false;
         }
@@ -556,12 +577,30 @@ public class ForgeHooks
 
     public static boolean onLivingAttack(EntityLivingBase entity, DamageSource src, float amount)
     {
+        return entity instanceof EntityPlayer || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
+    }
+
+    public static boolean onPlayerAttack(EntityLivingBase entity, DamageSource src, float amount)
+    {
         return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
+    }
+
+    public static LivingKnockBackEvent onLivingKnockBack(EntityLivingBase target, Entity attacker, float strength, double ratioX, double ratioZ)
+    {
+        LivingKnockBackEvent event = new LivingKnockBackEvent(target, attacker, strength, ratioX, ratioZ);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event;
     }
 
     public static float onLivingHurt(EntityLivingBase entity, DamageSource src, float amount)
     {
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
+        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
+    }
+
+    public static float onLivingDamage(EntityLivingBase entity, DamageSource src, float amount)
+    {
+        LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
         return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
     }
 
@@ -622,9 +661,9 @@ public class ForgeHooks
         else
         {
             AxisAlignedBB bb = entity.getEntityBoundingBox();
-            int mX = MathHelper.floor_double(bb.minX);
-            int mY = MathHelper.floor_double(bb.minY);
-            int mZ = MathHelper.floor_double(bb.minZ);
+            int mX = MathHelper.floor(bb.minX);
+            int mY = MathHelper.floor(bb.minY);
+            int mZ = MathHelper.floor(bb.minZ);
             for (int y2 = mY; y2 < bb.maxY; y2++)
             {
                 for (int x2 = mX; x2 < bb.maxX; x2++)
@@ -668,9 +707,9 @@ public class ForgeHooks
             return null;
         }
 
-        if (!player.worldObj.isRemote)
+        if (!player.world.isRemote)
         {
-            player.getEntityWorld().spawnEntityInWorld(event.getEntityItem());
+            player.getEntityWorld().spawnEntity(event.getEntityItem());
         }
         return event.getEntityItem();
     }
@@ -683,7 +722,7 @@ public class ForgeHooks
     @Nullable
     public static ITextComponent onServerChatEvent(NetHandlerPlayServer net, String raw, ITextComponent comp)
     {
-        ServerChatEvent event = new ServerChatEvent(net.playerEntity, raw, comp);
+        ServerChatEvent event = new ServerChatEvent(net.player, raw, comp);
         if (MinecraftForge.EVENT_BUS.post(event))
         {
             return null;
@@ -776,18 +815,18 @@ public class ForgeHooks
         // Logic from tryHarvestBlock for pre-canceling the event
         boolean preCancelEvent = false;
         ItemStack itemstack = entityPlayer.getHeldItemMainhand();
-        if (gameType.isCreative() && !itemstack.func_190926_b()
+        if (gameType.isCreative() && !itemstack.isEmpty()
                 && !itemstack.getItem().canDestroyBlockInCreative(world, pos, itemstack, entityPlayer))
             preCancelEvent = true;
 
-        if (gameType.isAdventure())
+        if (gameType.hasLimitedInteractions())
         {
             if (gameType == GameType.SPECTATOR)
                 preCancelEvent = true;
 
             if (!entityPlayer.isAllowEdit())
             {
-                if (itemstack.func_190926_b() || !itemstack.canDestroy(world.getBlockState(pos).getBlock()))
+                if (itemstack.isEmpty() || !itemstack.canDestroy(world.getBlockState(pos).getBlock()))
                     preCancelEvent = true;
             }
         }
@@ -830,7 +869,7 @@ public class ForgeHooks
     {
         // handle all placement events here
         int meta = itemstack.getItemDamage();
-        int size = itemstack.func_190916_E();
+        int size = itemstack.getCount();
         NBTTagCompound nbt = null;
         if (itemstack.getTagCompound() != null)
         {
@@ -849,7 +888,7 @@ public class ForgeHooks
         {
             // save new item data
             int newMeta = itemstack.getItemDamage();
-            int newSize = itemstack.func_190916_E();
+            int newSize = itemstack.getCount();
             NBTTagCompound newNBT = null;
             if (itemstack.getTagCompound() != null)
             {
@@ -862,7 +901,7 @@ public class ForgeHooks
 
             // make sure to set pre-placement item data for event
             itemstack.setItemDamage(meta);
-            itemstack.func_190920_e(size);
+            itemstack.setCount(size);
             if (nbt != null)
             {
                 itemstack.setTagCompound(nbt);
@@ -891,7 +930,7 @@ public class ForgeHooks
             {
                 // Change the stack to its new content
                 itemstack.setItemDamage(newMeta);
-                itemstack.func_190920_e(newSize);
+                itemstack.setCount(newSize);
                 if (nbt != null)
                 {
                     itemstack.setTagCompound(newNBT);
@@ -921,7 +960,7 @@ public class ForgeHooks
     {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost);
         if (MinecraftForge.EVENT_BUS.post(e)) return false;
-        if (e.getOutput().func_190926_b()) return true;
+        if (e.getOutput().isEmpty()) return true;
 
         outputSlot.setInventorySlotContents(0, e.getOutput());
         container.maximumCost = e.getCost();
@@ -957,7 +996,7 @@ public class ForgeHooks
      */
     public static NonNullList<ItemStack> defaultRecipeGetRemainingItems(InventoryCrafting inv)
     {
-        NonNullList<ItemStack> ret = NonNullList.func_191197_a(inv.getSizeInventory(), ItemStack.field_190927_a);
+        NonNullList<ItemStack> ret = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
         for (int i = 0; i < ret.size(); i++)
         {
             ret.set(i, getContainerItem(inv.getStackInSlot(i)));
@@ -980,41 +1019,39 @@ public class ForgeHooks
         if (stack.getItem().hasContainerItem(stack))
         {
             stack = stack.getItem().getContainerItem(stack);
-            if (!stack.func_190926_b() && stack.isItemStackDamageable() && stack.getMetadata() > stack.getMaxDamage())
+            if (!stack.isEmpty() && stack.isItemStackDamageable() && stack.getMetadata() > stack.getMaxDamage())
             {
                 ForgeEventFactory.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
-                return ItemStack.field_190927_a;
+                return ItemStack.EMPTY;
             }
             return stack;
         }
-        return ItemStack.field_190927_a;
+        return ItemStack.EMPTY;
     }
 
     public static boolean isInsideOfMaterial(Material material, Entity entity, BlockPos pos)
     {
-        IBlockState state = entity.worldObj.getBlockState(pos);
+        IBlockState state = entity.world.getBlockState(pos);
         Block block = state.getBlock();
         double eyes = entity.posY + (double)entity.getEyeHeight();
 
         double filled = 1.0f; //If it's not a liquid assume it's a solid block
         if (block instanceof IFluidBlock)
         {
-            filled = ((IFluidBlock)block).getFilledPercentage(entity.worldObj, pos);
+            filled = ((IFluidBlock)block).getFilledPercentage(entity.world, pos);
         }
         else if (block instanceof BlockLiquid)
         {
-            filled = BlockLiquid.getLiquidHeightPercent(block.getMetaFromState(state));
+            filled = 1.0 - (BlockLiquid.getLiquidHeightPercent(block.getMetaFromState(state)) - (1.0 / 9.0));
         }
 
         if (filled < 0)
         {
-            filled *= -1;
-            //filled -= 0.11111111F; //Why this is needed.. not sure...
-            return eyes > pos.getY() + 1 + (1 - filled);
+            return eyes > pos.getY() + (filled + 1);
         }
         else
         {
-            return eyes < pos.getY() + 1 + filled;
+            return eyes < pos.getY() + filled;
         }
     }
 
@@ -1022,7 +1059,7 @@ public class ForgeHooks
     {
         if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target))) return false;
         ItemStack stack = player.getHeldItemMainhand();
-        return stack.func_190926_b() || !stack.getItem().onLeftClickEntity(stack, player, target);
+        return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
     }
 
     public static boolean onTravelToDimension(Entity entity, int dimension)
@@ -1044,8 +1081,8 @@ public class ForgeHooks
     public static RayTraceResult rayTraceEyes(EntityLivingBase entity, double length)
     {
         Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-        Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().xCoord * length, entity.getLookVec().yCoord * length, entity.getLookVec().zCoord * length));
-        return entity.worldObj.rayTraceBlocks(startPos, endPos);
+        Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length));
+        return entity.world.rayTraceBlocks(startPos, endPos);
     }
 
     @Nullable
@@ -1057,7 +1094,7 @@ public class ForgeHooks
 
     public static EnumActionResult onInteractEntityAt(EntityPlayer player, Entity entity, RayTraceResult ray, EnumHand hand)
     {
-        Vec3d vec3d = new Vec3d(ray.hitVec.xCoord - entity.posX, ray.hitVec.yCoord - entity.posY, ray.hitVec.zCoord - entity.posZ);
+        Vec3d vec3d = new Vec3d(ray.hitVec.x - entity.posX, ray.hitVec.y - entity.posY, ray.hitVec.z - entity.posZ);
         return onInteractEntityAt(player, entity, vec3d, hand);
     }
 
@@ -1239,9 +1276,11 @@ public class ForgeHooks
     public static LootEntry deserializeJsonLootEntry(String type, JsonObject json, int weight, int quality, LootCondition[] conditions){ return null; }
     public static String getLootEntryType(LootEntry entry){ return null; } //Companion to above function
 
+    /** @deprecated use {@link ForgeEventFactory#onProjectileImpact(EntityThrowable, RayTraceResult)} */
+    @Deprecated // TODO: remove (1.13)
     public static boolean onThrowableImpact(EntityThrowable throwable, RayTraceResult ray)
     {
-        return MinecraftForge.EVENT_BUS.post(new ThrowableImpactEvent(throwable, ray));
+        return ForgeEventFactory.onProjectileImpact(throwable, ray);
     }
 
     public static boolean onCropsGrowPre(World worldIn, BlockPos pos, IBlockState state, boolean def)
@@ -1262,7 +1301,7 @@ public class ForgeHooks
         @SuppressWarnings("unchecked")
         protected String computeValue(Class<?> type)
         {
-            return String.valueOf(TileEntity.func_190559_a((Class<? extends TileEntity>) type));
+            return String.valueOf(TileEntity.getKey((Class<? extends TileEntity>) type));
         }
     };
 
@@ -1322,7 +1361,7 @@ public class ForgeHooks
                     try
                     {
                         reader = Files.newBufferedReader(file);
-                        Advancement.Builder builder = JsonUtils.func_193839_a(AdvancementManager.field_192783_b, reader, Advancement.Builder.class);
+                        Advancement.Builder builder = JsonUtils.fromJson(AdvancementManager.GSON, reader, Advancement.Builder.class);
                         map.put(key, builder);
                     }
                     catch (JsonParseException jsonparseexception)
@@ -1364,4 +1403,71 @@ public class ForgeHooks
         if (recipes.size() > 0 || display.size() > 0)
             connection.sendPacket(new SPacketRecipeBook(state, recipes, display, isGuiOpen, isFilteringCraftable));
     }
+
+    public static void onAdvancement(EntityPlayerMP player, Advancement advancement)
+    {
+        MinecraftForge.EVENT_BUS.post(new AdvancementEvent(player, advancement));
+    }
+
+    /**
+     * Used as the default implementation of {@link Item#getCreatorModId}. Call that method instead.
+     */
+    @Nullable
+    public static String getDefaultCreatorModId(@Nonnull ItemStack itemStack)
+    {
+        Item item = itemStack.getItem();
+        ResourceLocation registryName = item.getRegistryName();
+        String modId = registryName == null ? null : registryName.getResourceDomain();
+        if ("minecraft".equals(modId))
+        {
+            if (item instanceof ItemEnchantedBook)
+            {
+                NBTTagList enchantmentsNbt = ItemEnchantedBook.getEnchantments(itemStack);
+                if (enchantmentsNbt.tagCount() == 1)
+                {
+                    NBTTagCompound nbttagcompound = enchantmentsNbt.getCompoundTagAt(0);
+                    Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
+                    if (enchantment != null)
+                    {
+                        ResourceLocation resourceLocation = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
+                        if (resourceLocation != null)
+                        {
+                            return resourceLocation.getResourceDomain();
+                        }
+                    }
+                }
+            }
+            else if (item instanceof ItemPotion || item instanceof ItemTippedArrow)
+            {
+                PotionType potionType = PotionUtils.getPotionFromItem(itemStack);
+                ResourceLocation resourceLocation = ForgeRegistries.POTION_TYPES.getKey(potionType);
+                if (resourceLocation != null)
+                {
+                    return resourceLocation.getResourceDomain();
+                }
+            }
+            else if (item instanceof ItemMonsterPlacer)
+            {
+                ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
+                if (resourceLocation != null)
+                {
+                    return resourceLocation.getResourceDomain();
+                }
+            }
+        }
+        return modId;
+    }
+
+    public static boolean onFarmlandTrample(World world, BlockPos pos, IBlockState state, float fallDistance, Entity entity)
+    {
+
+        if (entity.canTrample(world, state.getBlock(), pos, fallDistance))
+        {
+            BlockEvent.FarmlandTrampleEvent event = new BlockEvent.FarmlandTrampleEvent(world, pos, state, fallDistance, entity);
+            MinecraftForge.EVENT_BUS.post(event);
+            return !event.isCanceled();
+        }
+        return false;
+    }
+
 }

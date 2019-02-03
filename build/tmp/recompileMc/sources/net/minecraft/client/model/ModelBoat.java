@@ -13,7 +13,12 @@ public class ModelBoat extends ModelBase implements IMultipassModel
 {
     public ModelRenderer[] boatSides = new ModelRenderer[5];
     public ModelRenderer[] paddles = new ModelRenderer[2];
-    /** Part of the model rendered to make it seem like there's no water in the boat */
+    /**
+     * An invisible layer that is rendered to make it seem like there's no water in the boat.
+     *  
+     * @see https://redd.it/3qufgo
+     * @see https://bugs.mojang.com/browse/MC-47636
+     */
     public ModelRenderer noWater;
     private final int patchList = GLAllocation.generateDisplayLists(1);
 
@@ -98,8 +103,8 @@ public class ModelBoat extends ModelBase implements IMultipassModel
     {
         float f = boat.getRowingTime(paddle, limbSwing);
         ModelRenderer modelrenderer = this.paddles[paddle];
-        modelrenderer.rotateAngleX = (float)MathHelper.denormalizeClamp(-1.0471975803375244D, -0.2617993950843811D, (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
-        modelrenderer.rotateAngleY = (float)MathHelper.denormalizeClamp(-(Math.PI / 4D), (Math.PI / 4D), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));
+        modelrenderer.rotateAngleX = (float)MathHelper.clampedLerp(-1.0471975803375244D, -0.2617993950843811D, (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
+        modelrenderer.rotateAngleY = (float)MathHelper.clampedLerp(-(Math.PI / 4D), (Math.PI / 4D), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));
 
         if (paddle == 1)
         {

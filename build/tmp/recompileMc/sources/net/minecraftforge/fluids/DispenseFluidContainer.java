@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -77,12 +77,12 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
         FluidActionResult actionResult = FluidUtil.tryPickUpFluid(stack, null, world, blockpos, dispenserFacing.getOpposite());
         ItemStack resultStack = actionResult.getResult();
 
-        if (!actionResult.isSuccess() || resultStack.func_190926_b())
+        if (!actionResult.isSuccess() || resultStack.isEmpty())
         {
             return super.dispenseStack(source, stack);
         }
 
-        if (stack.func_190916_E() == 1)
+        if (stack.getCount() == 1)
         {
             return resultStack;
         }
@@ -92,7 +92,7 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
         }
 
         ItemStack stackCopy = stack.copy();
-        stackCopy.func_190918_g(1);
+        stackCopy.shrink(1);
         return stackCopy;
     }
 
@@ -103,7 +103,7 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
     private ItemStack dumpContainer(IBlockSource source, @Nonnull ItemStack stack)
     {
         ItemStack singleStack = stack.copy();
-        singleStack.func_190920_e(1);
+        singleStack.setCount(1);
         IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(singleStack);
         if (fluidHandler == null)
         {
@@ -119,17 +119,17 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
         {
             ItemStack drainedStack = result.getResult();
 
-            if (drainedStack.func_190916_E() == 1)
+            if (drainedStack.getCount() == 1)
             {
                 return drainedStack;
             }
-            else if (!drainedStack.func_190926_b() && ((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(drainedStack) < 0)
+            else if (!drainedStack.isEmpty() && ((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(drainedStack) < 0)
             {
                 this.dispenseBehavior.dispense(source, drainedStack);
             }
 
             ItemStack stackCopy = drainedStack.copy();
-            stackCopy.func_190918_g(1);
+            stackCopy.shrink(1);
             return stackCopy;
         }
         else

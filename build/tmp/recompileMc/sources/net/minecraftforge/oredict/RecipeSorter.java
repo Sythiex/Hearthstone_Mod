@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -171,8 +171,8 @@ public class RecipeSorter implements Comparator<IRecipe>
         }
         else
         {
-            if (r2.func_192400_c().size() < r1.func_192400_c().size()) return -1;
-            if (r2.func_192400_c().size() > r1.func_192400_c().size()) return  1;
+            if (r2.getIngredients().size() < r1.getIngredients().size()) return -1;
+            if (r2.getIngredients().size() > r1.getIngredients().size()) return  1;
             return getPriority(r2) - getPriority(r1); // high priority value first!
         }
     }

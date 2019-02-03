@@ -129,7 +129,7 @@ public class RenderManager
     private double renderPosZ;
     public TextureManager renderEngine;
     /** Reference to the World object. */
-    public World worldObj;
+    public World world;
     /** RenderManager's field for the renderViewEntity */
     public Entity renderViewEntity;
     public Entity pointedEntity;
@@ -277,7 +277,7 @@ public class RenderManager
 
     public void cacheActiveRenderInfo(World worldIn, FontRenderer textRendererIn, Entity livingPlayerIn, Entity pointedEntityIn, GameSettings optionsIn, float partialTicks)
     {
-        this.worldObj = worldIn;
+        this.world = worldIn;
         this.options = optionsIn;
         this.renderViewEntity = livingPlayerIn;
         this.pointedEntity = pointedEntityIn;
@@ -371,10 +371,10 @@ public class RenderManager
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.doRenderEntity(entityIn, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, partialTicks, p_188388_3_);
+        this.renderEntity(entityIn, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, partialTicks, p_188388_3_);
     }
 
-    public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_)
+    public void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_)
     {
         Render<Entity> render = null;
 
@@ -503,7 +503,7 @@ public class RenderManager
         Vec3d vec3d = entityIn.getLook(partialTicks);
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
         bufferbuilder.pos(x, y + (double)entityIn.getEyeHeight(), z).color(0, 0, 255, 255).endVertex();
-        bufferbuilder.pos(x + vec3d.xCoord * 2.0D, y + (double)entityIn.getEyeHeight() + vec3d.yCoord * 2.0D, z + vec3d.zCoord * 2.0D).color(0, 0, 255, 255).endVertex();
+        bufferbuilder.pos(x + vec3d.x * 2.0D, y + (double)entityIn.getEyeHeight() + vec3d.y * 2.0D, z + vec3d.z * 2.0D).color(0, 0, 255, 255).endVertex();
         tessellator.draw();
         GlStateManager.enableTexture2D();
         GlStateManager.enableLighting();
@@ -515,9 +515,9 @@ public class RenderManager
     /**
      * World sets this RenderManager's worldObj to the world provided
      */
-    public void set(@Nullable World worldIn)
+    public void setWorld(@Nullable World worldIn)
     {
-        this.worldObj = worldIn;
+        this.world = worldIn;
 
         if (worldIn == null)
         {

@@ -1,60 +1,99 @@
-[20:20:46] [main/INFO]: Setting user: Player639
-[20:20:49] [main/WARN]: Skipping bad option: lastServer:
-[20:20:49] [main/INFO]: LWJGL Version: 2.9.4
-[20:20:52] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
-[20:20:55] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[20:20:56] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[20:20:56] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[20:20:56] [Thread-5/INFO]: OpenAL initialized.
-[20:20:56] [Sound Library Loader/INFO]: Sound engine started
-[20:21:00] [main/INFO]: Created: 512x512 textures-atlas
-[20:21:02] [main/WARN]: Skipping bad option: lastServer:
-[20:21:02] [main/INFO]: Narrator library for x64 successfully loaded
-[20:21:02] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[20:21:07] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
-[20:21:07] [Server thread/INFO]: Generating keypair
-[20:21:08] [Server thread/INFO]: Loaded 488 advancements
-[20:21:08] [Server thread/INFO]: Preparing start region for level 0
-[20:21:08] [Server thread/INFO]: Changing view distance to 12, from 10
-[20:21:09] [Server thread/INFO]: Player639[local:E:a34d1e8c] logged in with entity id 79 at (-486.88500390878227, 4.0, -475.2571087274337)
-[20:21:10] [Server thread/INFO]: Player639 joined the game
-[20:21:10] [Server thread/INFO]: Player639 has made the advancement [Diamonds!]
-[20:21:10] [Server thread/INFO]: Saving and pausing game...
-[20:21:10] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
-[20:21:10] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
-[20:21:10] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
-[20:21:10] [main/INFO]: [CHAT] Player639 has made the advancement [Diamonds!]
-[20:21:10] [main/INFO]: Loaded 27 advancements
-[20:21:16] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:21:17] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:22:58] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[20:23:00] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[20:23:02] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[20:23:03] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[20:23:07] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[20:23:12] [main/INFO]: [CHAT] Hearthstone channel canceled!
-[20:23:27] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:29] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:30] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:31] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:32] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:33] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:34] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:34] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:34] [main/INFO]: [CHAT] Hearthstone is now linked
-[20:23:45] [Server thread/INFO]: Saving and pausing game...
-[20:23:45] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
-[20:23:45] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
-[20:23:45] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
-[20:23:45] [Server thread/INFO]: Stopping server
-[20:23:45] [Server thread/INFO]: Saving players
-[20:23:45] [Server thread/INFO]: Player639 lost connection: Disconnected
-[20:23:45] [Server thread/INFO]: Player639 left the game
-[20:23:46] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[20:23:46] [Server thread/INFO]: Saving worlds
-[20:23:46] [Server thread/INFO]: Saving chunks for level 'New World'/overworld
-[20:23:46] [Server thread/INFO]: Saving chunks for level 'New World'/the_nether
-[20:23:46] [Server thread/INFO]: Saving chunks for level 'New World'/the_end
-[20:23:47] [main/INFO]: Stopping!
-[20:23:47] [main/INFO]: SoundSystem shutting down...
-[20:23:47] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[13:44:28] [main/INFO] [GradleStart]: Extra: []
+[13:44:28] [main/INFO] [GradleStart]: Running with arguments: [--userProperties, {}, --assetsDir, C:/Users/Sythiex/.gradle/caches/minecraft/assets, --assetIndex, 1.12, --accessToken{REDACTED}, --version, 1.12.2, --tweakClass, net.minecraftforge.fml.common.launcher.FMLTweaker, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
+[13:44:28] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Using primary tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.gradle.tweakers.CoremodTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLTweaker
+[13:44:28] [main/INFO] [FML]: Forge Mod Loader version 14.23.5.2810 for Minecraft 1.12.2 loading
+[13:44:28] [main/INFO] [FML]: Java is Java HotSpot(TM) 64-Bit Server VM, version 1.8.0_201, running on Windows 10:amd64:10.0, installed at C:\Program Files\Java\jre1.8.0_201
+[13:44:28] [main/ERROR] [FML]: Apache Maven library folder was not in the format expected. Using default libraries directory.
+[13:44:28] [main/ERROR] [FML]: Full: C:\Users\Sythiex\.gradle\caches\modules-2\files-2.1\org.apache.maven\maven-artifact\3.5.3\7dc72b6d6d8a6dced3d294ed54c2cc3515ade9f4\maven-artifact-3.5.3.jar
+[13:44:28] [main/ERROR] [FML]: Trimmed: c:/users/sythiex/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-artifact/3.5.3/
+[13:44:28] [main/INFO] [FML]: Managed to load a deobfuscated Minecraft name- we are in a deobfuscated environment. Skipping runtime deobfuscation
+[13:44:28] [main/INFO] [FML]: Detected deobfuscated environment, loading log configs for colored console logs.
+[13:44:28] [main/INFO] [FML]: Ignoring missing certificate for coremod FMLCorePlugin (net.minecraftforge.fml.relauncher.FMLCorePlugin), we are in deobf and it's a forge core plugin
+[13:44:28] [main/INFO] [FML]: Ignoring missing certificate for coremod FMLForgePlugin (net.minecraftforge.classloading.FMLForgePlugin), we are in deobf and it's a forge core plugin
+[13:44:28] [main/INFO] [FML]: Searching B:\Minecraft Modding\Hearthstone_Mod\run\.\mods for mods
+[13:44:28] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.gradle.tweakers.CoremodTweaker
+[13:44:28] [main/INFO] [GradleStart]: Injecting location in coremod net.minecraftforge.fml.relauncher.FMLCorePlugin
+[13:44:28] [main/INFO] [GradleStart]: Injecting location in coremod net.minecraftforge.classloading.FMLForgePlugin
+[13:44:28] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLDeobfTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.gradle.tweakers.AccessTransformerTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[13:44:28] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[13:44:29] [main/ERROR] [FML]: FML appears to be missing any signature data. This is not a good thing
+[13:44:29] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[13:44:29] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLDeobfTweaker
+[13:44:30] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.gradle.tweakers.AccessTransformerTweaker
+[13:44:30] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.fml.common.launcher.TerminalTweaker
+[13:44:30] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.TerminalTweaker
+[13:44:30] [main/INFO] [LaunchWrapper]: Launching wrapped minecraft {net.minecraft.client.main.Main}
+[13:44:30] [Client thread/INFO] [net.minecraft.client.Minecraft]: Setting user: Player106
+[13:44:32] [Client thread/WARN] [net.minecraft.client.settings.GameSettings]: Skipping bad option: lastServer:
+[13:44:32] [Client thread/INFO] [net.minecraft.client.Minecraft]: LWJGL Version: 2.9.4
+[13:44:33] [Client thread/INFO] [FML]: -- System Details --
+Details:
+	Minecraft Version: 1.12.2
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_201, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 817372104 bytes (779 MB) / 1037959168 bytes (989 MB) up to 1037959168 bytes (989 MB)
+	JVM Flags: 3 total; -Xincgc -Xmx1024M -Xms1024M
+	IntCache: cache: 0, tcache: 0, allocated: 0, tallocated: 0
+	FML: 
+	Loaded coremods (and transformers): 
+	GL info: ' Vendor: 'NVIDIA Corporation' Version: '4.6.0 NVIDIA 417.71' Renderer: 'GeForce RTX 2070/PCIe/SSE2'
+[13:44:33] [Client thread/INFO] [FML]: MinecraftForge v14.23.5.2810 Initialized
+[13:44:33] [Client thread/INFO] [FML]: Starts to replace vanilla recipe ingredients with ore ingredients.
+[13:44:33] [Client thread/INFO] [FML]: Replaced 1036 ore ingredients
+[13:44:33] [Client thread/INFO] [FML]: Searching B:\Minecraft Modding\Hearthstone_Mod\run\.\mods for mods
+[13:44:34] [Client thread/INFO] [FML]: Forge Mod Loader has identified 5 mods to load
+[13:44:34] [Client thread/INFO] [FML]: Attempting connection with missing mods [minecraft, mcp, FML, forge, hearthstonemod] at CLIENT
+[13:44:34] [Client thread/INFO] [FML]: Attempting connection with missing mods [minecraft, mcp, FML, forge, hearthstonemod] at SERVER
+[13:44:35] [Client thread/INFO] [net.minecraft.client.resources.SimpleReloadableResourceManager]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Hearthstone Mod
+[13:44:35] [Client thread/INFO] [FML]: Processing ObjectHolder annotations
+[13:44:35] [Client thread/INFO] [FML]: Found 1168 ObjectHolder annotations
+[13:44:35] [Client thread/INFO] [FML]: Identifying ItemStackHolder annotations
+[13:44:35] [Client thread/INFO] [FML]: Found 0 ItemStackHolder annotations
+[13:44:35] [Thread-3/INFO] [FML]: Using sync timing. 200 frames of Display.update took 86914700 nanos
+[13:44:35] [Client thread/INFO] [FML]: Configured a dormant chunk cache size of 0
+[13:44:35] [Forge Version Check/INFO] [forge.VersionCheck]: [forge] Starting version check at http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
+[13:44:35] [Client thread/INFO] [hearthstonemod]: Preinitializing
+[13:44:35] [Client thread/INFO] [hearthstonemod]: Loading config
+[13:44:35] [Client thread/INFO] [hearthstonemod]: Registering items
+[13:44:35] [Client thread/INFO] [hearthstonemod]: Registering sound events
+[13:44:35] [Client thread/INFO] [hearthstonemod]: Registering event handler
+[13:44:35] [Client thread/INFO] [hearthstonemod]: Loading item models
+[13:44:35] [Client thread/INFO] [FML]: Applying holder lookups
+[13:44:35] [Client thread/INFO] [FML]: Holder lookups applied
+[13:44:35] [Client thread/INFO] [FML]: Applying holder lookups
+[13:44:35] [Client thread/INFO] [FML]: Holder lookups applied
+[13:44:35] [Client thread/INFO] [FML]: Applying holder lookups
+[13:44:35] [Client thread/INFO] [FML]: Holder lookups applied
+[13:44:35] [Client thread/INFO] [FML]: Applying holder lookups
+[13:44:35] [Client thread/INFO] [FML]: Holder lookups applied
+[13:44:35] [Client thread/INFO] [FML]: Injecting itemstacks
+[13:44:35] [Client thread/INFO] [FML]: Itemstack injection complete
+[13:44:35] [Forge Version Check/INFO] [forge.VersionCheck]: [forge] Found status: AHEAD Target: null
+[13:44:37] [Sound Library Loader/INFO] [net.minecraft.client.audio.SoundManager]: Starting up SoundSystem...
+[13:44:38] [Thread-5/INFO] [net.minecraft.client.audio.SoundManager]: Initializing LWJGL OpenAL
+[13:44:38] [Thread-5/INFO] [net.minecraft.client.audio.SoundManager]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[13:44:38] [Thread-5/INFO] [net.minecraft.client.audio.SoundManager]: OpenAL initialized.
+[13:44:38] [Sound Library Loader/INFO] [net.minecraft.client.audio.SoundManager]: Sound engine started
+[13:44:41] [Client thread/INFO] [FML]: Max texture size: 16384
+[13:44:41] [Client thread/INFO] [net.minecraft.client.renderer.texture.TextureMap]: Created: 512x512 textures-atlas
+[13:44:42] [Client thread/INFO] [FML]: Applying holder lookups
+[13:44:42] [Client thread/INFO] [FML]: Holder lookups applied
+[13:44:42] [Client thread/INFO] [hearthstonemod]: Initializing
+[13:44:42] [Client thread/INFO] [hearthstonemod]: Registering recipies
+[13:44:42] [Client thread/INFO] [FML]: Injecting itemstacks
+[13:44:42] [Client thread/INFO] [FML]: Itemstack injection complete
+[13:44:42] [Client thread/INFO] [FML]: Forge Mod Loader has successfully loaded 5 mods
+[13:44:42] [Client thread/WARN] [net.minecraft.client.settings.GameSettings]: Skipping bad option: lastServer:
+[13:44:42] [Client thread/INFO] [com.mojang.text2speech.NarratorWindows]: Narrator library for x64 successfully loaded
+[13:44:43] [Realms Notification Availability checker #1/INFO] [com.mojang.realmsclient.client.RealmsClient]: Could not authorize you against Realms server: Invalid session id
+[13:45:01] [Client thread/INFO] [net.minecraft.client.Minecraft]: Stopping!
+[13:45:01] [Client thread/INFO] [net.minecraft.client.audio.SoundManager]: SoundSystem shutting down...
+[13:45:01] [Client thread/WARN] [net.minecraft.client.audio.SoundManager]: Author: Paul Lamb, www.paulscode.com

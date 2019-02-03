@@ -16,9 +16,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiTextField extends Gui
 {
     private final int id;
-    private final FontRenderer fontRendererInstance;
-    public int xPosition;
-    public int yPosition;
+    private final FontRenderer fontRenderer;
+    public int x;
+    public int y;
     /** The width of this text field. */
     public int width;
     public int height;
@@ -49,9 +49,9 @@ public class GuiTextField extends Gui
     public GuiTextField(int componentId, FontRenderer fontrendererObj, int x, int y, int par5Width, int par6Height)
     {
         this.id = componentId;
-        this.fontRendererInstance = fontrendererObj;
-        this.xPosition = x;
-        this.yPosition = y;
+        this.fontRenderer = fontrendererObj;
+        this.x = x;
+        this.y = y;
         this.width = par5Width;
         this.height = par6Height;
     }
@@ -153,15 +153,18 @@ public class GuiTextField extends Gui
         {
             this.text = s;
             this.moveCursorBy(i - this.selectionEnd + l);
-            this.func_190516_a(this.id, this.text);
+            this.setResponderEntryValue(this.id, this.text);
         }
     }
 
-    public void func_190516_a(int p_190516_1_, String p_190516_2_)
+    /**
+     * Notifies this text box's {@linkplain GuiPageButtonList.GuiResponder responder} that the text has changed.
+     */
+    public void setResponderEntryValue(int idIn, String textIn)
     {
         if (this.guiResponder != null)
         {
-            this.guiResponder.setEntryValue(p_190516_1_, p_190516_2_);
+            this.guiResponder.setEntryValue(idIn, textIn);
         }
     }
 
@@ -222,7 +225,7 @@ public class GuiTextField extends Gui
                         this.moveCursorBy(num);
                     }
 
-                    this.func_190516_a(this.id, this.text);
+                    this.setResponderEntryValue(this.id, this.text);
                 }
             }
         }
@@ -309,7 +312,7 @@ public class GuiTextField extends Gui
     {
         this.cursorPosition = pos;
         int i = this.text.length();
-        this.cursorPosition = MathHelper.clamp_int(this.cursorPosition, 0, i);
+        this.cursorPosition = MathHelper.clamp(this.cursorPosition, 0, i);
         this.setSelectionPos(this.cursorPosition);
     }
 
@@ -497,7 +500,7 @@ public class GuiTextField extends Gui
      */
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton)
     {
-        boolean flag = mouseX >= this.xPosition && mouseX < this.xPosition + this.width && mouseY >= this.yPosition && mouseY < this.yPosition + this.height;
+        boolean flag = mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < this.y + this.height;
 
         if (this.canLoseFocus)
         {
@@ -506,15 +509,15 @@ public class GuiTextField extends Gui
 
         if (this.isFocused && flag && mouseButton == 0)
         {
-            int i = mouseX - this.xPosition;
+            int i = mouseX - this.x;
 
             if (this.enableBackgroundDrawing)
             {
                 i -= 4;
             }
 
-            String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
-            this.setCursorPosition(this.fontRendererInstance.trimStringToWidth(s, i).length() + this.lineScrollOffset);
+            String s = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
+            this.setCursorPosition(this.fontRenderer.trimStringToWidth(s, i).length() + this.lineScrollOffset);
             return true;
         }
         else
@@ -532,18 +535,18 @@ public class GuiTextField extends Gui
         {
             if (this.getEnableBackgroundDrawing())
             {
-                drawRect(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
-                drawRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, -16777216);
+                drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
+                drawRect(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
             }
 
             int i = this.isEnabled ? this.enabledColor : this.disabledColor;
             int j = this.cursorPosition - this.lineScrollOffset;
             int k = this.selectionEnd - this.lineScrollOffset;
-            String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
+            String s = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
             boolean flag = j >= 0 && j <= s.length();
             boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-            int l = this.enableBackgroundDrawing ? this.xPosition + 4 : this.xPosition;
-            int i1 = this.enableBackgroundDrawing ? this.yPosition + (this.height - 8) / 2 : this.yPosition;
+            int l = this.enableBackgroundDrawing ? this.x + 4 : this.x;
+            int i1 = this.enableBackgroundDrawing ? this.y + (this.height - 8) / 2 : this.y;
             int j1 = l;
 
             if (k > s.length())
@@ -554,7 +557,7 @@ public class GuiTextField extends Gui
             if (!s.isEmpty())
             {
                 String s1 = flag ? s.substring(0, j) : s;
-                j1 = this.fontRendererInstance.drawStringWithShadow(s1, (float)l, (float)i1, i);
+                j1 = this.fontRenderer.drawStringWithShadow(s1, (float)l, (float)i1, i);
             }
 
             boolean flag2 = this.cursorPosition < this.text.length() || this.text.length() >= this.getMaxStringLength();
@@ -572,33 +575,33 @@ public class GuiTextField extends Gui
 
             if (!s.isEmpty() && flag && j < s.length())
             {
-                j1 = this.fontRendererInstance.drawStringWithShadow(s.substring(j), (float)j1, (float)i1, i);
+                j1 = this.fontRenderer.drawStringWithShadow(s.substring(j), (float)j1, (float)i1, i);
             }
 
             if (flag1)
             {
                 if (flag2)
                 {
-                    Gui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRendererInstance.FONT_HEIGHT, -3092272);
+                    Gui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
                 }
                 else
                 {
-                    this.fontRendererInstance.drawStringWithShadow("_", (float)k1, (float)i1, i);
+                    this.fontRenderer.drawStringWithShadow("_", (float)k1, (float)i1, i);
                 }
             }
 
             if (k != j)
             {
-                int l1 = l + this.fontRendererInstance.getStringWidth(s.substring(0, k));
-                this.drawCursorVertical(k1, i1 - 1, l1 - 1, i1 + 1 + this.fontRendererInstance.FONT_HEIGHT);
+                int l1 = l + this.fontRenderer.getStringWidth(s.substring(0, k));
+                this.drawSelectionBox(k1, i1 - 1, l1 - 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT);
             }
         }
     }
 
     /**
-     * Draws the current selection and a vertical line cursor in the text box.
+     * Draws the blue selection box.
      */
-    private void drawCursorVertical(int startX, int startY, int endX, int endY)
+    private void drawSelectionBox(int startX, int startY, int endX, int endY)
     {
         if (startX < endX)
         {
@@ -614,14 +617,14 @@ public class GuiTextField extends Gui
             endY = j;
         }
 
-        if (endX > this.xPosition + this.width)
+        if (endX > this.x + this.width)
         {
-            endX = this.xPosition + this.width;
+            endX = this.x + this.width;
         }
 
-        if (startX > this.xPosition + this.width)
+        if (startX > this.x + this.width)
         {
-            startX = this.xPosition + this.width;
+            startX = this.x + this.width;
         }
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -716,7 +719,7 @@ public class GuiTextField extends Gui
 
         if (Minecraft.getMinecraft().currentScreen != null)
         {
-            Minecraft.getMinecraft().currentScreen.func_193975_a(isFocusedIn);
+            Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
         }
     }
 
@@ -772,7 +775,7 @@ public class GuiTextField extends Gui
 
         this.selectionEnd = position;
 
-        if (this.fontRendererInstance != null)
+        if (this.fontRenderer != null)
         {
             if (this.lineScrollOffset > i)
             {
@@ -780,12 +783,12 @@ public class GuiTextField extends Gui
             }
 
             int j = this.getWidth();
-            String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(this.lineScrollOffset), j);
+            String s = this.fontRenderer.trimStringToWidth(this.text.substring(this.lineScrollOffset), j);
             int k = s.length() + this.lineScrollOffset;
 
             if (position == this.lineScrollOffset)
             {
-                this.lineScrollOffset -= this.fontRendererInstance.trimStringToWidth(this.text, j, true).length();
+                this.lineScrollOffset -= this.fontRenderer.trimStringToWidth(this.text, j, true).length();
             }
 
             if (position > k)
@@ -797,7 +800,7 @@ public class GuiTextField extends Gui
                 this.lineScrollOffset -= this.lineScrollOffset - position;
             }
 
-            this.lineScrollOffset = MathHelper.clamp_int(this.lineScrollOffset, 0, i);
+            this.lineScrollOffset = MathHelper.clamp(this.lineScrollOffset, 0, i);
         }
     }
 

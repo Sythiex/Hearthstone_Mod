@@ -57,13 +57,13 @@ public class BlockNewLeaf extends BlockLeaves
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
     {
-        tab.add(new ItemStack(this, 1, 0));
-        tab.add(new ItemStack(this, 1, 1));
+        items.add(new ItemStack(this, 1, 0));
+        items.add(new ItemStack(this, 1, 1));
     }
 
-    protected ItemStack createStackedBlock(IBlockState state)
+    protected ItemStack getSilkTouchDrop(IBlockState state)
     {
         return new ItemStack(Item.getItemFromBlock(this), 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4);
     }
@@ -107,6 +107,10 @@ public class BlockNewLeaf extends BlockLeaves
         return new BlockStateContainer(this, new IProperty[] {VARIANT, CHECK_DECAY, DECAYABLE});
     }
 
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
         if (!worldIn.isRemote && stack.getItem() == Items.SHEARS)
@@ -123,6 +127,6 @@ public class BlockNewLeaf extends BlockLeaves
     @Override
     public NonNullList<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
     {
-        return NonNullList.func_191197_a(1, new ItemStack(this, 1, world.getBlockState(pos).getValue(VARIANT).getMetadata() - 4));
+        return NonNullList.withSize(1, new ItemStack(this, 1, world.getBlockState(pos).getValue(VARIANT).getMetadata() - 4));
     }
 }

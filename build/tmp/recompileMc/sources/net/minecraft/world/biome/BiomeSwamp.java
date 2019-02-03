@@ -21,22 +21,21 @@ public class BiomeSwamp extends Biome
     protected BiomeSwamp(Biome.BiomeProperties properties)
     {
         super(properties);
-        this.theBiomeDecorator.treesPerChunk = 2;
-        this.theBiomeDecorator.flowersPerChunk = 1;
-        this.theBiomeDecorator.deadBushPerChunk = 1;
-        this.theBiomeDecorator.mushroomsPerChunk = 8;
-        this.theBiomeDecorator.reedsPerChunk = 10;
-        this.theBiomeDecorator.clayPerChunk = 1;
-        this.theBiomeDecorator.waterlilyPerChunk = 4;
-        this.theBiomeDecorator.sandPerChunk2 = 0;
-        this.theBiomeDecorator.sandPerChunk = 0;
-        this.theBiomeDecorator.grassPerChunk = 5;
+        this.decorator.treesPerChunk = 2;
+        this.decorator.flowersPerChunk = 1;
+        this.decorator.deadBushPerChunk = 1;
+        this.decorator.mushroomsPerChunk = 8;
+        this.decorator.reedsPerChunk = 10;
+        this.decorator.clayPerChunk = 1;
+        this.decorator.waterlilyPerChunk = 4;
+        this.decorator.sandPatchesPerChunk = 0;
+        this.decorator.gravelPatchesPerChunk = 0;
+        this.decorator.grassPerChunk = 5;
         this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntitySlime.class, 1, 1, 1));
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
-        /** The swamp tree generator. */
         return SWAMP_FEATURE;
     }
 
@@ -80,7 +79,7 @@ public class BiomeSwamp extends Biome
     {
         super.decorate(worldIn, rand, pos);
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
         if (rand.nextInt(64) == 0)
         {
             (new WorldGenFossils()).generate(worldIn, rand, pos);
@@ -91,13 +90,13 @@ public class BiomeSwamp extends Biome
     public int getGrassColorAtPos(BlockPos pos)
     {
         double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() * 0.0225D, (double)pos.getZ() * 0.0225D);
-        return d0 < -0.1D ? 5011004 : 6975545;
+        return getModdedBiomeGrassColor(d0 < -0.1D ? 5011004 : 6975545);
     }
 
     @SideOnly(Side.CLIENT)
     public int getFoliageColorAtPos(BlockPos pos)
     {
-        return 6975545;
+        return getModdedBiomeFoliageColor(6975545);
     }
 
     @Override

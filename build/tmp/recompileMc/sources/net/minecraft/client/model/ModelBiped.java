@@ -211,7 +211,7 @@ public class ModelBiped extends ModelBase
             EnumHandSide enumhandside = this.getMainHand(entityIn);
             ModelRenderer modelrenderer = this.getArmForSide(enumhandside);
             float f1 = this.swingProgress;
-            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(f1) * ((float)Math.PI * 2F)) * 0.2F;
+            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) * ((float)Math.PI * 2F)) * 0.2F;
 
             if (enumhandside == EnumHandSide.LEFT)
             {
@@ -293,15 +293,15 @@ public class ModelBiped extends ModelBase
         }
     }
 
-    public void setInvisible(boolean invisible)
+    public void setVisible(boolean visible)
     {
-        this.bipedHead.showModel = invisible;
-        this.bipedHeadwear.showModel = invisible;
-        this.bipedBody.showModel = invisible;
-        this.bipedRightArm.showModel = invisible;
-        this.bipedLeftArm.showModel = invisible;
-        this.bipedRightLeg.showModel = invisible;
-        this.bipedLeftLeg.showModel = invisible;
+        this.bipedHead.showModel = visible;
+        this.bipedHeadwear.showModel = visible;
+        this.bipedBody.showModel = visible;
+        this.bipedRightArm.showModel = visible;
+        this.bipedLeftArm.showModel = visible;
+        this.bipedRightLeg.showModel = visible;
+        this.bipedLeftLeg.showModel = visible;
     }
 
     public void postRenderArm(float scale, EnumHandSide side)

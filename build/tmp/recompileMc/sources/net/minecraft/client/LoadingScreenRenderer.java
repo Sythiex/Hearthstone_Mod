@@ -19,7 +19,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
     private String message = "";
     /** A reference to the Minecraft object. */
     private final Minecraft mc;
-    /** The text currently displayed (i.e. the argument to the last call to printText or func_73722_d) */
+    /** The text currently displayed (i.e. the argument to the last call to printText or displayString) */
     private String currentlyDisplayedText = "";
     /** The system's time represented in milliseconds. */
     private long systemTime = Minecraft.getSystemTime();
@@ -193,13 +193,13 @@ public class LoadingScreenRenderer implements IProgressUpdate
 
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                this.mc.fontRendererObj.drawStringWithShadow(this.currentlyDisplayedText, (float)((k - this.mc.fontRendererObj.getStringWidth(this.currentlyDisplayedText)) / 2), (float)(l / 2 - 4 - 16), 16777215);
-                this.mc.fontRendererObj.drawStringWithShadow(this.message, (float)((k - this.mc.fontRendererObj.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215);
+                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedText, (float)((k - this.mc.fontRenderer.getStringWidth(this.currentlyDisplayedText)) / 2), (float)(l / 2 - 4 - 16), 16777215);
+                this.mc.fontRenderer.drawStringWithShadow(this.message, (float)((k - this.mc.fontRenderer.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215);
                 }
                 }
                 catch (java.io.IOException e)
                 {
-                    com.google.common.base.Throwables.propagate(e);
+                    throw new RuntimeException(e);
                 } //FML End
                 this.framebuffer.unbindFramebuffer();
 

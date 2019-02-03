@@ -1,181 +1,45 @@
-!SESSION 2017-11-16 22:51:26.651 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
+!SESSION 2019-02-03 13:03:42.597 -----------------------------------------------
+eclipse.buildId=4.10.0.I20181206-0815
+java.version=1.8.0_201
 java.vendor=Oracle Corporation
 BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
 Framework arguments:  -product org.eclipse.epp.package.java.product
 Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
 
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-16 22:51:46.189
+!ENTRY org.eclipse.egit.ui 2 0 2019-02-03 13:03:55.151
 !MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
 user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
 not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
 EGit might behave differently since they see different configuration options.
 This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
 
-!ENTRY org.eclipse.oomph.setup.ui 1 0 2017-11-16 22:51:49.138
-!MESSAGE Setup tasks were performed during startup updating 2 preferences. See 'C:\Users\Sythiex\eclipse\java-latest-released\eclipse\configuration\org.eclipse.oomph.setup\setup.log' for details
-!SESSION 2017-11-16 22:52:06.336 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
+!ENTRY org.eclipse.epp.mpc.ui 1 0 2019-02-03 13:07:48.731
+!MESSAGE Performing Marketplace install request from http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=4240174
+!SESSION 2019-02-03 13:10:05.102 -----------------------------------------------
+eclipse.buildId=4.10.0.I20181206-0815
+java.version=1.8.0_201
 java.vendor=Oracle Corporation
 BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
 Framework arguments:  -product org.eclipse.epp.package.java.product
 Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
 
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-16 22:52:37.823
+!ENTRY org.eclipse.egit.ui 2 0 2019-02-03 13:10:18.694
 !MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
 user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
 not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
 EGit might behave differently since they see different configuration options.
 This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-
-!ENTRY org.eclipse.oomph.setup.ui 1 0 2017-11-16 22:52:39.983
-!MESSAGE Setup tasks were performed during startup updating 2 preferences. See 'C:\Users\Sythiex\eclipse\java-latest-released\eclipse\configuration\org.eclipse.oomph.setup\setup.log' for details
-!SESSION 2017-11-17 22:44:06.515 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
+!SESSION 2019-02-03 13:21:37.847 -----------------------------------------------
+eclipse.buildId=4.10.0.I20181206-0815
+java.version=1.8.0_201
 java.vendor=Oracle Corporation
 BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
 Framework arguments:  -product org.eclipse.epp.package.java.product
 Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
 
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-17 22:44:18.480
+!ENTRY org.eclipse.egit.ui 2 0 2019-02-03 13:22:16.875
 !MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
 user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
 not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
 EGit might behave differently since they see different configuration options.
 This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-
-!ENTRY org.eclipse.core.resources 4 566 2017-11-17 23:39:48.562
-!MESSAGE Workspace was not properly initialized or has already shutdown.
-
-!ENTRY org.eclipse.core.jobs 4 1 2017-11-17 23:39:48.567
-!MESSAGE Worker thread ended job: Refreshing workspace(10), but still holds rule: ThreadJob(Refreshing workspace(10),[F/.org.eclipse.jdt.core.external.folders/.git])
-!SESSION 2017-11-18 13:08:27.406 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-18 13:08:37.544
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-!SESSION 2017-11-19 10:31:39.347 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-19 10:32:03.366
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-!SESSION 2017-11-20 23:10:17.917 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-20 23:10:27.169
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-!SESSION 2017-11-22 19:49:37.378 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-22 19:50:09.469
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-
-!ENTRY org.eclipse.ui 4 4 2017-11-22 22:22:00.626
-!MESSAGE Unable to create part
-!SUBENTRY 1 org.eclipse.ui 4 0 2017-11-22 22:22:00.626
-!MESSAGE Could not open web browser on brewing_stand.png. Ensure that it is an uncompressed file.
-
-!ENTRY org.eclipse.debug.core 4 120 2017-11-22 22:30:49.797
-!MESSAGE Variable references empty selection: ${project_loc}
-
-!ENTRY org.eclipse.core.resources 4 566 2017-11-22 22:48:49.537
-!MESSAGE Workspace was not properly initialized or has already shutdown.
-
-!ENTRY org.eclipse.core.jobs 4 1 2017-11-22 22:48:49.537
-!MESSAGE Worker thread ended job: Refreshing workspace(10), but still holds rule: ThreadJob(Refreshing workspace(10),[F/.org.eclipse.jdt.core.external.folders/build/tmp/recompileMc/compiled/META-INF])
-!SESSION 2017-11-22 23:48:37.872 -----------------------------------------------
-eclipse.buildId=4.7.1.M20171009-0410
-java.version=1.8.0_151
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2017-11-22 23:48:45.590
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-
-!ENTRY org.eclipse.debug.core 4 120 2017-11-22 23:48:49.999
-!MESSAGE Variable references empty selection: ${project_loc}
-
-!ENTRY org.eclipse.core.resources 4 566 2017-11-23 00:08:20.195
-!MESSAGE Workspace was not properly initialized or has already shutdown.
-
-!ENTRY org.eclipse.core.jobs 4 1 2017-11-23 00:08:20.196
-!MESSAGE Worker thread ended job: Refreshing workspace(10), but still holds rule: ThreadJob(Refreshing workspace(10),[F/Hearthstone_Mod/eclipse/.metadata/.plugins/org.eclipse.core.resources/.history])
-!SESSION 2018-04-28 22:47:04.234 -----------------------------------------------
-eclipse.buildId=4.7.2.M20171130-0510
-java.version=1.8.0_161
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2018-04-28 22:47:28.108
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-
-!ENTRY org.eclipse.oomph.setup.ui 1 0 2018-04-28 22:47:32.329
-!MESSAGE Setup tasks were performed during startup updating 13 preferences. See 'C:\Users\Sythiex\eclipse\java-latest-released\eclipse\configuration\org.eclipse.oomph.setup\setup.log' for details
-!SESSION 2018-04-29 19:46:51.889 -----------------------------------------------
-eclipse.buildId=4.7.2.M20171130-0510
-java.version=1.8.0_161
-java.vendor=Oracle Corporation
-BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.java.product
-Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
-
-!ENTRY org.eclipse.egit.ui 2 0 2018-04-29 19:47:03.110
-!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
-user global configuration and to define the default location to store repositories: 'C:\Users\Sythiex'. If this is
-not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
-EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
-
-!ENTRY org.eclipse.debug.core 4 120 2018-04-29 19:54:18.273
-!MESSAGE Variable references empty selection: ${project_loc}

@@ -54,9 +54,9 @@ public class DedicatedServer extends MinecraftServer implements IServer
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern RESOURCE_PACK_SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     public final List<PendingCommand> pendingCommandList = Collections.<PendingCommand>synchronizedList(Lists.newArrayList());
-    private RConThreadQuery theRConThreadQuery;
+    private RConThreadQuery rconQueryThread;
     private final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
-    private RConThreadMain theRConThreadMain;
+    private RConThreadMain rconThread;
     private PropertyManager settings;
     private ServerEula eula;
     private boolean canSpawnStructures;
@@ -93,7 +93,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     /**
      * Initialises the server and starts it.
      */
-    public boolean startServer() throws IOException
+    public boolean init() throws IOException
     {
         Thread thread = new Thread("Server console handler")
         {
@@ -146,7 +146,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
             else
             {
                 this.setOnlineMode(this.settings.getBooleanProperty("online-mode", true));
-                this.func_190517_e(this.settings.getBooleanProperty("prevent-proxy-connections", false));
+                this.setPreventProxyConnections(this.settings.getBooleanProperty("prevent-proxy-connections", false));
                 this.setHostname(this.settings.getStringProperty("server-ip", ""));
             }
 
@@ -263,7 +263,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 this.getNetworkCompressionThreshold();
                 this.setBuildLimit(this.settings.getIntProperty("max-build-height", 256));
                 this.setBuildLimit((this.getBuildLimit() + 8) / 16 * 16);
-                this.setBuildLimit(MathHelper.clamp_int(this.getBuildLimit(), 64, 256));
+                this.setBuildLimit(MathHelper.clamp(this.getBuildLimit(), 64, 256));
                 this.settings.setProperty("max-build-height", Integer.valueOf(this.getBuildLimit()));
                 TileEntitySkull.setProfileCache(this.getPlayerProfileCache());
                 TileEntitySkull.setSessionService(this.getMinecraftSessionService());
@@ -274,10 +274,11 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
                 LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
+                this.currentTime = getCurrentTimeMillis();
 
                 if (this.settings.hasProperty("announce-player-achievements"))
                 {
-                    this.worldServers[0].getGameRules().setOrCreateGameRule("announceAdvancements", this.settings.getBooleanProperty("announce-player-achievements", true) ? "true" : "false");
+                    this.worlds[0].getGameRules().setOrCreateGameRule("announceAdvancements", this.settings.getBooleanProperty("announce-player-achievements", true) ? "true" : "false");
                     this.settings.removeProperty("announce-player-achievements");
                     this.settings.saveProperties();
                 }
@@ -285,15 +286,15 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 if (this.settings.getBooleanProperty("enable-query", false))
                 {
                     LOGGER.info("Starting GS4 status listener");
-                    this.theRConThreadQuery = new RConThreadQuery(this);
-                    this.theRConThreadQuery.startThread();
+                    this.rconQueryThread = new RConThreadQuery(this);
+                    this.rconQueryThread.startThread();
                 }
 
                 if (this.settings.getBooleanProperty("enable-rcon", false))
                 {
                     LOGGER.info("Starting remote control listener");
-                    this.theRConThreadMain = new RConThreadMain(this);
-                    this.theRConThreadMain.startThread();
+                    this.rconThread = new RConThreadMain(this);
+                    this.rconThread.startThread();
                 }
 
                 if (this.getMaxTickTime() > 0L)
@@ -304,7 +305,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                     thread1.start();
                 }
 
-                Items.field_190931_a.getSubItems(CreativeTabs.SEARCH, NonNullList.func_191196_a());
+                Items.AIR.getSubItems(CreativeTabs.SEARCH, NonNullList.create());
                 // <3 you Grum for this, saves us ~30 patch files! --^
                 return net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarting(this);
             }
@@ -383,7 +384,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     public CrashReport addServerInfoToCrashReport(CrashReport report)
     {
         report = super.addServerInfoToCrashReport(report);
-        report.getCategory().setDetail("Is Modded", new ICrashReportDetail<String>()
+        report.getCategory().addDetail("Is Modded", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -391,7 +392,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 return !"vanilla".equals(s) ? "Definitely; Server brand changed to '" + s + "'" : "Unknown (can't tell)";
             }
         });
-        report.getCategory().setDetail("Type", new ICrashReportDetail<String>()
+        report.getCategory().addDetail("Type", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -602,8 +603,8 @@ public class DedicatedServer extends MinecraftServer implements IServer
         else
         {
             BlockPos blockpos = worldIn.getSpawnPoint();
-            int i = MathHelper.abs_int(pos.getX() - blockpos.getX());
-            int j = MathHelper.abs_int(pos.getZ() - blockpos.getZ());
+            int i = MathHelper.abs(pos.getX() - blockpos.getX());
+            int j = MathHelper.abs(pos.getZ() - blockpos.getZ());
             int k = Math.max(i, j);
             return k <= this.getSpawnProtectionSize();
         }
@@ -662,7 +663,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     }
 
     //Forge: Enable formated text for colors in console.
-    @Override public void addChatMessage(net.minecraft.util.text.ITextComponent message) { LOGGER.info(message.getFormattedText()); }
+    @Override public void sendMessage(net.minecraft.util.text.ITextComponent message) { LOGGER.info(message.getFormattedText()); }
 
     protected boolean convertFiles() throws IOException
     {

@@ -43,7 +43,7 @@ public class TextComponentTranslation extends TextComponentBase
     @VisibleForTesting
 
     /**
-     * ensures that our children are initialized from the most recent string translation mapping.
+     * Ensures that all of the children are up to date with the most recent translation mapping.
      */
     synchronized void ensureInitialized()
     {
@@ -80,7 +80,7 @@ public class TextComponentTranslation extends TextComponentBase
     }
 
     /**
-     * initializes our children from a format string, using the format args to fill in the placeholder variables.
+     * Initializes the content of this component, substituting in variables.
      */
     protected void initializeFromFormat(String format)
     {
@@ -169,6 +169,9 @@ public class TextComponentTranslation extends TextComponentBase
         }
     }
 
+    /**
+     * Sets the style of this component and updates the parent style of all of the sibling components.
+     */
     public ITextComponent setStyle(Style style)
     {
         super.setStyle(style);
@@ -199,8 +202,9 @@ public class TextComponentTranslation extends TextComponentBase
     }
 
     /**
-     * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
-     * different methods?
+     * Gets the raw content of this component (but not its sibling components), without any formatting codes. For
+     * example, this is the raw text in a {@link TextComponentString}, but it's the translated text for a {@link
+     * TextComponentTranslation} and it's the score value for a {@link TextComponentScore}.
      */
     public String getUnformattedComponentText()
     {
@@ -275,11 +279,17 @@ public class TextComponentTranslation extends TextComponentBase
         return "TranslatableComponent{key='" + this.key + '\'' + ", args=" + Arrays.toString(this.formatArgs) + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
     }
 
+    /**
+     * Gets the key used to translate this component.
+     */
     public String getKey()
     {
         return this.key;
     }
 
+    /**
+     * Gets the object array that is used to translate the key.
+     */
     public Object[] getFormatArgs()
     {
         return this.formatArgs;

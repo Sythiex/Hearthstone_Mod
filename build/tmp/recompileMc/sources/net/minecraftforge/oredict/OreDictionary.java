@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -67,7 +67,7 @@ public class OreDictionary
     private static List<NonNullList<ItemStack>> idToStack = Lists.newArrayList();
     private static List<NonNullList<ItemStack>> idToStackUn = Lists.newArrayList();
     private static Map<Integer, List<Integer>> stackToId = Maps.newHashMapWithExpectedSize((int)(128 * 0.75));
-    public static final NonNullList<ItemStack> EMPTY_LIST = NonNullList.func_191196_a();
+    public static final NonNullList<ItemStack> EMPTY_LIST = NonNullList.create();
 
     /**
      * Minecraft changed from -1 to Short.MAX_VALUE in 1.5 release for the "block wildcard". Use this in case it
@@ -94,6 +94,24 @@ public class OreDictionary
             registerOre("stairWood",   Blocks.JUNGLE_STAIRS);
             registerOre("stairWood",   Blocks.ACACIA_STAIRS);
             registerOre("stairWood",   Blocks.DARK_OAK_STAIRS);
+            registerOre("fenceWood", Blocks.OAK_FENCE);
+            registerOre("fenceWood", Blocks.SPRUCE_FENCE);
+            registerOre("fenceWood", Blocks.BIRCH_FENCE);
+            registerOre("fenceWood", Blocks.JUNGLE_FENCE);
+            registerOre("fenceWood", Blocks.DARK_OAK_FENCE);
+            registerOre("fenceWood", Blocks.ACACIA_FENCE);
+            registerOre("fenceGateWood", Blocks.OAK_FENCE_GATE);
+            registerOre("fenceGateWood", Blocks.SPRUCE_FENCE_GATE);
+            registerOre("fenceGateWood", Blocks.BIRCH_FENCE_GATE);
+            registerOre("fenceGateWood", Blocks.JUNGLE_FENCE_GATE);
+            registerOre("fenceGateWood", Blocks.DARK_OAK_FENCE_GATE);
+            registerOre("fenceGateWood", Blocks.ACACIA_FENCE_GATE);
+            registerOre("doorWood", Items.ACACIA_DOOR);
+            registerOre("doorWood", Items.BIRCH_DOOR);
+            registerOre("doorWood", Items.DARK_OAK_DOOR);
+            registerOre("doorWood", Items.OAK_DOOR);
+            registerOre("doorWood", Items.JUNGLE_DOOR);
+            registerOre("doorWood", Items.SPRUCE_DOOR);
             registerOre("stickWood",   Items.STICK);
             registerOre("treeSapling", new ItemStack(Blocks.SAPLING, 1, WILDCARD_VALUE));
             registerOre("treeLeaves",  new ItemStack(Blocks.LEAVES, 1, WILDCARD_VALUE));
@@ -116,7 +134,7 @@ public class OreDictionary
             registerOre("ingotBrick",    Items.BRICK);
             registerOre("ingotBrickNether", Items.NETHERBRICK);
             registerOre("nuggetGold",  Items.GOLD_NUGGET);
-            registerOre("nuggetIron",  Items.field_191525_da);
+            registerOre("nuggetIron",  Items.IRON_NUGGET);
 
             // gems and dusts
             registerOre("gemDiamond",  Items.DIAMOND);
@@ -363,28 +381,28 @@ public class OreDictionary
             new ItemStack(Items.JUNGLE_DOOR),
             new ItemStack(Items.ACACIA_DOOR),
             new ItemStack(Items.DARK_OAK_DOOR),
-            ItemStack.field_190927_a //So the above can have a comma and we don't have to keep editing extra lines.
+            ItemStack.EMPTY //So the above can have a comma and we don't have to keep editing extra lines.
         };
 
         FMLLog.log.info("Starts to replace vanilla recipe ingredients with ore ingredients.");
         int replaced = 0;
         // Search vanilla recipes for recipes to replace
-        for(IRecipe obj : CraftingManager.field_193380_a)
+        for(IRecipe obj : CraftingManager.REGISTRY)
         {
             if(obj.getClass() == ShapedRecipes.class || obj.getClass() == ShapelessRecipes.class)
             {
                 ItemStack output = obj.getRecipeOutput();
-                if (!output.func_190926_b() && containsMatch(false, new ItemStack[]{ output }, exclusions))
+                if (!output.isEmpty() && containsMatch(false, new ItemStack[]{ output }, exclusions))
                 {
                     continue;
                 }
 
                 Set<Ingredient> replacedIngs = new HashSet<>();
-                NonNullList<Ingredient> lst = obj.func_192400_c();
+                NonNullList<Ingredient> lst = obj.getIngredients();
                 for (int x = 0; x < lst.size(); x++)
                 {
                     Ingredient ing = lst.get(x);
-                    ItemStack[] ingredients = ing.func_193365_a();
+                    ItemStack[] ingredients = ing.getMatchingStacks();
                     String oreName = null;
                     boolean skip = false;
 
@@ -426,7 +444,7 @@ public class OreDictionary
                         if(DEBUG && replacedIngs.add(ing))
                         {
                             String recipeName = obj.getRegistryName().getResourcePath();
-                            FMLLog.log.debug("Replaced {} of the recipe \'{}\' with \"{}\".", ing.func_193365_a(), recipeName, oreName);
+                            FMLLog.log.debug("Replaced {} of the recipe \'{}\' with \"{}\".", ing.getMatchingStacks(), recipeName, oreName);
                         }
                     }
                 }
@@ -451,7 +469,7 @@ public class OreDictionary
             idToName.add(name);
             val = idToName.size() - 1; //0 indexed
             nameToId.put(name, val);
-            NonNullList<ItemStack> back = NonNullList.func_191196_a();
+            NonNullList<ItemStack> back = NonNullList.create();
             idToStack.add(back);
             idToStackUn.add(back);
         }
@@ -478,7 +496,7 @@ public class OreDictionary
      */
     public static int[] getOreIDs(@Nonnull ItemStack stack)
     {
-        if (stack.func_190926_b()) throw new IllegalArgumentException("Stack can not be invalid!");
+        if (stack.isEmpty()) throw new IllegalArgumentException("Stack can not be invalid!");
 
         Set<Integer> set = new HashSet<Integer>();
 
@@ -615,7 +633,7 @@ public class OreDictionary
 
     public static boolean itemMatches(@Nonnull ItemStack target, @Nonnull ItemStack input, boolean strict)
     {
-        if (input.func_190926_b() && !target.func_190926_b() || !input.func_190926_b() && target.func_190926_b())
+        if (input.isEmpty() && !target.isEmpty() || !input.isEmpty() && target.isEmpty())
         {
             return false;
         }
@@ -637,7 +655,7 @@ public class OreDictionary
     private static void registerOreImpl(String name, @Nonnull ItemStack ore)
     {
         if ("Unknown".equals(name)) return; //prevent bad IDs.
-        if (ore.func_190926_b())
+        if (ore.isEmpty())
         {
             FMLLog.bigWarning("Invalid registration attempt for an Ore Dictionary item with name {} has occurred. The registration has been denied to prevent crashes. The mod responsible for the registration needs to correct this.", name);
             return; //prevent bad ItemStacks.

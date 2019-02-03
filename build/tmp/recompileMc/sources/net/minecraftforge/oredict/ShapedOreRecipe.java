@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,12 +52,13 @@ import com.google.gson.JsonSyntaxException;
 
 public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IShapedRecipe
 {
-    //Added in for future ease of change, but hard coded for now.
+    @Deprecated
     public static final int MAX_CRAFT_GRID_WIDTH = 3;
+    @Deprecated
     public static final int MAX_CRAFT_GRID_HEIGHT = 3;
 
     @Nonnull
-    protected ItemStack output = ItemStack.field_190927_a;
+    protected ItemStack output = ItemStack.EMPTY;
     protected NonNullList<Ingredient> input = null;
     protected int width = 0;
     protected int height = 0;
@@ -94,9 +95,9 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
     @Override
     public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world)
     {
-        for (int x = 0; x <= MAX_CRAFT_GRID_WIDTH - width; x++)
+        for (int x = 0; x <= inv.getWidth() - width; x++)
         {
-            for (int y = 0; y <= MAX_CRAFT_GRID_HEIGHT - height; ++y)
+            for (int y = 0; y <= inv.getHeight() - height; ++y)
             {
                 if (checkMatch(inv, x, y, false))
                 {
@@ -118,13 +119,13 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
      */
     protected boolean checkMatch(InventoryCrafting inv, int startX, int startY, boolean mirror)
     {
-        for (int x = 0; x < MAX_CRAFT_GRID_WIDTH; x++)
+        for (int x = 0; x < inv.getWidth(); x++)
         {
-            for (int y = 0; y < MAX_CRAFT_GRID_HEIGHT; y++)
+            for (int y = 0; y < inv.getHeight(); y++)
             {
                 int subX = x - startX;
                 int subY = y - startY;
-                Ingredient target = Ingredient.field_193370_a;
+                Ingredient target = Ingredient.EMPTY;
 
                 if (subX >= 0 && subY >= 0 && subX < width && subY < height)
                 {
@@ -156,7 +157,7 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
 
     @Override
     @Nonnull
-    public NonNullList<Ingredient> func_192400_c()
+    public NonNullList<Ingredient> getIngredients()
     {
         return this.input;
     }
@@ -187,15 +188,18 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
 
     @Override
     @Nonnull
-    public String func_193358_e()
+    public String getGroup()
     {
         return this.group == null ? "" : this.group.toString();
     }
 
+    /**
+     * Used to determine if this recipe can fit in a grid of the given width/height
+     */
     @Override
-    public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
+    public boolean canFit(int width, int height)
     {
-        return p_194133_1_ >= this.width && p_194133_2_ >= this.height;
+        return width >= this.width && height >= this.height;
     }
 
     public static ShapedOreRecipe factory(JsonContext context, JsonObject json)
@@ -215,7 +219,7 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
             ingMap.put(entry.getKey().toCharArray()[0], CraftingHelper.getIngredient(entry.getValue(), context));
         }
 
-        ingMap.put(' ', Ingredient.field_193370_a);
+        ingMap.put(' ', Ingredient.EMPTY);
 
         JsonArray patternJ = JsonUtils.getJsonArray(json, "pattern");
 
@@ -235,7 +239,7 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
         primer.width = pattern[0].length();
         primer.height = pattern.length;
         primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
-        primer.input = NonNullList.func_191197_a(primer.width * primer.height, Ingredient.field_193370_a);
+        primer.input = NonNullList.withSize(primer.width * primer.height, Ingredient.EMPTY);
 
         Set<Character> keys = Sets.newHashSet(ingMap.keySet());
         keys.remove(' ');

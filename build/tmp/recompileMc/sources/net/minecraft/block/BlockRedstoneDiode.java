@@ -38,14 +38,19 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         return false;
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.down()).isFullyOpaque() ? super.canPlaceBlockAt(worldIn, pos) : false;
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        return (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) ? super.canPlaceBlockAt(worldIn, pos) : false;
     }
 
     public boolean canBlockStay(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.down()).isFullyOpaque();
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
     }
 
     /**
@@ -110,7 +115,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (this.canBlockStay(worldIn, pos))
         {
@@ -221,7 +226,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
@@ -251,12 +256,12 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         BlockPos blockpos = pos.offset(enumfacing.getOpposite());
         if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldIn, pos, worldIn.getBlockState(pos), java.util.EnumSet.of(enumfacing.getOpposite()), false).isCanceled())
             return;
-        worldIn.func_190524_a(blockpos, this, pos);
+        worldIn.neighborChanged(blockpos, this, pos);
         worldIn.notifyNeighborsOfStateExcept(blockpos, this, enumfacing);
     }
 
     /**
-     * Called when a player destroys this Block
+     * Called after a player destroys this Block - the posiiton pos may no longer hold the state indicated.
      */
     public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state)
     {
@@ -356,8 +361,17 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         return false;
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+        return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 }

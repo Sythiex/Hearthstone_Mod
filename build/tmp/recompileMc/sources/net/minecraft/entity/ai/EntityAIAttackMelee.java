@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public class EntityAIAttackMelee extends EntityAIBase
 {
-    World worldObj;
+    World world;
     protected EntityCreature attacker;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     protected int attackTick;
@@ -19,7 +19,7 @@ public class EntityAIAttackMelee extends EntityAIBase
     /** When true, the mob will continue chasing its target, even if it can't find a path to them right now. */
     boolean longMemory;
     /** The PathEntity of our entity. */
-    Path entityPathEntity;
+    Path path;
     private int delayCounter;
     private double targetX;
     private double targetY;
@@ -31,7 +31,7 @@ public class EntityAIAttackMelee extends EntityAIBase
     public EntityAIAttackMelee(EntityCreature creature, double speedIn, boolean useLongMemory)
     {
         this.attacker = creature;
-        this.worldObj = creature.worldObj;
+        this.world = creature.world;
         this.speedTowardsTarget = speedIn;
         this.longMemory = useLongMemory;
         this.setMutexBits(3);
@@ -58,18 +58,18 @@ public class EntityAIAttackMelee extends EntityAIBase
             {
                 if (--this.delayCounter <= 0)
                 {
-                    this.entityPathEntity = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
+                    this.path = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
                     this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
-                    return this.entityPathEntity != null;
+                    return this.path != null;
                 }
                 else
                 {
                     return true;
                 }
             }
-            this.entityPathEntity = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
+            this.path = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
 
-            if (this.entityPathEntity != null)
+            if (this.path != null)
             {
                 return true;
             }
@@ -83,7 +83,7 @@ public class EntityAIAttackMelee extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
 
@@ -114,12 +114,12 @@ public class EntityAIAttackMelee extends EntityAIBase
      */
     public void startExecuting()
     {
-        this.attacker.getNavigator().setPath(this.entityPathEntity, this.speedTowardsTarget);
+        this.attacker.getNavigator().setPath(this.path, this.speedTowardsTarget);
         this.delayCounter = 0;
     }
 
     /**
-     * Resets the task
+     * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void resetTask()
     {
@@ -130,11 +130,11 @@ public class EntityAIAttackMelee extends EntityAIBase
             this.attacker.setAttackTarget((EntityLivingBase)null);
         }
 
-        this.attacker.getNavigator().clearPathEntity();
+        this.attacker.getNavigator().clearPath();
     }
 
     /**
-     * Updates the task
+     * Keep ticking a continuous task that has already been started
      */
     public void updateTask()
     {
@@ -156,7 +156,7 @@ public class EntityAIAttackMelee extends EntityAIBase
                 if (this.attacker.getNavigator().getPath() != null)
                 {
                     net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
-                    if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.xCoord, finalPathPoint.yCoord, finalPathPoint.zCoord) < 1)
+                    if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
                         failedPathFindingPenalty = 0;
                     else
                         failedPathFindingPenalty += 10;

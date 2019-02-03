@@ -57,6 +57,9 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         }
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return super.canPlaceBlockAt(worldIn, pos) && worldIn.isAirBlock(pos.up());
@@ -125,7 +128,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
     {
         if (state.getValue(HALF) == BlockDoublePlant.EnumBlockHalf.UPPER)
         {
-            return Items.field_190931_a;
+            return Items.AIR;
         }
         else
         {
@@ -133,11 +136,11 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
 
             if (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN)
             {
-                return Items.field_190931_a;
+                return Items.AIR;
             }
             else if (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS)
             {
-                return rand.nextInt(8) == 0 ? Items.WHEAT_SEEDS : Items.field_190931_a;
+                return rand.nextInt(8) == 0 ? Items.WHEAT_SEEDS : Items.AIR;
             }
             else
             {
@@ -169,6 +172,10 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         worldIn.setBlockState(pos.up(), this.getDefaultState().withProperty(HALF, BlockDoublePlant.EnumBlockHalf.UPPER), 2);
     }
 
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
         {
@@ -176,6 +183,10 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         }
     }
 
+    /**
+     * Called before the Block is set to air in the world. Called regardless of if the player's tool can actually
+     * collect this block
+     */
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
     {
         if (state.getValue(HALF) == BlockDoublePlant.EnumBlockHalf.UPPER)
@@ -199,7 +210,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
                     {
                         worldIn.setBlockToAir(pos.down());
                     }
-                    else if (!player.getHeldItemMainhand().func_190926_b() && player.getHeldItemMainhand().getItem() == Items.SHEARS)
+                    else if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() == Items.SHEARS)
                     {
                         this.onHarvest(worldIn, pos, iblockstate, player);
                         worldIn.setBlockToAir(pos.down());
@@ -237,11 +248,11 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
     /**
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> tab)
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
     {
         for (BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype : BlockDoublePlant.EnumPlantType.values())
         {
-            tab.add(new ItemStack(this, 1, blockdoubleplant$enumplanttype.getMeta()));
+            items.add(new ItemStack(this, 1, blockdoubleplant$enumplanttype.getMeta()));
         }
     }
 

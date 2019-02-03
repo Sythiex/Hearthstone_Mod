@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class Particle
 {
     private static final AxisAlignedBB EMPTY_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-    protected World worldObj;
+    protected World world;
     protected double prevPosX;
     protected double prevPosY;
     protected double prevPosZ;
@@ -28,7 +28,7 @@ public class Particle
     protected double motionY;
     protected double motionZ;
     private AxisAlignedBB boundingBox;
-    protected boolean isCollided;
+    protected boolean onGround;
     /** Determines if particle to block collision is to be used */
     protected boolean canCollide;
     protected boolean isExpired;
@@ -68,7 +68,7 @@ public class Particle
         this.height = 1.8F;
         this.rand = new Random();
         this.particleAlpha = 1.0F;
-        this.worldObj = worldIn;
+        this.world = worldIn;
         this.setSize(0.2F, 0.2F);
         this.setPosition(posXIn, posYIn, posZIn);
         this.prevPosX = posXIn;
@@ -92,7 +92,7 @@ public class Particle
         this.motionY = ySpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
         this.motionZ = zSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
         float f = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
-        float f1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+        float f1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
         this.motionX = this.motionX / (double)f1 * (double)f * 0.4000000059604645D;
         this.motionY = this.motionY / (double)f1 * (double)f * 0.4000000059604645D + 0.10000000149011612D;
         this.motionZ = this.motionZ / (double)f1 * (double)f * 0.4000000059604645D;
@@ -128,7 +128,7 @@ public class Particle
         this.particleAlpha = alpha;
     }
 
-    public boolean isTransparent()
+    public boolean shouldDisableDepth()
     {
         return false;
     }
@@ -165,12 +165,12 @@ public class Particle
         }
 
         this.motionY -= 0.04D * (double)this.particleGravity;
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(this.motionX, this.motionY, this.motionZ);
         this.motionX *= 0.9800000190734863D;
         this.motionY *= 0.9800000190734863D;
         this.motionZ *= 0.9800000190734863D;
 
-        if (this.isCollided)
+        if (this.onGround)
         {
             this.motionX *= 0.699999988079071D;
             this.motionZ *= 0.699999988079071D;
@@ -180,7 +180,7 @@ public class Particle
     /**
      * Renders the particle
      */
-    public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
     {
         float f = (float)this.particleTextureIndexX / 16.0F;
         float f1 = f + 0.0624375F;
@@ -208,9 +208,9 @@ public class Particle
         {
             float f8 = this.particleAngle + (this.particleAngle - this.prevParticleAngle) * partialTicks;
             float f9 = MathHelper.cos(f8 * 0.5F);
-            float f10 = MathHelper.sin(f8 * 0.5F) * (float)cameraViewDir.xCoord;
-            float f11 = MathHelper.sin(f8 * 0.5F) * (float)cameraViewDir.yCoord;
-            float f12 = MathHelper.sin(f8 * 0.5F) * (float)cameraViewDir.zCoord;
+            float f10 = MathHelper.sin(f8 * 0.5F) * (float)cameraViewDir.x;
+            float f11 = MathHelper.sin(f8 * 0.5F) * (float)cameraViewDir.y;
+            float f12 = MathHelper.sin(f8 * 0.5F) * (float)cameraViewDir.z;
             Vec3d vec3d = new Vec3d((double)f10, (double)f11, (double)f12);
 
             for (int l = 0; l < 4; ++l)
@@ -219,10 +219,10 @@ public class Particle
             }
         }
 
-        worldRendererIn.pos((double)f5 + avec3d[0].xCoord, (double)f6 + avec3d[0].yCoord, (double)f7 + avec3d[0].zCoord).tex((double)f1, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
-        worldRendererIn.pos((double)f5 + avec3d[1].xCoord, (double)f6 + avec3d[1].yCoord, (double)f7 + avec3d[1].zCoord).tex((double)f1, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
-        worldRendererIn.pos((double)f5 + avec3d[2].xCoord, (double)f6 + avec3d[2].yCoord, (double)f7 + avec3d[2].zCoord).tex((double)f, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
-        worldRendererIn.pos((double)f5 + avec3d[3].xCoord, (double)f6 + avec3d[3].yCoord, (double)f7 + avec3d[3].zCoord).tex((double)f, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        buffer.pos((double)f5 + avec3d[0].x, (double)f6 + avec3d[0].y, (double)f7 + avec3d[0].z).tex((double)f1, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        buffer.pos((double)f5 + avec3d[1].x, (double)f6 + avec3d[1].y, (double)f7 + avec3d[1].z).tex((double)f1, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        buffer.pos((double)f5 + avec3d[2].x, (double)f6 + avec3d[2].y, (double)f7 + avec3d[2].z).tex((double)f, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        buffer.pos((double)f5 + avec3d[3].x, (double)f6 + avec3d[3].y, (double)f7 + avec3d[3].z).tex((double)f, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
     }
 
     /**
@@ -291,8 +291,8 @@ public class Particle
         {
             this.width = p_187115_1_;
             this.height = p_187115_2_;
-            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
-            this.setEntityBoundingBox(new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double)this.width, axisalignedbb.minY + (double)this.height, axisalignedbb.minZ + (double)this.width));
+            // FORGE: Fix MC-12269 - Glitchy movement when setSize is called without setPosition
+            setPosition(posX, posY, posZ);
         }
     }
 
@@ -303,10 +303,10 @@ public class Particle
         this.posZ = p_187109_5_;
         float f = this.width / 2.0F;
         float f1 = this.height;
-        this.setEntityBoundingBox(new AxisAlignedBB(p_187109_1_ - (double)f, p_187109_3_, p_187109_5_ - (double)f, p_187109_1_ + (double)f, p_187109_3_ + (double)f1, p_187109_5_ + (double)f));
+        this.setBoundingBox(new AxisAlignedBB(p_187109_1_ - (double)f, p_187109_3_, p_187109_5_ - (double)f, p_187109_1_ + (double)f, p_187109_3_ + (double)f1, p_187109_5_ + (double)f));
     }
 
-    public void moveEntity(double x, double y, double z)
+    public void move(double x, double y, double z)
     {
         double d0 = y;
         double origX = x;
@@ -314,36 +314,36 @@ public class Particle
 
         if (this.canCollide)
         {
-            List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes((Entity)null, this.getEntityBoundingBox().addCoord(x, y, z));
+            List<AxisAlignedBB> list = this.world.getCollisionBoxes((Entity)null, this.getBoundingBox().expand(x, y, z));
 
             for (AxisAlignedBB axisalignedbb : list)
             {
-                y = axisalignedbb.calculateYOffset(this.getEntityBoundingBox(), y);
+                y = axisalignedbb.calculateYOffset(this.getBoundingBox(), y);
             }
 
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+            this.setBoundingBox(this.getBoundingBox().offset(0.0D, y, 0.0D));
 
             for (AxisAlignedBB axisalignedbb1 : list)
             {
-                x = axisalignedbb1.calculateXOffset(this.getEntityBoundingBox(), x);
+                x = axisalignedbb1.calculateXOffset(this.getBoundingBox(), x);
             }
 
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
+            this.setBoundingBox(this.getBoundingBox().offset(x, 0.0D, 0.0D));
 
             for (AxisAlignedBB axisalignedbb2 : list)
             {
-                z = axisalignedbb2.calculateZOffset(this.getEntityBoundingBox(), z);
+                z = axisalignedbb2.calculateZOffset(this.getBoundingBox(), z);
             }
 
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, 0.0D, z));
+            this.setBoundingBox(this.getBoundingBox().offset(0.0D, 0.0D, z));
         }
         else
         {
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
+            this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
         }
 
         this.resetPositionToBB();
-        this.isCollided = d0 != y && d0 < 0.0D;
+        this.onGround = d0 != y && d0 < 0.0D;
 
         if (origX != x)
         {
@@ -358,7 +358,7 @@ public class Particle
 
     protected void resetPositionToBB()
     {
-        AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
+        AxisAlignedBB axisalignedbb = this.getBoundingBox();
         this.posX = (axisalignedbb.minX + axisalignedbb.maxX) / 2.0D;
         this.posY = axisalignedbb.minY;
         this.posZ = (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0D;
@@ -367,7 +367,7 @@ public class Particle
     public int getBrightnessForRender(float p_189214_1_)
     {
         BlockPos blockpos = new BlockPos(this.posX, this.posY, this.posZ);
-        return this.worldObj.isBlockLoaded(blockpos) ? this.worldObj.getCombinedLight(blockpos, 0) : 0;
+        return this.world.isBlockLoaded(blockpos) ? this.world.getCombinedLight(blockpos, 0) : 0;
     }
 
     /**
@@ -378,12 +378,12 @@ public class Particle
         return !this.isExpired;
     }
 
-    public AxisAlignedBB getEntityBoundingBox()
+    public AxisAlignedBB getBoundingBox()
     {
         return this.boundingBox;
     }
 
-    public void setEntityBoundingBox(AxisAlignedBB bb)
+    public void setBoundingBox(AxisAlignedBB bb)
     {
         this.boundingBox = bb;
     }

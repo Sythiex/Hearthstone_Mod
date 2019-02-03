@@ -15,10 +15,10 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
 {
     private final RealmsSimpleScrolledSelectionList realmsScrolledSelectionList;
 
-    public GuiSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList p_i45525_1_, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
+    public GuiSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList realmsScrolledSelectionListIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
     {
         super(Minecraft.getMinecraft(), widthIn, heightIn, topIn, bottomIn, slotHeightIn);
-        this.realmsScrolledSelectionList = p_i45525_1_;
+        this.realmsScrolledSelectionList = realmsScrolledSelectionListIn;
     }
 
     protected int getSize()
@@ -47,9 +47,9 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
         this.realmsScrolledSelectionList.renderBackground();
     }
 
-    protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks)
     {
-        this.realmsScrolledSelectionList.renderItem(p_192637_1_, p_192637_2_, p_192637_3_, p_192637_4_, p_192637_5_, p_192637_6_);
+        this.realmsScrolledSelectionList.renderItem(slotIndex, xPos, yPos, heightIn, mouseXIn, mouseYIn);
     }
 
     public int getWidth()
@@ -107,7 +107,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
                 this.drawListHeader(k, l, tessellator);
             }
 
-            this.func_192638_a(k, l, mouseXIn, mouseYIn, partialTicks);
+            this.drawSelectionBox(k, l, mouseXIn, mouseYIn, partialTicks);
             GlStateManager.disableDepth();
             this.overlayBackground(0, this.top, 255, 255);
             this.overlayBackground(this.bottom, this.height, 255, 255);
@@ -121,7 +121,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
             if (i1 > 0)
             {
                 int j1 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
-                j1 = MathHelper.clamp_int(j1, 32, this.bottom - this.top - 8);
+                j1 = MathHelper.clamp(j1, 32, this.bottom - this.top - 8);
                 int k1 = (int)this.amountScrolled * (this.bottom - this.top - j1) / i1 + this.top;
 
                 if (k1 < this.top)

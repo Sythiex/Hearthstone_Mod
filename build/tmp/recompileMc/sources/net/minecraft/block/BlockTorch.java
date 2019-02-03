@@ -89,6 +89,9 @@ public class BlockTorch extends Block
         return state.getBlock().canPlaceTorchOnTop(state, worldIn, pos);
     }
 
+    /**
+     * Checks if this block can be placed exactly at the given position.
+     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         for (EnumFacing enumfacing : FACING.getAllowedValues())
@@ -107,7 +110,7 @@ public class BlockTorch extends Block
         BlockPos blockpos = pos.offset(facing.getOpposite());
         IBlockState iblockstate = worldIn.getBlockState(blockpos);
         Block block = iblockstate.getBlock();
-        BlockFaceShape blockfaceshape = iblockstate.func_193401_d(worldIn, blockpos, facing);
+        BlockFaceShape blockfaceshape = iblockstate.getBlockFaceShape(worldIn, blockpos, facing);
 
         if (facing.equals(EnumFacing.UP) && this.canPlaceOn(worldIn, blockpos))
         {
@@ -115,7 +118,7 @@ public class BlockTorch extends Block
         }
         else if (facing != EnumFacing.UP && facing != EnumFacing.DOWN)
         {
-            return !func_193382_c(block) && blockfaceshape == BlockFaceShape.SOLID;
+            return !isExceptBlockForAttachWithPiston(block) && blockfaceshape == BlockFaceShape.SOLID;
         }
         else
         {
@@ -127,7 +130,7 @@ public class BlockTorch extends Block
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         if (this.canPlaceAt(worldIn, pos, facing))
         {
@@ -160,7 +163,7 @@ public class BlockTorch extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         this.onNeighborChangeInternal(worldIn, pos, state);
     }
@@ -179,7 +182,7 @@ public class BlockTorch extends Block
             BlockPos blockpos = pos.offset(enumfacing1);
             boolean flag = false;
 
-            if (enumfacing$axis.isHorizontal() && worldIn.getBlockState(blockpos).func_193401_d(worldIn, blockpos, enumfacing) != BlockFaceShape.SOLID)
+            if (enumfacing$axis.isHorizontal() && worldIn.getBlockState(blockpos).getBlockFaceShape(worldIn, blockpos, enumfacing) != BlockFaceShape.SOLID)
             {
                 flag = true;
             }
@@ -330,7 +333,16 @@ public class BlockTorch extends Block
         return new BlockStateContainer(this, new IProperty[] {FACING});
     }
 
-    public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+    /**
+     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
+     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
+     * <p>
+     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
+     * does not fit the other descriptions and will generally cause other things not to connect to the face.
+     * 
+     * @return an approximation of the form of the given face
+     */
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
     }

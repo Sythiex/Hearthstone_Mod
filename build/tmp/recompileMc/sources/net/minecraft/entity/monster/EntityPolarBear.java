@@ -51,7 +51,7 @@ public class EntityPolarBear extends EntityAnimal
 
     public EntityAgeable createChild(EntityAgeable ageable)
     {
-        return new EntityPolarBear(this.worldObj);
+        return new EntityPolarBear(this.world);
     }
 
     /**
@@ -92,7 +92,7 @@ public class EntityPolarBear extends EntityAnimal
         return this.isChild() ? SoundEvents.ENTITY_POLAR_BEAR_BABY_AMBIENT : SoundEvents.ENTITY_POLAR_BEAR_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_POLAR_BEAR_HURT;
     }
@@ -135,17 +135,17 @@ public class EntityPolarBear extends EntityAnimal
     {
         super.onUpdate();
 
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             this.clientSideStandAnimation0 = this.clientSideStandAnimation;
 
             if (this.isStanding())
             {
-                this.clientSideStandAnimation = MathHelper.clamp_float(this.clientSideStandAnimation + 1.0F, 0.0F, 6.0F);
+                this.clientSideStandAnimation = MathHelper.clamp(this.clientSideStandAnimation + 1.0F, 0.0F, 6.0F);
             }
             else
             {
-                this.clientSideStandAnimation = MathHelper.clamp_float(this.clientSideStandAnimation - 1.0F, 0.0F, 6.0F);
+                this.clientSideStandAnimation = MathHelper.clamp(this.clientSideStandAnimation - 1.0F, 0.0F, 6.0F);
             }
         }
 
@@ -231,7 +231,7 @@ public class EntityPolarBear extends EntityAnimal
             {
                 if (super.shouldExecute())
                 {
-                    for (EntityPolarBear entitypolarbear : EntityPolarBear.this.worldObj.getEntitiesWithinAABB(EntityPolarBear.class, EntityPolarBear.this.getEntityBoundingBox().expand(8.0D, 4.0D, 8.0D)))
+                    for (EntityPolarBear entitypolarbear : EntityPolarBear.this.world.getEntitiesWithinAABB(EntityPolarBear.class, EntityPolarBear.this.getEntityBoundingBox().grow(8.0D, 4.0D, 8.0D)))
                     {
                         if (entitypolarbear.isChild())
                         {
@@ -320,7 +320,7 @@ public class EntityPolarBear extends EntityAnimal
         }
 
         /**
-         * Resets the task
+         * Reset the task's internal state. Called when this task is interrupted by another one
          */
         public void resetTask()
         {

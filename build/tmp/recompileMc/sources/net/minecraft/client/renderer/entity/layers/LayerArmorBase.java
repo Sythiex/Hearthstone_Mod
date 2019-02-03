@@ -103,7 +103,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
     {
         float f = (float)p_188364_1_.ticksExisted + p_188364_5_;
         p_188364_0_.bindTexture(ENCHANTED_ITEM_GLINT_RES);
-        Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+        Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
         GlStateManager.enableBlend();
         GlStateManager.depthFunc(514);
         GlStateManager.depthMask(false);
@@ -134,7 +134,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         GlStateManager.depthMask(true);
         GlStateManager.depthFunc(515);
         GlStateManager.disableBlend();
-        Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
+        Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
     }
 
     @Deprecated //Use the more sensitive version getArmorResource below

@@ -49,7 +49,7 @@ public class EntityAIFindEntityNearest extends EntityAIBase
                 }
                 else
                 {
-                    return (double)p_apply_1_.getDistanceToEntity(EntityAIFindEntityNearest.this.mob) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIFindEntityNearest.this.mob, p_apply_1_, false, true);
+                    return (double)p_apply_1_.getDistance(EntityAIFindEntityNearest.this.mob) > d0 ? false : EntityAITarget.isSuitableTarget(EntityAIFindEntityNearest.this.mob, p_apply_1_, false, true);
                 }
             }
         };
@@ -62,7 +62,7 @@ public class EntityAIFindEntityNearest extends EntityAIBase
     public boolean shouldExecute()
     {
         double d0 = this.getFollowRange();
-        List<EntityLivingBase> list = this.mob.worldObj.<EntityLivingBase>getEntitiesWithinAABB(this.classToCheck, this.mob.getEntityBoundingBox().expand(d0, 4.0D, d0), this.predicate);
+        List<EntityLivingBase> list = this.mob.world.<EntityLivingBase>getEntitiesWithinAABB(this.classToCheck, this.mob.getEntityBoundingBox().grow(d0, 4.0D, d0), this.predicate);
         Collections.sort(list, this.sorter);
 
         if (list.isEmpty())
@@ -79,7 +79,7 @@ public class EntityAIFindEntityNearest extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         EntityLivingBase entitylivingbase = this.mob.getAttackTarget();
 
@@ -95,7 +95,7 @@ public class EntityAIFindEntityNearest extends EntityAIBase
         {
             double d0 = this.getFollowRange();
 
-            if (this.mob.getDistanceSqToEntity(entitylivingbase) > d0 * d0)
+            if (this.mob.getDistanceSq(entitylivingbase) > d0 * d0)
             {
                 return false;
             }
@@ -116,7 +116,7 @@ public class EntityAIFindEntityNearest extends EntityAIBase
     }
 
     /**
-     * Resets the task
+     * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void resetTask()
     {

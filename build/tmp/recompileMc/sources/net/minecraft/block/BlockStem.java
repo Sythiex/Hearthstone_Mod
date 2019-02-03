@@ -73,6 +73,7 @@ public class BlockStem extends BlockBush implements IGrowable
     {
         super.updateTick(worldIn, pos, state, rand);
 
+        if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
         if (worldIn.getLightFromNeighbors(pos.up()) >= 9)
         {
             float f = BlockCrops.getGrowthChance(this, worldIn, pos);
@@ -112,7 +113,7 @@ public class BlockStem extends BlockBush implements IGrowable
 
     public void growStem(World worldIn, BlockPos pos, IBlockState state)
     {
-        int i = ((Integer)state.getValue(AGE)).intValue() + MathHelper.getRandomIntegerInRange(worldIn.rand, 2, 5);
+        int i = ((Integer)state.getValue(AGE)).intValue() + MathHelper.getInt(worldIn.rand, 2, 5);
         worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(Math.min(7, i))), 2);
     }
 
@@ -163,13 +164,13 @@ public class BlockStem extends BlockBush implements IGrowable
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.field_190931_a;
+        return Items.AIR;
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         Item item = this.getSeedItem();
-        return item == null ? ItemStack.field_190927_a : new ItemStack(item);
+        return item == null ? ItemStack.EMPTY : new ItemStack(item);
     }
 
     /**

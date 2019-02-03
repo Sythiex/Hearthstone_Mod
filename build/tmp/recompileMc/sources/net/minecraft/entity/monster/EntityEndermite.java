@@ -74,7 +74,7 @@ public class EntityEndermite extends EntityMob
         return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_ENDERMITE_HURT;
     }
@@ -167,11 +167,11 @@ public class EntityEndermite extends EntityMob
     {
         super.onLivingUpdate();
 
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             for (int i = 0; i < 2; ++i)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+                this.world.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
             }
         }
         else
@@ -203,7 +203,7 @@ public class EntityEndermite extends EntityMob
     {
         if (super.getCanSpawnHere())
         {
-            EntityPlayer entityplayer = this.worldObj.getClosestPlayerToEntity(this, 5.0D);
+            EntityPlayer entityplayer = this.world.getClosestPlayerToEntity(this, 5.0D);
             return entityplayer == null;
         }
         else

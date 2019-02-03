@@ -42,15 +42,16 @@ public class ContainerChest extends Container
      */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.lowerChestInventory.isUseableByPlayer(playerIn);
+        return this.lowerChestInventory.isUsableByPlayer(playerIn);
     }
 
     /**
-     * Take a stack from the specified inventory slot.
+     * Handle when the stack in slot {@code index} is shift-clicked. Normally this moves the stack between the player
+     * inventory and the other inventory(s).
      */
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = ItemStack.field_190927_a;
+        ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -62,17 +63,17 @@ public class ContainerChest extends Container
             {
                 if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true))
                 {
-                    return ItemStack.field_190927_a;
+                    return ItemStack.EMPTY;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false))
             {
-                return ItemStack.field_190927_a;
+                return ItemStack.EMPTY;
             }
 
-            if (itemstack1.func_190926_b())
+            if (itemstack1.isEmpty())
             {
-                slot.putStack(ItemStack.field_190927_a);
+                slot.putStack(ItemStack.EMPTY);
             }
             else
             {

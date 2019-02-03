@@ -19,10 +19,10 @@ public class BiomePlains extends Biome
         this.sunflowers = p_i46699_1_;
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityHorse.class, 5, 2, 6));
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityDonkey.class, 1, 1, 3));
-        this.theBiomeDecorator.treesPerChunk = 0;
-        this.theBiomeDecorator.extraTreeChance = 0.05F;
-        this.theBiomeDecorator.flowersPerChunk = 4;
-        this.theBiomeDecorator.grassPerChunk = 10;
+        this.decorator.treesPerChunk = 0;
+        this.decorator.extraTreeChance = 0.05F;
+        this.decorator.flowersPerChunk = 4;
+        this.decorator.grassPerChunk = 10;
     }
 
     public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
@@ -71,16 +71,16 @@ public class BiomePlains extends Biome
 
         if (d0 < -0.8D)
         {
-            this.theBiomeDecorator.flowersPerChunk = 15;
-            this.theBiomeDecorator.grassPerChunk = 5;
+            this.decorator.flowersPerChunk = 15;
+            this.decorator.grassPerChunk = 5;
         }
         else
         {
-            this.theBiomeDecorator.flowersPerChunk = 4;
-            this.theBiomeDecorator.grassPerChunk = 10;
+            this.decorator.flowersPerChunk = 4;
+            this.decorator.grassPerChunk = 10;
             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
 
-            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
+            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
             for (int i = 0; i < 7; ++i)
             {
                 int j = rand.nextInt(16) + 8;
@@ -90,7 +90,7 @@ public class BiomePlains extends Biome
             }
         }
 
-        if (this.sunflowers && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
+        if (this.sunflowers && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
         {
             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.SUNFLOWER);
 
@@ -121,7 +121,7 @@ public class BiomePlains extends Biome
         addFlower(yel.getDefaultState().withProperty(yel.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 30);
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
         return (WorldGenAbstractTree)(rand.nextInt(3) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
     }

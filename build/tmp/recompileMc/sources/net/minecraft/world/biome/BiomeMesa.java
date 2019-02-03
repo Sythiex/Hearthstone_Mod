@@ -41,16 +41,16 @@ public class BiomeMesa extends Biome
         this.spawnableCreatureList.clear();
         this.topBlock = RED_SAND;
         this.fillerBlock = STAINED_HARDENED_CLAY;
-        this.theBiomeDecorator.treesPerChunk = -999;
-        this.theBiomeDecorator.deadBushPerChunk = 20;
-        this.theBiomeDecorator.reedsPerChunk = 3;
-        this.theBiomeDecorator.cactiPerChunk = 5;
-        this.theBiomeDecorator.flowersPerChunk = 0;
+        this.decorator.treesPerChunk = -999;
+        this.decorator.deadBushPerChunk = 20;
+        this.decorator.reedsPerChunk = 3;
+        this.decorator.cactiPerChunk = 5;
+        this.decorator.flowersPerChunk = 0;
         this.spawnableCreatureList.clear();
 
         if (p_i46704_2_)
         {
-            this.theBiomeDecorator.treesPerChunk = 5;
+            this.decorator.treesPerChunk = 5;
         }
     }
 
@@ -62,9 +62,8 @@ public class BiomeMesa extends Biome
         return new BiomeMesa.Decorator();
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
-        /** The tree generator. */
         return TREE_FEATURE;
     }
 
@@ -322,13 +321,13 @@ public class BiomeMesa extends Biome
     @SideOnly(Side.CLIENT)
     public int getFoliageColorAtPos(BlockPos pos)
     {
-        return 10387789;
+        return getModdedBiomeFoliageColor(10387789);
     }
 
     @SideOnly(Side.CLIENT)
     public int getGrassColorAtPos(BlockPos pos)
     {
-        return 9470285;
+        return getModdedBiomeGrassColor(9470285);
     }
 
     class Decorator extends BiomeDecorator

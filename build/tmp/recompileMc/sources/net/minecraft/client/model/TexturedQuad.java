@@ -52,9 +52,9 @@ public class TexturedQuad
         Vec3d vec3d = this.vertexPositions[1].vector3D.subtractReverse(this.vertexPositions[0].vector3D);
         Vec3d vec3d1 = this.vertexPositions[1].vector3D.subtractReverse(this.vertexPositions[2].vector3D);
         Vec3d vec3d2 = vec3d1.crossProduct(vec3d).normalize();
-        float f = (float)vec3d2.xCoord;
-        float f1 = (float)vec3d2.yCoord;
-        float f2 = (float)vec3d2.zCoord;
+        float f = (float)vec3d2.x;
+        float f1 = (float)vec3d2.y;
+        float f2 = (float)vec3d2.z;
 
         if (this.invertNormal)
         {
@@ -68,7 +68,7 @@ public class TexturedQuad
         for (int i = 0; i < 4; ++i)
         {
             PositionTextureVertex positiontexturevertex = this.vertexPositions[i];
-            renderer.pos(positiontexturevertex.vector3D.xCoord * (double)scale, positiontexturevertex.vector3D.yCoord * (double)scale, positiontexturevertex.vector3D.zCoord * (double)scale).tex((double)positiontexturevertex.texturePositionX, (double)positiontexturevertex.texturePositionY).normal(f, f1, f2).endVertex();
+            renderer.pos(positiontexturevertex.vector3D.x * (double)scale, positiontexturevertex.vector3D.y * (double)scale, positiontexturevertex.vector3D.z * (double)scale).tex((double)positiontexturevertex.texturePositionX, (double)positiontexturevertex.texturePositionY).normal(f, f1, f2).endVertex();
         }
 
         Tessellator.getInstance().draw();

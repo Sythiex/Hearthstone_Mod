@@ -37,15 +37,15 @@ public class BiomeJungle extends Biome
 
         if (isEdgeIn)
         {
-            this.theBiomeDecorator.treesPerChunk = 2;
+            this.decorator.treesPerChunk = 2;
         }
         else
         {
-            this.theBiomeDecorator.treesPerChunk = 50;
+            this.decorator.treesPerChunk = 50;
         }
 
-        this.theBiomeDecorator.grassPerChunk = 25;
-        this.theBiomeDecorator.flowersPerChunk = 4;
+        this.decorator.grassPerChunk = 25;
+        this.decorator.flowersPerChunk = 4;
 
         if (!isEdgeIn)
         {
@@ -56,11 +56,10 @@ public class BiomeJungle extends Biome
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityChicken.class, 10, 4, 4));
     }
 
-    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
         if (rand.nextInt(10) == 0)
         {
-            /** The big tree generator. */
             return BIG_TREE_FEATURE;
         }
         else if (rand.nextInt(2) == 0)
@@ -89,11 +88,11 @@ public class BiomeJungle extends Biome
         int height = worldIn.getHeight(pos.add(i, 0, j)).getY() * 2; // could == 0, which crashes nextInt
         if (height < 1) height = 1;
         int k = rand.nextInt(height);
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), pos.add(i, k, j), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
         (new WorldGenMelon()).generate(worldIn, rand, pos.add(i, k, j));
         WorldGenVines worldgenvines = new WorldGenVines();
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
         for (int j1 = 0; j1 < 50; ++j1)
         {
             k = rand.nextInt(16) + 8;

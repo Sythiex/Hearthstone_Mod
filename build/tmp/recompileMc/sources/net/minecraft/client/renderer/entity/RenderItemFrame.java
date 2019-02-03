@@ -98,7 +98,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
     {
         ItemStack itemstack = itemFrame.getDisplayedItem();
 
-        if (!itemstack.func_190926_b())
+        if (!itemstack.isEmpty())
         {
             GlStateManager.pushMatrix();
             GlStateManager.disableLighting();
@@ -116,7 +116,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
                 float f = 0.0078125F;
                 GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
                 GlStateManager.translate(-64.0F, -64.0F, 0.0F);
-                MapData mapdata = ((net.minecraft.item.ItemMap) itemstack.getItem()).getMapData(itemstack, itemFrame.worldObj);
+                MapData mapdata = ((net.minecraft.item.ItemMap) itemstack.getItem()).getMapData(itemstack, itemFrame.world);
                 GlStateManager.translate(0.0F, 0.0F, -1.0F);
 
                 if (mapdata != null)
@@ -142,9 +142,9 @@ public class RenderItemFrame extends Render<EntityItemFrame>
 
     protected void renderName(EntityItemFrame entity, double x, double y, double z)
     {
-        if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().func_190926_b() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
+        if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
         {
-            double d0 = entity.getDistanceSqToEntity(this.renderManager.renderViewEntity);
+            double d0 = entity.getDistanceSq(this.renderManager.renderViewEntity);
             float f = entity.isSneaking() ? 32.0F : 64.0F;
 
             if (d0 < (double)(f * f))

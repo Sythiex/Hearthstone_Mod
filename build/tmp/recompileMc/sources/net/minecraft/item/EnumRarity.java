@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import net.minecraft.util.text.TextFormatting;
 
-public enum EnumRarity
+public enum EnumRarity implements net.minecraftforge.common.IRarity
 {
     COMMON(TextFormatting.WHITE, "Common"),
     UNCOMMON(TextFormatting.YELLOW, "Uncommon"),
@@ -21,5 +21,17 @@ public enum EnumRarity
     {
         this.rarityColor = color;
         this.rarityName = name;
+    }
+
+    @Override
+    public TextFormatting getColor()
+    {
+        return this.rarityColor;
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.rarityName;
     }
 }

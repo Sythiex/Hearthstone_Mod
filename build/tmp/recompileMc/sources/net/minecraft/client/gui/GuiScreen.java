@@ -176,7 +176,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         {
             if (i == 0)
             {
-                list.set(i, p_191927_1_.getRarity().rarityColor + (String)list.get(i));
+                list.set(i, p_191927_1_.getItem().getForgeRarity(p_191927_1_).getColor() + (String)list.get(i));
             }
             else
             {

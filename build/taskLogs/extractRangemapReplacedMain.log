@@ -1,0 +1,23 @@
+Symbol range map extraction starting
+Processing 7 files
+startProcessing "com\sythiex\hearthstonemod\ChannelPositionedSound.java" md5: 1fefea90b43da3b4b3a8a6cb8515b36e
+endProcessing "com\sythiex\hearthstonemod\ChannelPositionedSound.java"
+
+startProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java" md5: 6a315e72020eb053060d537f10fc0bc8
+endProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java"
+
+startProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java" md5: 78149aba937c87deb89a85171eb5fb4f
+endProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java"
+
+startProcessing "com\sythiex\hearthstonemod\HearthstoneTeleporter.java" md5: 266f66b0b06fc91cffb28dc51d009b7c
+endProcessing "com\sythiex\hearthstonemod\HearthstoneTeleporter.java"
+
+startProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java" md5: fd394f1d96bb2b932326c9c3b0a31bfb
+endProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java"
+
+startProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java" md5: e61ba5ee95864a0565aa32d14cca6c67
+endProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java"
+
+startProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java" md5: a8773a1d2fd5536b95dc5fbce8da8f64
+endProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java"
+

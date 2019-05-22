@@ -581,7 +581,7 @@ public class EntityEnderman extends EntityMob
                 IBlockState iblockstate1 = world.getBlockState(blockpos.down());
                 IBlockState iblockstate2 = this.enderman.getHeldBlockState();
 
-                if (iblockstate2 != null && this.canPlaceBlock(world, blockpos, iblockstate2.getBlock(), iblockstate, iblockstate1))
+                if (iblockstate2 != null && this.canPlaceBlock(world, blockpos, iblockstate2.getBlock(), iblockstate, iblockstate1) && net.minecraftforge.event.ForgeEventFactory.onBlockPlace(enderman, new net.minecraftforge.common.util.BlockSnapshot(world, blockpos, iblockstate2), net.minecraft.util.EnumFacing.UP).isCanceled())
                 {
                     world.setBlockState(blockpos, iblockstate2, 3);
                     this.enderman.setHeldBlockState((IBlockState)null);

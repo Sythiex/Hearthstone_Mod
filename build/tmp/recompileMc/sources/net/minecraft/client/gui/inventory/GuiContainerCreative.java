@@ -762,7 +762,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
             {
                 if (i == 0)
                 {
-                    list.set(i, stack.getRarity().rarityColor + (String)list.get(i));
+                    list.set(i, stack.getItem().getForgeRarity(stack).getColor() + (String)list.get(i));
                 }
                 else
                 {

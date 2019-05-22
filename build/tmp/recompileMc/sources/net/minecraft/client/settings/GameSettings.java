@@ -762,6 +762,7 @@ public class GameSettings
      */
     public void loadOptions()
     {
+        FileInputStream fileInputStream = null; // Forge: fix MC-151173
         try
         {
             if (!this.optionsFile.exists())
@@ -770,7 +771,7 @@ public class GameSettings
             }
 
             this.soundLevels.clear();
-            List<String> list = IOUtils.readLines(new FileInputStream(this.optionsFile));
+            List<String> list = IOUtils.readLines(fileInputStream = new FileInputStream(this.optionsFile), StandardCharsets.UTF_8); // Forge: fix MC-117449, MC-151173
             NBTTagCompound nbttagcompound = new NBTTagCompound();
 
             for (String s : list)
@@ -1143,6 +1144,7 @@ public class GameSettings
         {
             LOGGER.error("Failed to load options", (Throwable)exception);
         }
+        finally { IOUtils.closeQuietly(fileInputStream); } // Forge: fix MC-151173
     }
 
     private NBTTagCompound dataFix(NBTTagCompound p_189988_1_)

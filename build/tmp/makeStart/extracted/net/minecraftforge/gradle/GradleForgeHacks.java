@@ -1,6 +1,6 @@
 /*
  * A Gradle plugin for the creation of Minecraft mods and MinecraftForge plugins.
- * Copyright (C) 2013-2018 Minecraft Forge
+ * Copyright (C) 2013-2019 Minecraft Forge
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,10 +72,10 @@ public class GradleForgeHacks
         {
             // no core searching
             GradleStartCommon.LOGGER.info("GradleStart coremod searching disabled!");
-            
+
             // remove it so it cant potentially screw up the bonced start class
             common.extras.remove(NO_CORE_SEARCH);
-            
+
             return;
         }
 

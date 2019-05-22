@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="WorkbenchPreferenceDialogSettings">
-		<item value="618" key="DIALOG_X_ORIGIN"/>
-		<item value="172" key="DIALOG_Y_ORIGIN"/>
+		<item value="686" key="DIALOG_X_ORIGIN"/>
+		<item value="202" key="DIALOG_Y_ORIGIN"/>
 	</section>
 	<section name="org.eclipse.ui.internal.QuickAccess">
 		<item value="-1" key="dialogHeight"/>
@@ -33,6 +33,7 @@
 		</list>
 	</section>
 	<section name="PreferencesExportWizard">
+		<item value="B:\Minecraft Modding\black&amp;blue.epf" key=""/>
 		<item value="B:\Minecraft Modding\black&amp;blue.epf" key=""/>
 		<item value="true" key="WizardPreferencesExportPage1.STORE_OVERWRITE_EXISTING_FILES_ID"/>
 		<item value="true" key="WizardPreferencesExportPage1.EXPORT_ALL_PREFERENCES_ID"/>

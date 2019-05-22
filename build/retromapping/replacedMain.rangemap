@@ -1,0 +1,801 @@
+Symbol range map extraction starting
+Processing 7 files
+startProcessing "com\sythiex\hearthstonemod\ChannelPositionedSound.java" md5: 1fefea90b43da3b4b3a8a6cb8515b36e
+@|com\sythiex\hearthstonemod\ChannelPositionedSound.java|8|34|com.sythiex.hearthstonemod|package|com.sythiex.hearthstonemod|(file)
+Class Start: com.sythiex.hearthstonemod.ChannelPositionedSound
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|444|452|SideOnly|class|net.minecraftforge.fml.relauncher.SideOnly
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|453|457|Side|class|net.minecraftforge.fml.relauncher.Side
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|458|464|CLIENT|field|net.minecraftforge.fml.relauncher.Side|CLIENT
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|479|501|ChannelPositionedSound|class|com.sythiex.hearthstonemod.ChannelPositionedSound
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|510|525|PositionedSound|class|net.minecraft.client.audio.PositionedSound
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|537|551|ITickableSound|class|net.minecraft.client.audio.ITickableSound
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|565|577|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|565|577|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|578|584|player|field|com.sythiex.hearthstonemod.ChannelPositionedSound|player|
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|605|616|donePlaying|field|com.sythiex.hearthstonemod.ChannelPositionedSound|donePlaying|
+   @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|641|647|uptime|field|com.sythiex.hearthstonemod.ChannelPositionedSound|uptime|
+   Method Start: ChannelPositionedSound(Lnet/minecraft/entity/player/EntityPlayer;)V
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|702|708|player|param|com.sythiex.hearthstonemod.ChannelPositionedSound|ChannelPositionedSound|(Lnet/minecraft/entity/player/EntityPlayer;)V|player|0
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|666|688|ChannelPositionedSound|method|com.sythiex.hearthstonemod.ChannelPositionedSound|ChannelPositionedSound|(Lnet/minecraft/entity/player/EntityPlayer;)V
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|689|701|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|721|735|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|736|753|channelSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|channelSoundEvent
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|755|768|SoundCategory|class|net.minecraft.util.SoundCategory
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|769|776|PLAYERS|field|net.minecraft.util.SoundCategory|PLAYERS
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|786|792|player|field|com.sythiex.hearthstonemod.ChannelPositionedSound|player
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|795|801|player|param|com.sythiex.hearthstonemod.ChannelPositionedSound|ChannelPositionedSound|(Lnet/minecraft/entity/player/EntityPlayer;)V|player|0
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|810|816|repeat|field|net.minecraft.client.audio.PositionedSound|repeat
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|832|843|repeatDelay|field|net.minecraft.client.audio.PositionedSound|repeatDelay
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|856|861|xPosF|field|net.minecraft.client.audio.PositionedSound|xPosF
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|872|878|player|param|com.sythiex.hearthstonemod.ChannelPositionedSound|ChannelPositionedSound|(Lnet/minecraft/entity/player/EntityPlayer;)V|player|0
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|879|883|posX|field|net.minecraft.entity.Entity|posX
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|892|897|yPosF|field|net.minecraft.client.audio.PositionedSound|yPosF
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|908|914|player|param|com.sythiex.hearthstonemod.ChannelPositionedSound|ChannelPositionedSound|(Lnet/minecraft/entity/player/EntityPlayer;)V|player|0
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|915|919|posY|field|net.minecraft.entity.Entity|posY
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|928|933|zPosF|field|net.minecraft.client.audio.PositionedSound|zPosF
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|944|950|player|param|com.sythiex.hearthstonemod.ChannelPositionedSound|ChannelPositionedSound|(Lnet/minecraft/entity/player/EntityPlayer;)V|player|0
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|951|955|posZ|field|net.minecraft.entity.Entity|posZ
+   Method End: ChannelPositionedSound(Lnet/minecraft/entity/player/EntityPlayer;)V
+   Method Start: update()V
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|964|972|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|986|992|update|method|net.minecraft.util.ITickable|update|()V
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1005|1011|uptime|field|com.sythiex.hearthstonemod.ChannelPositionedSound|uptime
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1064|1070|uptime|field|com.sythiex.hearthstonemod.ChannelPositionedSound|uptime
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1087|1098|donePlaying|field|com.sythiex.hearthstonemod.ChannelPositionedSound|donePlaying
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1112|1121|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1135|1141|player|field|com.sythiex.hearthstonemod.ChannelPositionedSound|player
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1142|1161|getHeldItemMainhand|method|net.minecraft.entity.EntityLivingBase|getHeldItemMainhand|()Lnet/minecraft/item/ItemStack;
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1238|1245|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1259|1274|ItemHearthstone|class|com.sythiex.hearthstonemod.ItemHearthstone
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1285|1299|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1312|1326|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1394|1404|getBoolean|method|net.minecraft.nbt.NBTTagCompound|getBoolean|(Ljava/lang/String;)Z
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1469|1480|donePlaying|field|com.sythiex.hearthstonemod.ChannelPositionedSound|donePlaying
+   Method End: update()V
+   Method Start: isDonePlaying()Z
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1496|1504|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1521|1534|isDonePlaying|method|net.minecraft.client.audio.ITickableSound|isDonePlaying|()Z
+      @|com\sythiex\hearthstonemod\ChannelPositionedSound.java|1554|1565|donePlaying|field|com.sythiex.hearthstonemod.ChannelPositionedSound|donePlaying
+   Method End: isDonePlaying()Z
+Class End  : com.sythiex.hearthstonemod.ChannelPositionedSound
+endProcessing "com\sythiex\hearthstonemod\ChannelPositionedSound.java"
+
+startProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java" md5: 6a315e72020eb053060d537f10fc0bc8
+@|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|8|34|com.sythiex.hearthstonemod|package|com.sythiex.hearthstonemod|(file)
+Class Start: com.sythiex.hearthstonemod.HearthstoneEventHandler
+   @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|372|395|HearthstoneEventHandler|class|com.sythiex.hearthstonemod.HearthstoneEventHandler
+   Method Start: onEvent(Lnet/minecraftforge/event/entity/living/LivingHurtEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|556|561|event|param|com.sythiex.hearthstonemod.HearthstoneEventHandler|onEvent|(Lnet/minecraftforge/event/entity/living/LivingHurtEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|446|460|SubscribeEvent|class|net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|461|469|priority|method|net.minecraftforge.fml.common.eventhandler.SubscribeEvent|priority|()Lnet/minecraftforge/fml/common/eventhandler/EventPriority;
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|472|485|EventPriority|class|net.minecraftforge.fml.common.eventhandler.EventPriority
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|486|492|NORMAL|field|net.minecraftforge.fml.common.eventhandler.EventPriority|NORMAL
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|494|509|receiveCanceled|method|net.minecraftforge.fml.common.eventhandler.SubscribeEvent|receiveCanceled|()Z
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|532|539|onEvent|method|com.sythiex.hearthstonemod.HearthstoneEventHandler|onEvent|(Lnet/minecraftforge/event/entity/living/LivingHurtEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|540|555|LivingHurtEvent|class|net.minecraftforge.event.entity.living.LivingHurtEvent
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|571|576|event|param|com.sythiex.hearthstonemod.HearthstoneEventHandler|onEvent|(Lnet/minecraftforge/event/entity/living/LivingHurtEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|577|586|getEntity|method|net.minecraftforge.event.entity.EntityEvent|getEntity|()Lnet/minecraft/entity/Entity;
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|600|612|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|621|633|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|644|656|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|658|663|event|param|com.sythiex.hearthstonemod.HearthstoneEventHandler|onEvent|(Lnet/minecraftforge/event/entity/living/LivingHurtEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|664|673|getEntity|method|net.minecraftforge.event.entity.EntityEvent|getEntity|()Lnet/minecraft/entity/Entity;
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|680|689|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|711|720|inventory|field|net.minecraft.entity.player.EntityPlayer|inventory
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|721|735|getCurrentItem|method|net.minecraft.entity.player.InventoryPlayer|getCurrentItem|()Lnet/minecraft/item/ItemStack;
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|790|797|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|811|826|ItemHearthstone|class|com.sythiex.hearthstonemod.ItemHearthstone
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|839|853|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|880|894|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|915|925|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\HearthstoneEventHandler.java|965|979|setTagCompound|method|net.minecraft.item.ItemStack|setTagCompound|(Lnet/minecraft/nbt/NBTTagCompound;)V
+   Method End: onEvent(Lnet/minecraftforge/event/entity/living/LivingHurtEvent;)V
+Class End  : com.sythiex.hearthstonemod.HearthstoneEventHandler
+endProcessing "com\sythiex\hearthstonemod\HearthstoneEventHandler.java"
+
+startProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java" md5: 78149aba937c87deb89a85171eb5fb4f
+@|com\sythiex\hearthstonemod\HearthstoneMod.java|8|34|com.sythiex.hearthstonemod|package|com.sythiex.hearthstonemod|(file)
+Class Start: com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1348|1351|Mod|class|net.minecraftforge.fml.common.Mod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1352|1357|modid|method|net.minecraftforge.fml.common.Mod|modid|()Ljava/lang/String;
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1360|1374|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1375|1380|MODID|field|com.sythiex.hearthstonemod.HearthstoneMod|MODID
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1382|1386|name|method|net.minecraftforge.fml.common.Mod|name|()Ljava/lang/String;
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1389|1403|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1404|1408|NAME|field|com.sythiex.hearthstonemod.HearthstoneMod|NAME
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1410|1417|version|method|net.minecraftforge.fml.common.Mod|version|()Ljava/lang/String;
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1420|1434|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1435|1442|VERSION|field|com.sythiex.hearthstonemod.HearthstoneMod|VERSION
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1444|1469|acceptedMinecraftVersions|method|net.minecraftforge.fml.common.Mod|acceptedMinecraftVersions|()Ljava/lang/String;
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1497|1511|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1664|1675|CommonProxy|class|com.sythiex.hearthstonemod.proxy.CommonProxy
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1516|1526|SidedProxy|class|net.minecraftforge.fml.common.SidedProxy
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1527|1537|clientSide|method|net.minecraftforge.fml.common.SidedProxy|clientSide|()Ljava/lang/String;
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1588|1598|serverSide|method|net.minecraftforge.fml.common.SidedProxy|serverSide|()Ljava/lang/String;
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1664|1675|CommonProxy|class|com.sythiex.hearthstonemod.proxy.CommonProxy
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1676|1681|proxy|field|com.sythiex.hearthstonemod.HearthstoneMod|proxy|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1706|1712|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1706|1712|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1713|1718|MODID|field|com.sythiex.hearthstonemod.HearthstoneMod|MODID|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1760|1766|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1760|1766|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1767|1771|NAME|field|com.sythiex.hearthstonemod.HearthstoneMod|NAME|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1814|1820|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1814|1820|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1821|1828|VERSION|field|com.sythiex.hearthstonemod.HearthstoneMod|VERSION|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1875|1889|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1844|1852|Instance|class|net.minecraftforge.fml.common.Mod.Instance
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1853|1858|MODID|field|com.sythiex.hearthstonemod.HearthstoneMod|MODID
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1875|1889|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1890|1898|instance|field|com.sythiex.hearthstonemod.HearthstoneMod|instance|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1917|1923|Logger|class|org.apache.logging.log4j.Logger
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1917|1923|Logger|class|org.apache.logging.log4j.Logger
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1924|1930|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1957|1967|easyRecipe|field|com.sythiex.hearthstonemod.HearthstoneMod|easyRecipe|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|1988|2010|hearthstoneChannelTime|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstoneChannelTime|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2031|2050|hearthstoneCooldown|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstoneCooldown|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2069|2073|Item|class|net.minecraft.item.Item
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2069|2073|Item|class|net.minecraft.item.Item
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2074|2085|hearthstone|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstone|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2104|2114|SoundEvent|class|net.minecraft.util.SoundEvent
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2104|2114|SoundEvent|class|net.minecraft.util.SoundEvent
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2115|2132|channelSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|channelSoundEvent|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2149|2159|SoundEvent|class|net.minecraft.util.SoundEvent
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2149|2159|SoundEvent|class|net.minecraft.util.SoundEvent
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2160|2174|castSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|castSoundEvent|
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2191|2201|SoundEvent|class|net.minecraft.util.SoundEvent
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2191|2201|SoundEvent|class|net.minecraft.util.SoundEvent
+   @|com\sythiex\hearthstonemod\HearthstoneMod.java|2202|2218|impactSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|impactSoundEvent|
+   Method Start: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2284|2289|event|param|com.sythiex.hearthstonemod.HearthstoneMod|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2224|2236|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2250|2257|preInit|method|com.sythiex.hearthstonemod.HearthstoneMod|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2258|2283|FMLPreInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2296|2302|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2305|2310|event|param|com.sythiex.hearthstonemod.HearthstoneMod|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2311|2320|getModLog|method|net.minecraftforge.fml.common.event.FMLPreInitializationEvent|getModLog|()Lorg/apache/logging/log4j/Logger;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2326|2332|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2333|2337|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2363|2369|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2370|2374|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2396|2409|Configuration|class|net.minecraftforge.common.config.Configuration
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2423|2436|Configuration|class|net.minecraftforge.common.config.Configuration
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2437|2442|event|param|com.sythiex.hearthstonemod.HearthstoneMod|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2443|2472|getSuggestedConfigurationFile|method|net.minecraftforge.fml.common.event.FMLPreInitializationEvent|getSuggestedConfigurationFile|()Ljava/io/File;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2486|2490|load|method|net.minecraftforge.common.config.Configuration|load|()V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2499|2509|easyRecipe|field|com.sythiex.hearthstonemod.HearthstoneMod|easyRecipe
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2519|2529|getBoolean|method|net.minecraftforge.common.config.Configuration|getBoolean|(Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;)Z
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2556|2572|CATEGORY_GENERAL|field|net.minecraftforge.common.config.Configuration|CATEGORY_GENERAL
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2588|2610|hearthstoneChannelTime|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstoneChannelTime
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2620|2626|getInt|method|net.minecraftforge.common.config.Configuration|getInt|(Ljava/lang/String;Ljava/lang/String;IIILjava/lang/String;)I
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2650|2666|CATEGORY_GENERAL|field|net.minecraftforge.common.config.Configuration|CATEGORY_GENERAL
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2808|2827|hearthstoneCooldown|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstoneCooldown
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2837|2843|getInt|method|net.minecraftforge.common.config.Configuration|getInt|(Ljava/lang/String;Ljava/lang/String;IIILjava/lang/String;)I
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|2863|2879|CATEGORY_GENERAL|field|net.minecraftforge.common.config.Configuration|CATEGORY_GENERAL
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3025|3029|save|method|net.minecraftforge.common.config.Configuration|save|()V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3038|3044|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3045|3049|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3074|3088|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3089|3100|hearthstone|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstone
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3107|3122|ItemHearthstone|class|com.sythiex.hearthstonemod.ItemHearthstone
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3128|3143|ForgeRegistries|class|net.minecraftforge.fml.common.registry.ForgeRegistries
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3144|3149|ITEMS|field|net.minecraftforge.fml.common.registry.ForgeRegistries|ITEMS
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3150|3158|register|method|net.minecraftforge.registries.IForgeRegistry|register|(Lnet/minecraftforge/registries/IForgeRegistryEntry;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3159|3170|hearthstone|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstone
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3178|3184|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3185|3189|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3221|3235|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3236|3253|channelSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|channelSoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3260|3270|SoundEvent|class|net.minecraft.util.SoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3275|3291|ResourceLocation|class|net.minecraft.util.ResourceLocation
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3333|3348|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry.Impl|setRegistryName|(Ljava/lang/String;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3374|3388|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3389|3403|castSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|castSoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3410|3420|SoundEvent|class|net.minecraft.util.SoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3425|3441|ResourceLocation|class|net.minecraft.util.ResourceLocation
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3480|3495|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry.Impl|setRegistryName|(Ljava/lang/String;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3518|3532|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3533|3549|impactSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|impactSoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3556|3566|SoundEvent|class|net.minecraft.util.SoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3571|3587|ResourceLocation|class|net.minecraft.util.ResourceLocation
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3628|3643|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry.Impl|setRegistryName|(Ljava/lang/String;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3668|3683|ForgeRegistries|class|net.minecraftforge.fml.common.registry.ForgeRegistries
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3684|3696|SOUND_EVENTS|field|net.minecraftforge.fml.common.registry.ForgeRegistries|SOUND_EVENTS
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3697|3705|register|method|net.minecraftforge.registries.IForgeRegistry|register|(Lnet/minecraftforge/registries/IForgeRegistryEntry;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3706|3723|channelSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|channelSoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3728|3743|ForgeRegistries|class|net.minecraftforge.fml.common.registry.ForgeRegistries
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3744|3756|SOUND_EVENTS|field|net.minecraftforge.fml.common.registry.ForgeRegistries|SOUND_EVENTS
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3757|3765|register|method|net.minecraftforge.registries.IForgeRegistry|register|(Lnet/minecraftforge/registries/IForgeRegistryEntry;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3766|3780|castSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|castSoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3785|3800|ForgeRegistries|class|net.minecraftforge.fml.common.registry.ForgeRegistries
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3801|3813|SOUND_EVENTS|field|net.minecraftforge.fml.common.registry.ForgeRegistries|SOUND_EVENTS
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3814|3822|register|method|net.minecraftforge.registries.IForgeRegistry|register|(Lnet/minecraftforge/registries/IForgeRegistryEntry;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3823|3839|impactSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|impactSoundEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3847|3853|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3854|3858|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3891|3905|MinecraftForge|class|net.minecraftforge.common.MinecraftForge
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3906|3915|EVENT_BUS|field|net.minecraftforge.common.MinecraftForge|EVENT_BUS
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3916|3924|register|method|net.minecraftforge.fml.common.eventhandler.EventBus|register|(Ljava/lang/Object;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3929|3952|HearthstoneEventHandler|class|com.sythiex.hearthstonemod.HearthstoneEventHandler
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3962|3967|proxy|field|com.sythiex.hearthstonemod.HearthstoneMod|proxy
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3968|3975|preInit|method|com.sythiex.hearthstonemod.proxy.CommonProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3976|3981|event|param|com.sythiex.hearthstonemod.HearthstoneMod|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+   Method End: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+   Method Start: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4045|4050|event|param|com.sythiex.hearthstonemod.HearthstoneMod|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|3991|4003|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4017|4021|init|method|com.sythiex.hearthstonemod.HearthstoneMod|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4022|4044|FMLInitializationEvent|class|net.minecraftforge.fml.common.event.FMLInitializationEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4057|4063|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4064|4068|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4091|4097|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4098|4102|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4130|4146|ResourceLocation|class|net.minecraft.util.ResourceLocation
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4161|4177|ResourceLocation|class|net.minecraft.util.ResourceLocation
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4185|4192|IRecipe|class|net.minecraft.item.crafting.IRecipe
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4237|4247|easyRecipe|field|com.sythiex.hearthstonemod.HearthstoneMod|easyRecipe
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4280|4295|ShapedOreRecipe|class|net.minecraftforge.oredict.ShapedOreRecipe
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4309|4318|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4319|4330|hearthstone|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstone
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4337|4343|Object|class|java.lang.Object
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4439|4448|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4449|4454|Items|class|net.minecraft.init.Items
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4455|4462|COMPASS|field|net.minecraft.init.Items|COMPASS
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4510|4525|ShapedOreRecipe|class|net.minecraftforge.oredict.ShapedOreRecipe
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4539|4548|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4549|4560|hearthstone|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstone
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4567|4573|Object|class|java.lang.Object
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4727|4742|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry|setRegistryName|(Lnet/minecraft/util/ResourceLocation;)Ljava/lang/Object;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4747|4763|ResourceLocation|class|net.minecraft.util.ResourceLocation
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4769|4774|MODID|field|com.sythiex.hearthstonemod.HearthstoneMod|MODID
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4804|4812|GameData|class|net.minecraftforge.registries.GameData
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4813|4826|register_impl|method|net.minecraftforge.registries.GameData|register_impl|(Lnet/minecraftforge/registries/IForgeRegistryEntry;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4852|4857|proxy|field|com.sythiex.hearthstonemod.HearthstoneMod|proxy
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4858|4862|init|method|com.sythiex.hearthstonemod.proxy.CommonProxy|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4863|4868|event|param|com.sythiex.hearthstonemod.HearthstoneMod|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V|event|0
+   Method End: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+   Method Start: postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4940|4945|event|param|com.sythiex.hearthstonemod.HearthstoneMod|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4878|4890|EventHandler|class|net.minecraftforge.fml.common.Mod.EventHandler
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4904|4912|postInit|method|com.sythiex.hearthstonemod.HearthstoneMod|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4913|4939|FMLPostInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4952|4957|proxy|field|com.sythiex.hearthstonemod.HearthstoneMod|proxy
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4958|4966|postInit|method|com.sythiex.hearthstonemod.proxy.CommonProxy|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\HearthstoneMod.java|4967|4972|event|param|com.sythiex.hearthstonemod.HearthstoneMod|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V|event|0
+   Method End: postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+Class End  : com.sythiex.hearthstonemod.HearthstoneMod
+endProcessing "com\sythiex\hearthstonemod\HearthstoneMod.java"
+
+startProcessing "com\sythiex\hearthstonemod\HearthstoneTeleporter.java" md5: 266f66b0b06fc91cffb28dc51d009b7c
+@|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|8|34|com.sythiex.hearthstonemod|package|com.sythiex.hearthstonemod|(file)
+Class Start: com.sythiex.hearthstonemod.HearthstoneTeleporter
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|207|228|HearthstoneTeleporter|class|com.sythiex.hearthstonemod.HearthstoneTeleporter
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|237|247|Teleporter|class|net.minecraft.world.Teleporter
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|265|276|WorldServer|class|net.minecraft.world.WorldServer
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|265|276|WorldServer|class|net.minecraft.world.WorldServer
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|277|296|worldServerInstance|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|worldServerInstance|
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|316|317|x|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|x|
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|335|336|y|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|y|
+   @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|354|355|z|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|z|
+   Method Start: HearthstoneTeleporter(Lnet/minecraft/world/WorldServer;DDD)V
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|401|406|world|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|world|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|415|416|x|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|x|1
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|425|426|y|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|y|2
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|435|436|z|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|z|3
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|367|388|HearthstoneTeleporter|method|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|389|400|WorldServer|class|net.minecraft.world.WorldServer
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|449|454|world|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|world|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|464|483|worldServerInstance|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|worldServerInstance
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|486|491|world|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|world|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|500|501|x|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|x
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|504|505|x|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|x|1
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|514|515|y|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|y
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|518|519|y|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|y|2
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|528|529|z|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|z
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|532|533|z|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|HearthstoneTeleporter|(Lnet/minecraft/world/WorldServer;DDD)V|z|3
+   Method End: HearthstoneTeleporter(Lnet/minecraft/world/WorldServer;DDD)V
+   Method Start: placeInPortal(Lnet/minecraft/entity/Entity;F)V
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|585|592|pEntity|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V|pEntity|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|600|611|rotationYaw|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V|rotationYaw|1
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|542|550|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|564|577|placeInPortal|method|net.minecraft.world.Teleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|578|584|Entity|class|net.minecraft.entity.Entity
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|623|642|worldServerInstance|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|worldServerInstance
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|643|656|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|661|669|BlockPos|class|net.minecraft.util.math.BlockPos
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|681|682|x|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|x
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|695|696|y|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|y
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|709|710|z|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|z
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|752|759|pEntity|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V|pEntity|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|760|771|setPosition|method|net.minecraft.entity.Entity|setPosition|(DDD)V
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|777|778|x|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|x
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|785|786|y|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|y
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|793|794|z|field|com.sythiex.hearthstonemod.HearthstoneTeleporter|z
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|799|806|pEntity|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V|pEntity|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|807|814|motionX|field|net.minecraft.entity.Entity|motionX
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|825|832|pEntity|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V|pEntity|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|833|840|motionY|field|net.minecraft.entity.Entity|motionY
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|851|858|pEntity|param|com.sythiex.hearthstonemod.HearthstoneTeleporter|placeInPortal|(Lnet/minecraft/entity/Entity;F)V|pEntity|0
+      @|com\sythiex\hearthstonemod\HearthstoneTeleporter.java|859|866|motionZ|field|net.minecraft.entity.Entity|motionZ
+   Method End: placeInPortal(Lnet/minecraft/entity/Entity;F)V
+Class End  : com.sythiex.hearthstonemod.HearthstoneTeleporter
+endProcessing "com\sythiex\hearthstonemod\HearthstoneTeleporter.java"
+
+startProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java" md5: fd394f1d96bb2b932326c9c3b0a31bfb
+@|com\sythiex\hearthstonemod\ItemHearthstone.java|8|34|com.sythiex.hearthstonemod|package|com.sythiex.hearthstonemod|(file)
+Class Start: com.sythiex.hearthstonemod.ItemHearthstone
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1244|1259|ItemHearthstone|class|com.sythiex.hearthstonemod.ItemHearthstone
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1268|1272|Item|class|net.minecraft.item.Item
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1290|1296|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1290|1296|String|class|java.lang.String
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1297|1301|name|field|com.sythiex.hearthstonemod.ItemHearthstone|name|
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1346|1357|maxCooldown|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCooldown|
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1360|1374|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1375|1394|hearthstoneCooldown|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstoneCooldown
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1438|1449|maxCastTime|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCastTime|
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1452|1466|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+   @|com\sythiex\hearthstonemod\ItemHearthstone.java|1467|1489|hearthstoneChannelTime|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstoneChannelTime
+   Method Start: ItemHearthstone()V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1518|1533|ItemHearthstone|method|com.sythiex.hearthstonemod.ItemHearthstone|ItemHearthstone|()V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1552|1570|setUnlocalizedName|method|net.minecraft.item.Item|setUnlocalizedName|(Ljava/lang/String;)Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1571|1575|name|field|com.sythiex.hearthstonemod.ItemHearthstone|name
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1580|1595|setRegistryName|method|net.minecraftforge.registries.IForgeRegistryEntry.Impl|setRegistryName|(Ljava/lang/String;)Lnet/minecraftforge/registries/IForgeRegistryEntry;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1596|1600|name|field|com.sythiex.hearthstonemod.ItemHearthstone|name
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1605|1620|setMaxStackSize|method|net.minecraft.item.Item|setMaxStackSize|(I)Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1627|1641|setCreativeTab|method|net.minecraft.item.Item|setCreativeTab|(Lnet/minecraft/creativetab/CreativeTabs;)Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1642|1654|CreativeTabs|class|net.minecraft.creativetab.CreativeTabs
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1655|1660|TOOLS|field|net.minecraft.creativetab.CreativeTabs|TOOLS
+   Method End: ItemHearthstone()V
+   Method Start: onUpdate(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1711|1720|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1728|1733|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1742|1748|entity|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|entity|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1754|1764|p_77663_4_|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|p_77663_4_|3
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1774|1784|p_77663_5_|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|p_77663_5_|4
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1670|1678|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1692|1700|onUpdate|method|net.minecraft.item.Item|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1701|1710|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1722|1727|World|class|net.minecraft.world.World
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1735|1741|Entity|class|net.minecraft.entity.Entity
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1812|1817|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1818|1826|isRemote|field|net.minecraft.world.World|isRemote
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1835|1849|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1856|1865|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1866|1880|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|1977|1987|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2054|2064|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2153|2167|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2179|2189|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2214|2224|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2249|2259|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2280|2290|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2311|2321|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2342|2352|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2381|2390|setDouble|method|net.minecraft.nbt.NBTTagCompound|setDouble|(Ljava/lang/String;D)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2413|2422|setDouble|method|net.minecraft.nbt.NBTTagCompound|setDouble|(Ljava/lang/String;D)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2445|2454|setDouble|method|net.minecraft.nbt.NBTTagCompound|setDouble|(Ljava/lang/String;D)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2477|2487|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2519|2529|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2559|2569|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2639|2649|getBoolean|method|net.minecraft.nbt.NBTTagCompound|getBoolean|(Ljava/lang/String;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2666|2672|entity|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|entity|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2684|2696|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2707|2719|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2730|2742|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2744|2750|entity|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|entity|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2807|2816|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2835|2854|getHeldItemMainhand|method|net.minecraft.entity.EntityLivingBase|getHeldItemMainhand|()Lnet/minecraft/item/ItemStack;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2909|2918|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|2937|2947|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3001|3011|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3088|3092|Math|class|java.lang.Math
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3093|3096|abs|method|java.lang.Math|abs|(D)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3101|3110|getDouble|method|net.minecraft.nbt.NBTTagCompound|getDouble|(Ljava/lang/String;)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3129|3133|posX|field|net.minecraft.entity.Entity|posX
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3155|3159|Math|class|java.lang.Math
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3160|3163|abs|method|java.lang.Math|abs|(D)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3168|3177|getDouble|method|net.minecraft.nbt.NBTTagCompound|getDouble|(Ljava/lang/String;)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3196|3200|posY|field|net.minecraft.entity.Entity|posY
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3222|3226|Math|class|java.lang.Math
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3227|3230|abs|method|java.lang.Math|abs|(D)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3235|3244|getDouble|method|net.minecraft.nbt.NBTTagCompound|getDouble|(Ljava/lang/String;)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3263|3267|posZ|field|net.minecraft.entity.Entity|posZ
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3382|3391|getDouble|method|net.minecraft.nbt.NBTTagCompound|getDouble|(Ljava/lang/String;)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3415|3425|getBoolean|method|net.minecraft.nbt.NBTTagCompound|getBoolean|(Ljava/lang/String;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3457|3467|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3493|3503|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3534|3544|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3580|3591|sendMessage|method|net.minecraft.command.ICommandSender|sendMessage|(Lnet/minecraft/util/text/ITextComponent;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3596|3620|TextComponentTranslation|class|net.minecraft.util.text.TextComponentTranslation
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3716|3726|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3743|3753|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3827|3837|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3853|3864|maxCastTime|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCastTime
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3914|3924|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3950|3960|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3993|3998|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|3999|4008|playSound|method|net.minecraft.world.World|playSound|(Lnet/minecraft/entity/player/EntityPlayer;DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4022|4026|posX|field|net.minecraft.entity.Entity|posX
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4035|4039|posY|field|net.minecraft.entity.Entity|posY
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4048|4052|posZ|field|net.minecraft.entity.Entity|posZ
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4054|4068|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4069|4083|castSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|castSoundEvent
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4085|4098|SoundCategory|class|net.minecraft.util.SoundCategory
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4099|4106|PLAYERS|field|net.minecraft.util.SoundCategory|PLAYERS
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4172|4182|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4212|4222|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4252|4262|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4379|4389|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4438|4452|getEntityWorld|method|net.minecraft.command.ICommandSender|getEntityWorld|()Lnet/minecraft/world/World;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4455|4463|provider|field|net.minecraft.world.World|provider
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4464|4476|getDimension|method|net.minecraft.world.WorldProvider|getDimension|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4528|4542|EntityPlayerMP|class|net.minecraft.entity.player.EntityPlayerMP
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4561|4575|EntityPlayerMP|class|net.minecraft.entity.player.EntityPlayerMP
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4591|4606|MinecraftServer|class|net.minecraft.server.MinecraftServer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4623|4637|getEntityWorld|method|net.minecraft.command.ICommandSender|getEntityWorld|()Lnet/minecraft/world/World;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4640|4658|getMinecraftServer|method|net.minecraft.world.World|getMinecraftServer|()Lnet/minecraft/server/MinecraftServer;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4668|4679|WorldServer|class|net.minecraft.world.WorldServer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4701|4709|getWorld|method|net.minecraft.server.MinecraftServer|getWorld|(I)Lnet/minecraft/world/WorldServer;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4735|4753|addExperienceLevel|method|net.minecraft.entity.player.EntityPlayer|addExperienceLevel|(I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4783|4801|getMinecraftServer|method|net.minecraft.world.World|getMinecraftServer|()Lnet/minecraft/server/MinecraftServer;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4804|4817|getPlayerList|method|net.minecraft.server.MinecraftServer|getPlayerList|()Lnet/minecraft/server/management/PlayerList;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4820|4845|transferPlayerToDimension|method|net.minecraft.server.management.PlayerList|transferPlayerToDimension|(Lnet/minecraft/entity/player/EntityPlayerMP;ILnet/minecraft/world/Teleporter;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4877|4898|HearthstoneTeleporter|class|com.sythiex.hearthstonemod.HearthstoneTeleporter
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4938|4943|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|4953|4967|getEntityWorld|method|net.minecraft.command.ICommandSender|getEntityWorld|()Lnet/minecraft/world/World;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5023|5031|BlockPos|class|net.minecraft.util.math.BlockPos
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5045|5053|BlockPos|class|net.minecraft.util.math.BlockPos
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5078|5089|IBlockState|class|net.minecraft.block.state.IBlockState
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5098|5103|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5104|5117|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5132|5137|Block|class|net.minecraft.block.Block
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5152|5160|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5221|5226|isBed|method|net.minecraft.block.Block|isBed|(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5234|5239|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5331|5336|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5337|5350|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5358|5363|north|method|net.minecraft.util.math.BlockPos|north|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5367|5375|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5378|5393|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5427|5432|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5433|5446|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5454|5459|north|method|net.minecraft.util.math.BlockPos|north|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5462|5464|up|method|net.minecraft.util.math.BlockPos|up|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5468|5476|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5479|5494|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5533|5538|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5539|5552|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5560|5564|east|method|net.minecraft.util.math.BlockPos|east|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5568|5576|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5579|5594|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5627|5632|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5633|5646|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5654|5658|east|method|net.minecraft.util.math.BlockPos|east|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5661|5663|up|method|net.minecraft.util.math.BlockPos|up|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5667|5675|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5678|5693|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5733|5738|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5739|5752|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5760|5765|south|method|net.minecraft.util.math.BlockPos|south|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5769|5777|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5780|5795|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5829|5834|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5835|5848|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5856|5861|south|method|net.minecraft.util.math.BlockPos|south|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5864|5866|up|method|net.minecraft.util.math.BlockPos|up|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5870|5878|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5881|5896|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5935|5940|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5941|5954|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5962|5966|west|method|net.minecraft.util.math.BlockPos|west|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5970|5978|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|5981|5996|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6029|6034|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6035|6048|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6056|6060|west|method|net.minecraft.util.math.BlockPos|west|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6063|6065|up|method|net.minecraft.util.math.BlockPos|up|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6069|6077|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6080|6095|canSpawnInBlock|method|net.minecraft.block.Block|canSpawnInBlock|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6185|6205|setPositionAndUpdate|method|net.minecraft.entity.Entity|setPositionAndUpdate|(DDD)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6213|6218|north|method|net.minecraft.util.math.BlockPos|north|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6221|6225|getX|method|net.minecraft.util.math.Vec3i|getX|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6242|6247|north|method|net.minecraft.util.math.BlockPos|north|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6250|6254|getY|method|net.minecraft.util.math.Vec3i|getY|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6265|6270|north|method|net.minecraft.util.math.BlockPos|north|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6273|6277|getZ|method|net.minecraft.util.math.Vec3i|getZ|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6347|6367|setPositionAndUpdate|method|net.minecraft.entity.Entity|setPositionAndUpdate|(DDD)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6375|6379|east|method|net.minecraft.util.math.BlockPos|east|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6382|6386|getX|method|net.minecraft.util.math.Vec3i|getX|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6403|6407|east|method|net.minecraft.util.math.BlockPos|east|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6410|6414|getY|method|net.minecraft.util.math.Vec3i|getY|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6425|6429|east|method|net.minecraft.util.math.BlockPos|east|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6432|6436|getZ|method|net.minecraft.util.math.Vec3i|getZ|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6508|6528|setPositionAndUpdate|method|net.minecraft.entity.Entity|setPositionAndUpdate|(DDD)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6536|6541|south|method|net.minecraft.util.math.BlockPos|south|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6544|6548|getX|method|net.minecraft.util.math.Vec3i|getX|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6565|6570|south|method|net.minecraft.util.math.BlockPos|south|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6573|6577|getY|method|net.minecraft.util.math.Vec3i|getY|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6588|6593|south|method|net.minecraft.util.math.BlockPos|south|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6596|6600|getZ|method|net.minecraft.util.math.Vec3i|getZ|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6670|6690|setPositionAndUpdate|method|net.minecraft.entity.Entity|setPositionAndUpdate|(DDD)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6698|6702|west|method|net.minecraft.util.math.BlockPos|west|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6705|6709|getX|method|net.minecraft.util.math.Vec3i|getX|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6726|6730|west|method|net.minecraft.util.math.BlockPos|west|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6733|6737|getY|method|net.minecraft.util.math.Vec3i|getY|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6748|6752|west|method|net.minecraft.util.math.BlockPos|west|()Lnet/minecraft/util/math/BlockPos;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6755|6759|getZ|method|net.minecraft.util.math.Vec3i|getZ|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6862|6882|setPositionAndUpdate|method|net.minecraft.entity.Entity|setPositionAndUpdate|(DDD)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6939|6944|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6945|6954|playSound|method|net.minecraft.world.World|playSound|(Lnet/minecraft/entity/player/EntityPlayer;DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6968|6972|posX|field|net.minecraft.entity.Entity|posX
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6981|6985|posY|field|net.minecraft.entity.Entity|posY
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|6994|6998|posZ|field|net.minecraft.entity.Entity|posZ
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7000|7014|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7015|7031|impactSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|impactSoundEvent
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7033|7046|SoundCategory|class|net.minecraft.util.SoundCategory
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7047|7054|PLAYERS|field|net.minecraft.util.SoundCategory|PLAYERS
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7124|7134|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7147|7158|maxCooldown|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCooldown
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7252|7272|setPositionAndUpdate|method|net.minecraft.entity.Entity|setPositionAndUpdate|(DDD)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7314|7319|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7320|7329|playSound|method|net.minecraft.world.World|playSound|(Lnet/minecraft/entity/player/EntityPlayer;DDDLnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7343|7347|posX|field|net.minecraft.entity.Entity|posX
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7356|7360|posY|field|net.minecraft.entity.Entity|posY
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7369|7373|posZ|field|net.minecraft.entity.Entity|posZ
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7375|7389|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7390|7406|impactSoundEvent|field|com.sythiex.hearthstonemod.HearthstoneMod|impactSoundEvent
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7408|7421|SoundCategory|class|net.minecraft.util.SoundCategory
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7422|7429|PLAYERS|field|net.minecraft.util.SoundCategory|PLAYERS
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7492|7502|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7515|7526|maxCooldown|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCooldown
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7539|7549|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7625|7636|sendMessage|method|net.minecraft.command.ICommandSender|sendMessage|(Lnet/minecraft/util/text/ITextComponent;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7641|7665|TextComponentTranslation|class|net.minecraft.util.text.TextComponentTranslation
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7781|7790|setDouble|method|net.minecraft.nbt.NBTTagCompound|setDouble|(Ljava/lang/String;D)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7800|7806|entity|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|entity|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7807|7811|posX|field|net.minecraft.entity.Entity|posX
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7821|7830|setDouble|method|net.minecraft.nbt.NBTTagCompound|setDouble|(Ljava/lang/String;D)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7840|7846|entity|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|entity|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7847|7851|posY|field|net.minecraft.entity.Entity|posY
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7861|7870|setDouble|method|net.minecraft.nbt.NBTTagCompound|setDouble|(Ljava/lang/String;D)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7880|7886|entity|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|entity|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7887|7891|posZ|field|net.minecraft.entity.Entity|posZ
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7916|7925|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|onUpdate|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|7926|7940|setTagCompound|method|net.minecraft.item.ItemStack|setTagCompound|(Lnet/minecraft/nbt/NBTTagCompound;)V
+   Method End: onUpdate(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V
+   Method Start: onItemRightClick(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8515|8520|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|world|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8535|8541|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8552|8556|hand|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|hand|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8451|8459|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8468|8480|ActionResult|class|net.minecraft.util.ActionResult
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8481|8490|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8492|8508|onItemRightClick|method|net.minecraft.item.Item|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8509|8514|World|class|net.minecraft.world.World
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8522|8534|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8543|8551|EnumHand|class|net.minecraft.util.EnumHand
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8567|8573|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8574|8579|world|field|net.minecraft.entity.Entity|world
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8580|8588|isRemote|field|net.minecraft.world.World|isRemote
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8597|8606|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8619|8625|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8626|8637|getHeldItem|method|net.minecraft.entity.EntityLivingBase|getHeldItem|(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8638|8642|hand|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|hand|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8648|8662|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8687|8701|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8738|8744|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8745|8755|isSneaking|method|net.minecraft.entity.Entity|isSneaking|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8809|8819|getBoolean|method|net.minecraft.nbt.NBTTagCompound|getBoolean|(Ljava/lang/String;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|8874|8884|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9029|9039|getBoolean|method|net.minecraft.nbt.NBTTagCompound|getBoolean|(Ljava/lang/String;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9081|9091|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9173|9179|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9180|9191|sendMessage|method|net.minecraft.command.ICommandSender|sendMessage|(Lnet/minecraft/util/text/ITextComponent;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9196|9220|TextComponentTranslation|class|net.minecraft.util.text.TextComponentTranslation
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9319|9325|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9326|9337|sendMessage|method|net.minecraft.command.ICommandSender|sendMessage|(Lnet/minecraft/util/text/ITextComponent;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9342|9366|TextComponentTranslation|class|net.minecraft.util.text.TextComponentTranslation
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9436|9450|setTagCompound|method|net.minecraft.item.ItemStack|setTagCompound|(Lnet/minecraft/nbt/NBTTagCompound;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9482|9494|ActionResult|class|net.minecraft.util.ActionResult
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9495|9511|EnumActionResult|class|net.minecraft.util.EnumActionResult
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9512|9516|PASS|field|net.minecraft.util.EnumActionResult|PASS
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9518|9524|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|player|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9525|9536|getHeldItem|method|net.minecraft.entity.EntityLivingBase|getHeldItem|(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9537|9541|hand|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemRightClick|(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;|hand|2
+   Method End: onItemRightClick(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHand;)Lnet/minecraft/util/ActionResult;
+   Method Start: onItemUse(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9609|9615|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|player|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9623|9628|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9639|9647|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9658|9662|hand|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|hand|3
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9675|9681|facing|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|facing|4
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9689|9693|hitX|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|hitX|5
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9701|9705|hitY|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|hitY|6
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9713|9717|hitZ|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|hitZ|7
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9552|9560|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9569|9585|EnumActionResult|class|net.minecraft.util.EnumActionResult
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9586|9595|onItemUse|method|net.minecraft.item.Item|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9596|9608|EntityPlayer|class|net.minecraft.entity.player.EntityPlayer
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9617|9622|World|class|net.minecraft.world.World
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9630|9638|BlockPos|class|net.minecraft.util.math.BlockPos
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9649|9657|EnumHand|class|net.minecraft.util.EnumHand
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9664|9674|EnumFacing|class|net.minecraft.util.EnumFacing
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9728|9733|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9734|9742|isRemote|field|net.minecraft.world.World|isRemote
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9751|9760|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9773|9779|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|player|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9780|9791|getHeldItem|method|net.minecraft.entity.EntityLivingBase|getHeldItem|(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9792|9796|hand|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|hand|3
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9802|9816|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9841|9855|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9887|9893|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|player|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9894|9904|isSneaking|method|net.minecraft.entity.Entity|isSneaking|()Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9961|9972|IBlockState|class|net.minecraft.block.state.IBlockState
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9981|9986|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|9987|10000|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10001|10009|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10019|10024|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10025|10038|getBlockState|method|net.minecraft.world.IBlockAccess|getBlockState|(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/IBlockState;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10039|10047|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10049|10057|getBlock|method|net.minecraft.block.state.IBlockState|getBlock|()Lnet/minecraft/block/Block;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10060|10065|isBed|method|net.minecraft.block.Block|isBed|(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10073|10078|world|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10080|10088|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10090|10096|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|player|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10155|10165|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10174|10182|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10183|10187|getX|method|net.minecraft.util.math.Vec3i|getX|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10209|10219|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10228|10236|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10237|10241|getY|method|net.minecraft.util.math.Vec3i|getY|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10263|10273|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10282|10290|blockPos|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|blockPos|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10291|10295|getZ|method|net.minecraft.util.math.Vec3i|getZ|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10317|10327|setInteger|method|net.minecraft.nbt.NBTTagCompound|setInteger|(Ljava/lang/String;I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10344|10350|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|player|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10351|10365|getEntityWorld|method|net.minecraft.command.ICommandSender|getEntityWorld|()Lnet/minecraft/world/World;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10368|10376|provider|field|net.minecraft.world.World|provider
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10377|10389|getDimension|method|net.minecraft.world.WorldProvider|getDimension|()I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10411|10421|setBoolean|method|net.minecraft.nbt.NBTTagCompound|setBoolean|(Ljava/lang/String;Z)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10449|10455|player|param|com.sythiex.hearthstonemod.ItemHearthstone|onItemUse|(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;|player|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10456|10467|sendMessage|method|net.minecraft.command.ICommandSender|sendMessage|(Lnet/minecraft/util/text/ITextComponent;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10472|10496|TextComponentTranslation|class|net.minecraft.util.text.TextComponentTranslation
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10564|10578|setTagCompound|method|net.minecraft.item.ItemStack|setTagCompound|(Lnet/minecraft/nbt/NBTTagCompound;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10604|10620|EnumActionResult|class|net.minecraft.util.EnumActionResult
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10621|10628|SUCCESS|field|net.minecraft.util.EnumActionResult|SUCCESS
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10648|10664|EnumActionResult|class|net.minecraft.util.EnumActionResult
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10665|10669|FAIL|field|net.minecraft.util.EnumActionResult|FAIL
+   Method End: onItemUse(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumHand;Lnet/minecraft/util/EnumFacing;FFF)Lnet/minecraft/util/EnumActionResult;
+   Method Start: shouldCauseReequipAnimation(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10741|10749|oldStack|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|oldStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10761|10769|newStack|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|newStack|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10779|10790|slotChanged|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|slotChanged|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10678|10686|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10703|10730|shouldCauseReequipAnimation|method|net.minecraft.item.Item|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10731|10740|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10751|10760|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10800|10808|oldStack|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|oldStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10809|10816|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10822|10830|newStack|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|newStack|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10831|10838|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10849|10863|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10873|10881|oldStack|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|oldStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10882|10896|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10903|10917|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10927|10935|newStack|param|com.sythiex.hearthstonemod.ItemHearthstone|shouldCauseReequipAnimation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z|newStack|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|10936|10950|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11013|11023|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11042|11052|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11071|11081|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11100|11110|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11129|11139|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11158|11168|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11199|11209|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11232|11242|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11271|11281|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11304|11314|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+   Method End: shouldCauseReequipAnimation(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Z)Z
+   Method Start: showDurabilityBar(Lnet/minecraft/item/ItemStack;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11444|11453|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|showDurabilityBar|(Lnet/minecraft/item/ItemStack;)Z|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11391|11399|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11416|11433|showDurabilityBar|method|net.minecraft.item.Item|showDurabilityBar|(Lnet/minecraft/item/ItemStack;)Z
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11434|11443|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11460|11474|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11489|11498|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|showDurabilityBar|(Lnet/minecraft/item/ItemStack;)Z|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11499|11513|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11569|11579|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11611|11621|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+   Method End: showDurabilityBar(Lnet/minecraft/item/ItemStack;)Z
+   Method Start: getDurabilityForDisplay(Lnet/minecraft/item/ItemStack;)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11727|11736|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|getDurabilityForDisplay|(Lnet/minecraft/item/ItemStack;)D|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11669|11677|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11693|11716|getDurabilityForDisplay|method|net.minecraft.item.Item|getDurabilityForDisplay|(Lnet/minecraft/item/ItemStack;)D
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11717|11726|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11743|11757|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11772|11781|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|getDurabilityForDisplay|(Lnet/minecraft/item/ItemStack;)D|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11782|11796|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11817|11827|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11876|11886|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11910|11921|maxCooldown|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCooldown
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|11966|11976|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12000|12011|maxCastTime|field|com.sythiex.hearthstonemod.ItemHearthstone|maxCastTime
+   Method End: getDurabilityForDisplay(Lnet/minecraft/item/ItemStack;)D
+   Method Start: addInformation(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12092|12101|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12119|12124|world|param|com.sythiex.hearthstonemod.ItemHearthstone|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V|world|1
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12139|12143|list|param|com.sythiex.hearthstonemod.ItemHearthstone|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V|list|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12158|12166|advanced|param|com.sythiex.hearthstonemod.ItemHearthstone|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V|advanced|3
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12021|12029|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12032|12040|SideOnly|class|net.minecraftforge.fml.relauncher.SideOnly
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12041|12045|Side|class|net.minecraftforge.fml.relauncher.Side
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12046|12052|CLIENT|field|net.minecraftforge.fml.relauncher.Side|CLIENT
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12067|12081|addInformation|method|net.minecraft.item.Item|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12082|12091|ItemStack|class|net.minecraft.item.ItemStack
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12104|12112|Nullable|class|javax.annotation.Nullable
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12113|12118|World|class|net.minecraft.world.World
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12126|12130|List|class|java.util.List
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12131|12137|String|class|java.lang.String
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12145|12157|ITooltipFlag|class|net.minecraft.client.util.ITooltipFlag
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12173|12187|NBTTagCompound|class|net.minecraft.nbt.NBTTagCompound
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12202|12211|itemStack|param|com.sythiex.hearthstonemod.ItemHearthstone|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V|itemStack|0
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12212|12226|getTagCompound|method|net.minecraft.item.ItemStack|getTagCompound|()Lnet/minecraft/nbt/NBTTagCompound;
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12263|12276|DecimalFormat|class|java.text.DecimalFormat
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12286|12299|DecimalFormat|class|java.text.DecimalFormat
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12309|12333|setMaximumFractionDigits|method|java.text.NumberFormat|setMaximumFractionDigits|(I)V
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12368|12378|getInteger|method|net.minecraft.nbt.NBTTagCompound|getInteger|(Ljava/lang/String;)I
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12610|12614|list|param|com.sythiex.hearthstonemod.ItemHearthstone|addInformation|(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V|list|2
+      @|com\sythiex\hearthstonemod\ItemHearthstone.java|12615|12618|add|method|java.util.Collection|add|(Ljava/lang/Object;)Z
+   Method End: addInformation(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Ljava/util/List;Lnet/minecraft/client/util/ITooltipFlag;)V
+Class End  : com.sythiex.hearthstonemod.ItemHearthstone
+endProcessing "com\sythiex\hearthstonemod\ItemHearthstone.java"
+
+startProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java" md5: e61ba5ee95864a0565aa32d14cca6c67
+@|com\sythiex\hearthstonemod\proxy\ClientProxy.java|8|40|com.sythiex.hearthstonemod.proxy|package|com.sythiex.hearthstonemod.proxy|(file)
+Class Start: com.sythiex.hearthstonemod.proxy.ClientProxy
+   @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|420|431|ClientProxy|class|com.sythiex.hearthstonemod.proxy.ClientProxy
+   @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|440|451|CommonProxy|class|com.sythiex.hearthstonemod.proxy.CommonProxy
+   Method Start: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|513|518|event|param|com.sythiex.hearthstonemod.proxy.ClientProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|457|465|Override|class|java.lang.Override
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|479|486|preInit|method|com.sythiex.hearthstonemod.proxy.CommonProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|487|512|FMLPreInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|531|538|preInit|method|com.sythiex.hearthstonemod.proxy.CommonProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|539|544|event|param|com.sythiex.hearthstonemod.proxy.ClientProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|549|563|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|564|570|logger|field|com.sythiex.hearthstonemod.HearthstoneMod|logger
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|571|575|info|method|org.apache.logging.log4j.Logger|info|(Ljava/lang/String;)V
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|602|613|ModelLoader|class|net.minecraftforge.client.model.ModelLoader
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|614|644|setCustomModelResourceLocation|method|net.minecraftforge.client.model.ModelLoader|setCustomModelResourceLocation|(Lnet/minecraft/item/Item;ILnet/minecraft/client/renderer/block/model/ModelResourceLocation;)V
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|645|659|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|660|671|hearthstone|field|com.sythiex.hearthstonemod.HearthstoneMod|hearthstone
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|680|701|ModelResourceLocation|class|net.minecraft.client.renderer.block.model.ModelResourceLocation
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|702|716|HearthstoneMod|class|com.sythiex.hearthstonemod.HearthstoneMod
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|717|722|MODID|field|com.sythiex.hearthstonemod.HearthstoneMod|MODID
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|731|746|ItemHearthstone|class|com.sythiex.hearthstonemod.ItemHearthstone
+      @|com\sythiex\hearthstonemod\proxy\ClientProxy.java|747|751|name|field|com.sythiex.hearthstonemod.ItemHearthstone|name
+   Method End: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+Class End  : com.sythiex.hearthstonemod.proxy.ClientProxy
+endProcessing "com\sythiex\hearthstonemod\proxy\ClientProxy.java"
+
+startProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java" md5: a8773a1d2fd5536b95dc5fbce8da8f64
+@|com\sythiex\hearthstonemod\proxy\CommonProxy.java|8|40|com.sythiex.hearthstonemod.proxy|package|com.sythiex.hearthstonemod.proxy|(file)
+Class Start: com.sythiex.hearthstonemod.proxy.CommonProxy
+   @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|265|276|CommonProxy|class|com.sythiex.hearthstonemod.proxy.CommonProxy
+   Method Start: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|326|331|event|param|com.sythiex.hearthstonemod.proxy.CommonProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|292|299|preInit|method|com.sythiex.hearthstonemod.proxy.CommonProxy|preInit|(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|300|325|FMLPreInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+   Method End: preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V
+   Method Start: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|385|390|event|param|com.sythiex.hearthstonemod.proxy.CommonProxy|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|357|361|init|method|com.sythiex.hearthstonemod.proxy.CommonProxy|init|(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|362|384|FMLInitializationEvent|class|net.minecraftforge.fml.common.event.FMLInitializationEvent
+   Method End: init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V
+   Method Start: postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|452|457|event|param|com.sythiex.hearthstonemod.proxy.CommonProxy|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V|event|0
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|416|424|postInit|method|com.sythiex.hearthstonemod.proxy.CommonProxy|postInit|(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+      @|com\sythiex\hearthstonemod\proxy\CommonProxy.java|425|451|FMLPostInitializationEvent|class|net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+   Method End: postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V
+Class End  : com.sythiex.hearthstonemod.proxy.CommonProxy
+endProcessing "com\sythiex\hearthstonemod\proxy\CommonProxy.java"
+

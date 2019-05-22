@@ -1807,13 +1807,18 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      */
     public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos)
     {
-        if (state.isTopSolid() || state.getBlockFaceShape(world, pos, EnumFacing.UP) == BlockFaceShape.SOLID)
+        if (this == Blocks.END_GATEWAY || this == Blocks.LIT_PUMPKIN)
         {
-            return this != Blocks.END_GATEWAY && this != Blocks.LIT_PUMPKIN;
+            return false;
+        }
+        else if (state.isTopSolid() || this instanceof BlockFence || this == Blocks.GLASS || this == Blocks.COBBLESTONE_WALL || this == Blocks.STAINED_GLASS)
+        {
+            return true;
         }
         else
         {
-            return this instanceof BlockFence || this == Blocks.GLASS || this == Blocks.COBBLESTONE_WALL || this == Blocks.STAINED_GLASS;
+            BlockFaceShape shape = state.getBlockFaceShape(world, pos, EnumFacing.UP);
+            return (shape == BlockFaceShape.SOLID || shape == BlockFaceShape.CENTER || shape == BlockFaceShape.CENTER_BIG) && !isExceptionBlockForAttaching(this);
         }
     }
 
@@ -2372,6 +2377,20 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      public Boolean isAABBInsideLiquid(World world, BlockPos pos, AxisAlignedBB boundingBox)
      {
          return null;
+     }
+     
+     /**
+      * Called when entities are swimming in the given liquid and returns the relative height (used by {@link net.minecraft.entity.item.EntityBoat})
+      * 
+      * @param world world that is being tested.
+      * @param pos block thats being tested.
+      * @param state state at world/pos
+      * @param material liquid thats being tested.
+      * @return relative height of the given liquid (material), a value between 0 and 1
+      */
+     public float getBlockLiquidHeight(World world, BlockPos pos, IBlockState state, Material material)
+     {
+         return 0;
      }
 
      /**

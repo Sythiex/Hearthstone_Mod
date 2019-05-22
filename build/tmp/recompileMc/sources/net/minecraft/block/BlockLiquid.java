@@ -488,6 +488,12 @@ public abstract class BlockLiquid extends Block
         return (float)pos.getY() + getBlockLiquidHeight(state, worldIn, pos);
     }
 
+    @Override
+    public float getBlockLiquidHeight(World world, BlockPos pos, IBlockState state, Material material)
+    {
+        return BlockLiquid.getBlockLiquidHeight(state, world, pos);
+    }
+
     /**
      * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
      * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.

@@ -34,7 +34,6 @@
 	</section>
 	<section name="PreferencesExportWizard">
 		<item value="B:\Minecraft Modding\black&amp;blue.epf" key=""/>
-		<item value="B:\Minecraft Modding\black&amp;blue.epf" key=""/>
 		<item value="true" key="WizardPreferencesExportPage1.STORE_OVERWRITE_EXISTING_FILES_ID"/>
 		<item value="true" key="WizardPreferencesExportPage1.EXPORT_ALL_PREFERENCES_ID"/>
 		<list key="WizardPreferencesExportPage1.STORE_DESTINATION_NAMES_ID">

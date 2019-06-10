@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="net.minecraft.entity.player.EntityPlayerMP"/>
-<fullyQualifiedTypeName name="net.minecraft.server.MinecraftServer"/>
-<fullyQualifiedTypeName name="net.minecraft.world.Teleporter"/>
-<fullyQualifiedTypeName name="net.minecraft.world.WorldServer"/>
-<fullyQualifiedTypeName name="net.minecraft.util.math.BlockPos"/>
-<fullyQualifiedTypeName name="net.minecraft.entity.Entity"/>
-</qualifiedTypeNameHistroy>

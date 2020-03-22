@@ -1,31 +1,45 @@
 package com.sythiex.hearthstonemod;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class HearthstoneEventHandler
 {
-	/** cancels hearthstone channel on damage */
 	@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = false)
-	public void onEvent(LivingHurtEvent event)
+	public void onLivingHurtEvent(LivingHurtEvent event)
 	{
-		if(event.getEntity() instanceof EntityPlayer)
+		if(event.getEntity() instanceof PlayerEntity)
 		{
-			EntityPlayer player = (EntityPlayer) event.getEntity();
+			PlayerEntity player = (PlayerEntity) event.getEntity();
 			ItemStack currentItem = player.inventory.getCurrentItem();
 			if(currentItem != null)
 			{
 				if(currentItem.getItem() instanceof ItemHearthstone)
 				{
-					NBTTagCompound tagCompound = currentItem.getTagCompound();
-					tagCompound.setBoolean("stopCasting", true);
-					currentItem.setTagCompound(tagCompound);
+					CompoundNBT tagCompound = currentItem.getTag();
+					tagCompound.putBoolean("stopCasting", true);
+					currentItem.setTag(tagCompound);
 				}
 			}
+		}
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = false)
+	public void onPlaySoundAtEntityEvent(PlaySoundAtEntityEvent event)
+	{
+		if(event.getSound() == HearthstoneMod.channelSoundEvent)
+		{
+			event.setCanceled(true);
+			Minecraft.getInstance().getSoundHandler().play(new HearthstoneChannelSound(event.getEntity()));
 		}
 	}
 }

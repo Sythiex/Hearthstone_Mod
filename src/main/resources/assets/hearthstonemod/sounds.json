@@ -1,14 +1,20 @@
 {
-    "hearthstonechannel": {
-        "category": "player",
-        "sounds": [ "hearthstonemod:hearthstonechannel" ]
-    },
-    "hearthstonecast": {
-        "category": "player",
-        "sounds": [ "hearthstonemod:hearthstonecast" ]
-    },
-    "hearthstoneimpact": {
-        "category": "player",
-        "sounds": [ "hearthstonemod:hearthstoneimpact" ]
-    }
+	"hearthstonecast": {
+		"category": "player",
+		"sounds": [
+			"hearthstonemod:hearthstonecast"
+		]
+	},
+	"hearthstoneimpact": {
+		"category": "player",
+		"sounds": [
+			"hearthstonemod:hearthstoneimpact"
+		]
+	},
+	"hearthstonechannel": {
+		"category": "player",
+		"sounds": [
+			"hearthstonemod:hearthstonechannel"
+		]
+	}
 }

@@ -1,0 +1,11 @@
+{
+	"item.hearthstonemod.hearthstone": "Hearthstone",
+	"item.hearthstone.on_cooldown": "Hearthstone is on cooldown",
+	"item.hearthstone.no_bed": "Hearthstone is not linked to a bed",
+	"item.hearthstone.missing_bed": "Your bed is missing; Hearthstone link is broken",
+	"item.hearthstone.linked": "Hearthstone is now linked",
+	"item.hearthstone.canceled": "Hearthstone channel canceled",
+	"config.hearthstone.channel_time": "ChannelTime",
+	"config.hearthstone.cooldown": "Cooldown",
+	"config.hearthstone.dimBlacklist": "Dimension Blacklist"
+}

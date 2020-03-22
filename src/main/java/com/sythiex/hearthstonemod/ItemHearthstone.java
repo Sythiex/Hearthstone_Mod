@@ -9,7 +9,6 @@ import com.sythiex.hearthstonemod.HearthstoneConfig.HearthstoneSettings;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,14 +18,12 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SChangeGameStatePacket;
 import net.minecraft.network.play.server.SPlayEntityEffectPacket;
 import net.minecraft.network.play.server.SPlaySoundEventPacket;
 import net.minecraft.network.play.server.SPlayerAbilitiesPacket;
 import net.minecraft.network.play.server.SRespawnPacket;
 import net.minecraft.network.play.server.SServerDifficultyPacket;
 import net.minecraft.potion.EffectInstance;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -34,7 +31,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -151,20 +147,9 @@ public class ItemHearthstone extends Item
 					int oldDimension = player.getEntityWorld().getDimension().getType().getId();
 					if(dimension != oldDimension)
 					{
-						ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-						serverPlayer = this.changeDimension(DimensionType.getById(dimension), serverPlayer);
-						serverPlayer.teleport(serverPlayer.getServerWorld(), bedX, bedY, bedZ, serverPlayer.rotationYaw, serverPlayer.rotationPitch);
+						player = this.changeDimension(DimensionType.getById(dimension), (ServerPlayerEntity) player);
+						player.setLocationAndAngles(bedX, bedY, bedZ, player.rotationYaw, player.rotationPitch);
 						world = player.getEntityWorld();
-						
-						/*
-						 * MinecraftServer server = player.getEntityWorld().getServer();
-						 * DimensionType dimType = DimensionType.getById(dimension);
-						 * ServerWorld worldServer = server.getWorld(dimType);
-						 * player.addExperienceLevel(0);
-						 * 
-						 * worldServer.getServer().getPlayerList().changePlayerDimension(serverPlayer, dimType, new HearthstoneTeleporter(worldServer, bedX, bedY, bedZ));
-						 * world = player.getEntityWorld();
-						 */
 					}
 					
 					// get block at bed location
@@ -402,16 +387,16 @@ public class ItemHearthstone extends Item
 	 * @param serverPlayer - player to change dimensions
 	 * @return the player after changing dimensions
 	 */
-	private ServerPlayerEntity changeDimension(DimensionType destination, ServerPlayerEntity serverPlayer)
+	private PlayerEntity changeDimension(DimensionType destination, ServerPlayerEntity serverPlayer)
 	{
 		if(!net.minecraftforge.common.ForgeHooks.onTravelToDimension(serverPlayer, destination))
 			return null;
 		// serverPlayer.invulnerableDimensionChange = true;
 		DimensionType dimensiontype = serverPlayer.dimension;
 		
-		ServerWorld serverworld = serverPlayer.server.getWorld(dimensiontype);
+		ServerWorld serverworld = serverPlayer.server.func_71218_a(dimensiontype);
 		serverPlayer.dimension = destination;
-		ServerWorld serverworld1 = serverPlayer.server.getWorld(destination);
+		ServerWorld serverworld1 = serverPlayer.server.func_71218_a(destination);
 		WorldInfo worldinfo = serverPlayer.world.getWorldInfo();
 		net.minecraftforge.fml.network.NetworkHooks.sendDimensionDataPacket(serverPlayer.connection.netManager, serverPlayer);
 		serverPlayer.connection.sendPacket(new SRespawnPacket(destination, worldinfo.getGenerator(), serverPlayer.interactionManager.getGameType()));
@@ -447,9 +432,9 @@ public class ItemHearthstone extends Item
 		serverPlayer.setWorld(serverworld1);
 		serverworld1.func_217447_b(serverPlayer);
 		serverPlayer.connection.setPlayerLocation(serverPlayer.posX, serverPlayer.posY, serverPlayer.posZ, f1, f);
-		serverPlayer.interactionManager.setWorld(serverworld1);
+		serverPlayer.interactionManager.func_73080_a(serverworld1);
 		serverPlayer.connection.sendPacket(new SPlayerAbilitiesPacket(serverPlayer.abilities));
-		playerlist.sendWorldInfo(serverPlayer, serverworld1);
+		playerlist.func_72354_b(serverPlayer, serverworld1);
 		playerlist.sendInventory(serverPlayer);
 		
 		for(EffectInstance effectinstance : serverPlayer.getActivePotionEffects())

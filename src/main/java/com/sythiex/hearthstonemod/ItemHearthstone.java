@@ -290,7 +290,7 @@ public class ItemHearthstone extends Item
 	@Override
 	public ActionResultType onItemUse(ItemUseContext context)
 	{
-		if(!context.getWorld().isRemote)
+		if(!context.getWorld().isRemote())
 		{
 			ItemStack itemStack = context.getPlayer().getHeldItem(context.getPlayer().getActiveHand());
 			CompoundNBT tagCompound = itemStack.getTag();

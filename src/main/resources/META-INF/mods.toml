@@ -4,9 +4,9 @@ issueTrackerURL="https://github.com/Sythiex/Hearthstone_Mod/issues"
 logoFile="logo.png"
 [[mods]]
 modId="hearthstonemod"
-version="0.5.2"
+version="0.5.1"
 displayName="Hearthstone Mod"
 displayURL="https://minecraft.curseforge.com/projects/hearthstone-mod"
-credits="Element_31 for the idea, DYColdWind for Chinese translations"
+credits="Element_31 for the idea"
 authors="Sythiex"
 description='''Adds an item that allows the player to teleport to their bed.'''

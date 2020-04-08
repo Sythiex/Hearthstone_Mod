@@ -24,6 +24,7 @@ import net.minecraft.network.play.server.SPlayerAbilitiesPacket;
 import net.minecraft.network.play.server.SRespawnPacket;
 import net.minecraft.network.play.server.SServerDifficultyPacket;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -111,9 +112,9 @@ public class ItemHearthstone extends Item
 					tag.putBoolean("stopCasting", true);
 				
 				// detect player movement
-				double diffX = Math.abs(tag.getDouble("prevX") - player.posX);
-				double diffY = Math.abs(tag.getDouble("prevY") - player.posY);
-				double diffZ = Math.abs(tag.getDouble("prevZ") - player.posZ);
+				double diffX = Math.abs(tag.getDouble("prevX") - player.getPosX());
+				double diffY = Math.abs(tag.getDouble("prevY") - player.getPosY());
+				double diffZ = Math.abs(tag.getDouble("prevZ") - player.getPosZ());
 				// if player moves or swaps items cancel cast
 				if(((diffX > 0.05 || diffY > 0.05 || diffZ > 0.05) && tag.getDouble("prevY") != -1) || tag.getBoolean("stopCasting"))
 				{
@@ -135,7 +136,7 @@ public class ItemHearthstone extends Item
 					tag.putInt("castTime", 0);
 					tag.putBoolean("isCasting", false);
 					
-					world.playSound(null, player.posX, player.posY, player.posZ, HearthstoneMod.castSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+					world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.castSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 					
 					// get bed location
 					int bedX = tag.getInt("bedX");
@@ -148,6 +149,10 @@ public class ItemHearthstone extends Item
 					if(dimension != oldDimension)
 					{
 						player = this.changeDimension(DimensionType.getById(dimension), (ServerPlayerEntity) player);
+						MinecraftServer server = player.getEntityWorld().getServer();
+						ServerWorld serverWorld = server.getWorld(DimensionType.getById(dimension));
+						ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+						// player = (PlayerEntity) serverPlayer.changeDimension(DimensionType.getById(dimension), new HearthstoneTeleporter(serverWorld));
 						player.setLocationAndAngles(bedX, bedY, bedZ, player.rotationYaw, player.rotationPitch);
 						world = player.getEntityWorld();
 					}
@@ -200,7 +205,7 @@ public class ItemHearthstone extends Item
 							player.setPositionAndUpdate(bedX + 0.5, bedY + 1, bedZ + 0.5);
 						}
 						
-						world.playSound(null, player.posX, player.posY, player.posZ, HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+						world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 						
 						// sets hearthstone on cooldown
 						tag.putInt("cooldown", HearthstoneSettings.cooldown.get());
@@ -209,7 +214,7 @@ public class ItemHearthstone extends Item
 					else
 					{
 						player.setPositionAndUpdate(bedX + 0.5, bedY + 1, bedZ + 0.5);
-						world.playSound(null, player.posX, player.posY, player.posZ, HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+						world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 						// sets hearthstone on cooldown
 						tag.putInt("cooldown", HearthstoneSettings.cooldown.get());
 						tag.putBoolean("locationSet", false);
@@ -219,9 +224,9 @@ public class ItemHearthstone extends Item
 				}
 			}
 			// record position of player for detecting movement
-			tag.putDouble("prevX", entity.posX);
-			tag.putDouble("prevY", entity.posY);
-			tag.putDouble("prevZ", entity.posZ);
+			tag.putDouble("prevX", entity.getPosX());
+			tag.putDouble("prevY", entity.getPosY());
+			tag.putDouble("prevZ", entity.getPosZ());
 			
 			// save tag
 			itemStack.setTag(tag);
@@ -237,7 +242,7 @@ public class ItemHearthstone extends Item
 			CompoundNBT tagCompound = itemStack.getTag();
 			
 			// if not sneaking
-			if(!player.isSneaking())
+			if(!player.isCrouching())
 			{
 				// if location is set
 				if(tagCompound.getBoolean("locationSet"))
@@ -251,7 +256,7 @@ public class ItemHearthstone extends Item
 						if(!tagCompound.getBoolean("isCasting"))
 						{
 							tagCompound.putBoolean("isCasting", true);
-							world.playSound(player, player.posX, player.posY, player.posZ, HearthstoneMod.channelSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+							world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.channelSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 						}
 					}
 					// if on cooldown
@@ -281,7 +286,7 @@ public class ItemHearthstone extends Item
 			CompoundNBT tagCompound = itemStack.getTag();
 			
 			// if sneaking
-			if(context.getPlayer().isSneaking())
+			if(context.getPlayer().isCrouching())
 			{
 				// checks if block right clicked is bed
 				BlockState state = context.getWorld().getBlockState(context.getPos());
@@ -381,33 +386,33 @@ public class ItemHearthstone extends Item
 	}
 	
 	/**
-	 * A copy of {@link ServerPlayerEntity#changeDimension(DimensionType)} without any end- or nether-specific code
+	 * A copy of {@link ServerPlayerEntity#changeDimension(DimensionType, net.minecraftforge.common.util.ITeleporter)} pre-ITeleporter patch and without any end- or nether-specific code
 	 * 
 	 * @param destination - destination dimension
 	 * @param serverPlayer - player to change dimensions
 	 * @return the player after changing dimensions
 	 */
-	private PlayerEntity changeDimension(DimensionType destination, ServerPlayerEntity serverPlayer)
+	private PlayerEntity changeDimension(DimensionType destination, ServerPlayerEntity serverPlayer) // TODO: remove and implement ITeleporter
 	{
 		if(!net.minecraftforge.common.ForgeHooks.onTravelToDimension(serverPlayer, destination))
 			return null;
 		// serverPlayer.invulnerableDimensionChange = true;
 		DimensionType dimensiontype = serverPlayer.dimension;
 		
-		ServerWorld serverworld = serverPlayer.server.func_71218_a(dimensiontype);
+		ServerWorld serverworld = serverPlayer.server.getWorld(dimensiontype);
 		serverPlayer.dimension = destination;
-		ServerWorld serverworld1 = serverPlayer.server.func_71218_a(destination);
+		ServerWorld serverworld1 = serverPlayer.server.getWorld(destination);
 		WorldInfo worldinfo = serverPlayer.world.getWorldInfo();
 		net.minecraftforge.fml.network.NetworkHooks.sendDimensionDataPacket(serverPlayer.connection.netManager, serverPlayer);
-		serverPlayer.connection.sendPacket(new SRespawnPacket(destination, worldinfo.getGenerator(), serverPlayer.interactionManager.getGameType()));
+		serverPlayer.connection.sendPacket(new SRespawnPacket(destination, WorldInfo.byHashing(worldinfo.getSeed()), worldinfo.getGenerator(), serverPlayer.interactionManager.getGameType()));
 		serverPlayer.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
 		PlayerList playerlist = serverPlayer.server.getPlayerList();
 		playerlist.updatePermissionLevel(serverPlayer);
 		serverworld.removeEntity(serverPlayer, true); // Forge: the player entity is moved to the new world, NOT cloned. So keep the data alive with no matching invalidate call.
 		serverPlayer.revive();
-		double d0 = serverPlayer.posX;
-		double d1 = serverPlayer.posY;
-		double d2 = serverPlayer.posZ;
+		double d0 = serverPlayer.getPosX();
+		double d1 = serverPlayer.getPosY();
+		double d2 = serverPlayer.getPosZ();
 		float f = serverPlayer.rotationPitch;
 		float f1 = serverPlayer.rotationYaw;
 		double d3 = 8.0D;
@@ -430,11 +435,11 @@ public class ItemHearthstone extends Item
 		
 		serverworld.getProfiler().endSection();
 		serverPlayer.setWorld(serverworld1);
-		serverworld1.func_217447_b(serverPlayer);
-		serverPlayer.connection.setPlayerLocation(serverPlayer.posX, serverPlayer.posY, serverPlayer.posZ, f1, f);
-		serverPlayer.interactionManager.func_73080_a(serverworld1);
+		serverworld1.addDuringPortalTeleport(serverPlayer);
+		serverPlayer.connection.setPlayerLocation(serverPlayer.getPosX(), serverPlayer.getPosY(), serverPlayer.getPosZ(), f1, f);
+		serverPlayer.interactionManager.setWorld(serverworld1);
 		serverPlayer.connection.sendPacket(new SPlayerAbilitiesPacket(serverPlayer.abilities));
-		playerlist.func_72354_b(serverPlayer, serverworld1);
+		playerlist.sendWorldInfo(serverPlayer, serverworld1);
 		playerlist.sendInventory(serverPlayer);
 		
 		for(EffectInstance effectinstance : serverPlayer.getActivePotionEffects())

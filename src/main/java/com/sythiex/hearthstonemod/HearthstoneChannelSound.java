@@ -24,9 +24,9 @@ public class HearthstoneChannelSound extends TickableSound
 		this.repeatDelay = 0;
 		this.volume = 1.0F;
 		this.pitch = 1.0F;
-		this.x = (float) entity.posX;
-		this.y = (float) entity.posY;
-		this.z = (float) entity.posZ;
+		this.x = (float) entity.getPosX();
+		this.y = (float) entity.getPosY();
+		this.z = (float) entity.getPosZ();
 		
 		if(entity instanceof PlayerEntity)
 		{

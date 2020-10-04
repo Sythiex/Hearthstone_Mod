@@ -13,6 +13,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class HearthstoneEventHandler
 {
+	// stops casting if the player takes damage
 	@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = false)
 	public void onLivingHurtEvent(LivingHurtEvent event)
 	{

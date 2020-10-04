@@ -87,7 +87,6 @@ public class ItemHearthstone extends Item
 				tag.putDouble("prevX", -1);
 				tag.putDouble("prevY", -1);
 				tag.putDouble("prevZ", -1);
-				tag.putBoolean("locationSet", false);
 				tag.putBoolean("isCasting", false);
 				tag.putBoolean("stopCasting", false);
 			}
@@ -142,37 +141,18 @@ public class ItemHearthstone extends Item
 					int bedZ = tag.getInt("bedZ");
 					
 					// create dimension registry key from NBT
-					RegistryKey<World> dimensionKey = null;
-					ResourceLocation dimensionResourceLocationParent = new ResourceLocation(tag.getString("dimensionResourceLocationParent"));
-					ResourceLocation dimensionResourceLocation = new ResourceLocation(tag.getString("dimensionResourceLocation"));
-					try
-					{
-						dimensionKey = (RegistryKey<World>) getOrCreateKeyMethod.invoke(null, dimensionResourceLocationParent, dimensionResourceLocation);
-					}
-					catch(IllegalAccessException e)
-					{
-						e.printStackTrace();
-					}
-					catch(IllegalArgumentException e)
-					{
-						e.printStackTrace();
-					}
-					catch(InvocationTargetException e)
-					{
-						e.printStackTrace();
-					}
-					
-					RegistryKey<World> oldDimensionKey = player.getEntityWorld().getDimensionKey();
+					RegistryKey<World> savedDimensionKey = getWorldRegistryKey(tag.getString("dimensionResourceLocationParent"), tag.getString("dimensionResourceLocation"));
+					RegistryKey<World> playerDimensionKey = player.getEntityWorld().getDimensionKey();
 					
 					// if player is not in same dimension as bed, travel to that dimension
-					if(dimensionKey != null)
+					if(savedDimensionKey != null)
 					{
-						if(oldDimensionKey.compareTo(dimensionKey) != 0)
+						if(playerDimensionKey.compareTo(savedDimensionKey) != 0)
 						{
 							MinecraftServer server = player.getEntityWorld().getServer();
+							ServerWorld destinationServerWorld = server.getWorld(savedDimensionKey);
 							ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-							ServerWorld serverWorld = server.getWorld(dimensionKey);
-							player = (PlayerEntity) serverPlayer.changeDimension(serverWorld, new HearthstoneTeleporter(serverWorld));
+							player = (PlayerEntity) serverPlayer.changeDimension(destinationServerWorld, new HearthstoneTeleporter(destinationServerWorld));
 							player.setLocationAndAngles(bedX, bedY, bedZ, player.rotationYaw, player.rotationPitch);
 							world = player.getEntityWorld();
 						}
@@ -238,7 +218,9 @@ public class ItemHearthstone extends Item
 						world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
 						// sets hearthstone on cooldown
 						tag.putInt("cooldown", HearthstoneSettings.cooldown.get());
-						tag.putBoolean("locationSet", false);
+						// clears the saved dimension
+						tag.putString("dimensionResourceLocationParent", "");
+						tag.putString("dimensionResourceLocation", "");
 						// informs player of broken link
 						player.sendStatusMessage(TEXT_MISSING_BED, true);
 					}
@@ -266,12 +248,12 @@ public class ItemHearthstone extends Item
 			if(!player.isCrouching())
 			{
 				// if location is set
-				if(tagCompound.getBoolean("locationSet"))
+				if(tagCompound.getString("dimensionResourceLocation") != "")
 				{
 					int cooldown = tagCompound.getInt("cooldown");
 					
 					// if off cooldown
-					if(cooldown <= 0)
+					if(cooldown == 0)
 					{
 						// if player is not casting, start casting
 						if(!tagCompound.getBoolean("isCasting"))
@@ -315,12 +297,12 @@ public class ItemHearthstone extends Item
 				{
 					// links bed to hearthstone
 					RegistryKey<World> dimensionKey = context.getPlayer().getEntityWorld().getDimensionKey();
+					
 					tagCompound.putInt("bedX", context.getPos().getX());
 					tagCompound.putInt("bedY", context.getPos().getY());
 					tagCompound.putInt("bedZ", context.getPos().getZ());
 					tagCompound.putString("dimensionResourceLocationParent", dimensionKey.getRegistryName().toString());
 					tagCompound.putString("dimensionResourceLocation", dimensionKey.getLocation().toString());
-					tagCompound.putBoolean("locationSet", true);
 					context.getPlayer().sendStatusMessage(TEXT_LINKED, true);
 				}
 				// save tag
@@ -383,16 +365,21 @@ public class ItemHearthstone extends Item
 		CompoundNBT tagCompound = itemStack.getTag();
 		if(tagCompound != null)
 		{
+			// calculates and displays cooldown in minutes and seconds
 			DecimalFormat df = new DecimalFormat();
 			df.setMaximumFractionDigits(3);
 			int cooldown = tagCompound.getInt("cooldown");
-			float minutesExact, secondsExact;
-			int minutes, seconds;
-			minutesExact = cooldown / 1200;
-			minutes = (int) minutesExact;
-			secondsExact = cooldown / 20;
-			seconds = (int) (secondsExact - (minutes * 60));
-			tooltip.add(new StringTextComponent("Cooldown: " + minutes + " minutes " + seconds + " seconds"));
+			if(cooldown != 0)
+			{
+				cooldown += 20; // more intuitive cooldown timer
+				float minutesExact, secondsExact;
+				int minutes, seconds;
+				minutesExact = cooldown / 1200;
+				minutes = (int) minutesExact;
+				secondsExact = cooldown / 20;
+				seconds = (int) (secondsExact - (minutes * 60));
+				tooltip.add(new StringTextComponent("Cooldown: " + minutes + " minutes " + seconds + " seconds"));
+			}
 		}
 	}
 	
@@ -406,5 +393,38 @@ public class ItemHearthstone extends Item
 			return tag.getBoolean("isCasting");
 		}
 		return false;
+	}
+	
+	/**
+	 * Gets {@code RegistryKey<World>} for a dimension using {@link RegistryKey<T>#getOrCreateKey(ResourceLocation parent, ResourceLocation location)}, but uses Strings instead of ResourceLocations
+	 * 
+	 * @param locationParent ResourceLocation parent represented as a String
+	 * @param location       ResourceLocation location represented as a String
+	 * @return {@code RegistryKey<World>}, or null if either String is empty
+	 */
+	private RegistryKey<World> getWorldRegistryKey(String locationParent, String location)
+	{
+		if(locationParent != "" && location != "")
+		{
+			ResourceLocation dimensionResourceLocationParent = new ResourceLocation(locationParent);
+			ResourceLocation dimensionResourceLocation = new ResourceLocation(location);
+			try
+			{
+				return (RegistryKey<World>) getOrCreateKeyMethod.invoke(null, dimensionResourceLocationParent, dimensionResourceLocation);
+			}
+			catch(IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IllegalArgumentException e)
+			{
+				e.printStackTrace();
+			}
+			catch(InvocationTargetException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 }

@@ -17,11 +17,11 @@ public class HearthstoneTeleporter implements ITeleporter
 	}
 	
 	@Override
-	public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity)
+	public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destinationWorld, float yaw, Function<Boolean, Entity> repositionEntity)
 	{
 		currentWorld.getProfiler().startSection("placing");
-		entity.setWorld(destWorld);
-		destWorld.addDuringPortalTeleport((ServerPlayerEntity) entity);
+		entity.setWorld(destinationWorld);
+		destinationWorld.addDuringPortalTeleport((ServerPlayerEntity) entity);
 		currentWorld.getProfiler().endSection();
 		return entity;
 	}

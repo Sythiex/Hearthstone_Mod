@@ -24,7 +24,7 @@ public class HearthstoneMod
 	public static final String NAME = "Hearthstone Mod";
 	public static final String VERSION = "0.5.1";
 	
-	public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+	public static CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 	
 	public static Logger logger = LogManager.getLogger(MODID);
 	

@@ -48,14 +48,14 @@ public class HearthstoneChannelSound extends TickableSound
 		time++;
 		if(hearthstone == null || time >= HearthstoneSettings.channelTime.get())
 		{
-			this.donePlaying = true;
+			this.finishPlaying();
 		}
 		else
 		{
 			CompoundNBT tag = hearthstone.getTag();
 			if(!tag.getBoolean("isCasting"))
 			{
-				this.donePlaying = true;
+				this.finishPlaying();
 			}
 		}
 	}

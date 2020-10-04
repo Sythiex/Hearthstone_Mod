@@ -1,5 +1,7 @@
 package com.sythiex.hearthstonemod;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -18,29 +20,22 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SPlayEntityEffectPacket;
-import net.minecraft.network.play.server.SPlaySoundEventPacket;
-import net.minecraft.network.play.server.SPlayerAbilitiesPacket;
-import net.minecraft.network.play.server.SRespawnPacket;
-import net.minecraft.network.play.server.SServerDifficultyPacket;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class ItemHearthstone extends Item
 {
@@ -51,6 +46,8 @@ public class ItemHearthstone extends Item
 	public final TranslationTextComponent TEXT_MISSING_BED = new TranslationTextComponent("item.hearthstone.missing_bed");
 	public final TranslationTextComponent TEXT_LINKED = new TranslationTextComponent("item.hearthstone.linked");
 	public final TranslationTextComponent TEXT_CANCELED = new TranslationTextComponent("item.hearthstone.canceled");
+	
+	private Method getOrCreateKeyMethod = ObfuscationReflectionHelper.findMethod(RegistryKey.class, "func_240905_a_", ResourceLocation.class, ResourceLocation.class);
 	
 	public ItemHearthstone()
 	{
@@ -85,7 +82,8 @@ public class ItemHearthstone extends Item
 				tag.putInt("bedX", 0);
 				tag.putInt("bedY", 0);
 				tag.putInt("bedZ", 0);
-				tag.putInt("bedDimension", 0);
+				tag.putString("dimensionResourceLocationParent", "");
+				tag.putString("dimensionResourceLocation", "");
 				tag.putDouble("prevX", -1);
 				tag.putDouble("prevY", -1);
 				tag.putDouble("prevZ", -1);
@@ -143,18 +141,41 @@ public class ItemHearthstone extends Item
 					int bedY = tag.getInt("bedY");
 					int bedZ = tag.getInt("bedZ");
 					
-					// if player is not in same dimension as bed, travel to that dimension
-					int dimension = tag.getInt("bedDimension");
-					int oldDimension = player.getEntityWorld().getDimension().getType().getId();
-					if(dimension != oldDimension)
+					// create dimension registry key from NBT
+					RegistryKey<World> dimensionKey = null;
+					ResourceLocation dimensionResourceLocationParent = new ResourceLocation(tag.getString("dimensionResourceLocationParent"));
+					ResourceLocation dimensionResourceLocation = new ResourceLocation(tag.getString("dimensionResourceLocation"));
+					try
 					{
-						player = this.changeDimension(DimensionType.getById(dimension), (ServerPlayerEntity) player);
-						MinecraftServer server = player.getEntityWorld().getServer();
-						ServerWorld serverWorld = server.getWorld(DimensionType.getById(dimension));
-						ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-						// player = (PlayerEntity) serverPlayer.changeDimension(DimensionType.getById(dimension), new HearthstoneTeleporter(serverWorld));
-						player.setLocationAndAngles(bedX, bedY, bedZ, player.rotationYaw, player.rotationPitch);
-						world = player.getEntityWorld();
+						dimensionKey = (RegistryKey<World>) getOrCreateKeyMethod.invoke(null, dimensionResourceLocationParent, dimensionResourceLocation);
+					}
+					catch(IllegalAccessException e)
+					{
+						e.printStackTrace();
+					}
+					catch(IllegalArgumentException e)
+					{
+						e.printStackTrace();
+					}
+					catch(InvocationTargetException e)
+					{
+						e.printStackTrace();
+					}
+					
+					RegistryKey<World> oldDimensionKey = player.getEntityWorld().getDimensionKey();
+					
+					// if player is not in same dimension as bed, travel to that dimension
+					if(dimensionKey != null)
+					{
+						if(oldDimensionKey.compareTo(dimensionKey) != 0)
+						{
+							MinecraftServer server = player.getEntityWorld().getServer();
+							ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+							ServerWorld serverWorld = server.getWorld(dimensionKey);
+							player = (PlayerEntity) serverPlayer.changeDimension(serverWorld, new HearthstoneTeleporter(serverWorld));
+							player.setLocationAndAngles(bedX, bedY, bedZ, player.rotationYaw, player.rotationPitch);
+							world = player.getEntityWorld();
+						}
 					}
 					
 					// get block at bed location
@@ -293,10 +314,12 @@ public class ItemHearthstone extends Item
 				if(context.getWorld().getBlockState(context.getPos()).getBlock().isBed(state, context.getWorld(), context.getPos(), context.getPlayer()))
 				{
 					// links bed to hearthstone
+					RegistryKey<World> dimensionKey = context.getPlayer().getEntityWorld().getDimensionKey();
 					tagCompound.putInt("bedX", context.getPos().getX());
 					tagCompound.putInt("bedY", context.getPos().getY());
 					tagCompound.putInt("bedZ", context.getPos().getZ());
-					tagCompound.putInt("bedDimension", context.getPlayer().getEntityWorld().getDimension().getType().getId());
+					tagCompound.putString("dimensionResourceLocationParent", dimensionKey.getRegistryName().toString());
+					tagCompound.putString("dimensionResourceLocation", dimensionKey.getLocation().toString());
 					tagCompound.putBoolean("locationSet", true);
 					context.getPlayer().sendStatusMessage(TEXT_LINKED, true);
 				}
@@ -383,75 +406,5 @@ public class ItemHearthstone extends Item
 			return tag.getBoolean("isCasting");
 		}
 		return false;
-	}
-	
-	/**
-	 * A copy of {@link ServerPlayerEntity#changeDimension(DimensionType, net.minecraftforge.common.util.ITeleporter)} pre-ITeleporter patch and without any end- or nether-specific code
-	 * 
-	 * @param destination - destination dimension
-	 * @param serverPlayer - player to change dimensions
-	 * @return the player after changing dimensions
-	 */
-	private PlayerEntity changeDimension(DimensionType destination, ServerPlayerEntity serverPlayer) // TODO: remove and implement ITeleporter
-	{
-		if(!net.minecraftforge.common.ForgeHooks.onTravelToDimension(serverPlayer, destination))
-			return null;
-		// serverPlayer.invulnerableDimensionChange = true;
-		DimensionType dimensiontype = serverPlayer.dimension;
-		
-		ServerWorld serverworld = serverPlayer.server.getWorld(dimensiontype);
-		serverPlayer.dimension = destination;
-		ServerWorld serverworld1 = serverPlayer.server.getWorld(destination);
-		WorldInfo worldinfo = serverPlayer.world.getWorldInfo();
-		net.minecraftforge.fml.network.NetworkHooks.sendDimensionDataPacket(serverPlayer.connection.netManager, serverPlayer);
-		serverPlayer.connection.sendPacket(new SRespawnPacket(destination, WorldInfo.byHashing(worldinfo.getSeed()), worldinfo.getGenerator(), serverPlayer.interactionManager.getGameType()));
-		serverPlayer.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
-		PlayerList playerlist = serverPlayer.server.getPlayerList();
-		playerlist.updatePermissionLevel(serverPlayer);
-		serverworld.removeEntity(serverPlayer, true); // Forge: the player entity is moved to the new world, NOT cloned. So keep the data alive with no matching invalidate call.
-		serverPlayer.revive();
-		double d0 = serverPlayer.getPosX();
-		double d1 = serverPlayer.getPosY();
-		double d2 = serverPlayer.getPosZ();
-		float f = serverPlayer.rotationPitch;
-		float f1 = serverPlayer.rotationYaw;
-		double d3 = 8.0D;
-		float f2 = f1;
-		serverworld.getProfiler().startSection("moving");
-		double moveFactor = serverworld.getDimension().getMovementFactor() / serverworld1.getDimension().getMovementFactor();
-		d0 *= moveFactor;
-		d2 *= moveFactor;
-		
-		serverPlayer.setLocationAndAngles(d0, d1, d2, f1, f);
-		serverworld.getProfiler().endSection();
-		serverworld.getProfiler().startSection("placing");
-		double d7 = Math.min(-2.9999872E7D, serverworld1.getWorldBorder().minX() + 16.0D);
-		double d4 = Math.min(-2.9999872E7D, serverworld1.getWorldBorder().minZ() + 16.0D);
-		double d5 = Math.min(2.9999872E7D, serverworld1.getWorldBorder().maxX() - 16.0D);
-		double d6 = Math.min(2.9999872E7D, serverworld1.getWorldBorder().maxZ() - 16.0D);
-		d0 = MathHelper.clamp(d0, d7, d5);
-		d2 = MathHelper.clamp(d2, d4, d6);
-		serverPlayer.setLocationAndAngles(d0, d1, d2, f1, f);
-		
-		serverworld.getProfiler().endSection();
-		serverPlayer.setWorld(serverworld1);
-		serverworld1.addDuringPortalTeleport(serverPlayer);
-		serverPlayer.connection.setPlayerLocation(serverPlayer.getPosX(), serverPlayer.getPosY(), serverPlayer.getPosZ(), f1, f);
-		serverPlayer.interactionManager.setWorld(serverworld1);
-		serverPlayer.connection.sendPacket(new SPlayerAbilitiesPacket(serverPlayer.abilities));
-		playerlist.sendWorldInfo(serverPlayer, serverworld1);
-		playerlist.sendInventory(serverPlayer);
-		
-		for(EffectInstance effectinstance : serverPlayer.getActivePotionEffects())
-		{
-			serverPlayer.connection.sendPacket(new SPlayEntityEffectPacket(serverPlayer.getEntityId(), effectinstance));
-		}
-		
-		serverPlayer.connection.sendPacket(new SPlaySoundEventPacket(1032, BlockPos.ZERO, 0, false));
-		// serverPlayer.lastExperience = -1;
-		// serverPlayer.lastHealth = -1.0F;
-		// serverPlayer.lastFoodLevel = -1;
-		net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerChangedDimensionEvent(serverPlayer, dimensiontype, destination);
-		return serverPlayer;
 	}
 }

@@ -5,6 +5,10 @@
 	"item.hearthstone.missing_bed": "Your bed is missing; Hearthstone link is broken",
 	"item.hearthstone.linked": "Hearthstone is now linked",
 	"item.hearthstone.canceled": "Hearthstone channel canceled",
+	"item.hearthstone.home_set": "Home set",
+	"item.hearthstone.cooldown": "Cooldown: ",
+	"item.hearthstone.minutes": " minutes ",
+	"item.hearthstone.seconds": " seconds",
 	"config.hearthstone.channel_time": "ChannelTime",
 	"config.hearthstone.cooldown": "Cooldown",
 	"config.hearthstone.dimBlacklist": "Dimension Blacklist"

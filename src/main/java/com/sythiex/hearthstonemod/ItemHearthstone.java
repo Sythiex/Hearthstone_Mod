@@ -2,7 +2,6 @@ package com.sythiex.hearthstonemod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -28,8 +27,10 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -46,6 +47,11 @@ public class ItemHearthstone extends Item
 	public final TranslationTextComponent TEXT_MISSING_BED = new TranslationTextComponent("item.hearthstone.missing_bed");
 	public final TranslationTextComponent TEXT_LINKED = new TranslationTextComponent("item.hearthstone.linked");
 	public final TranslationTextComponent TEXT_CANCELED = new TranslationTextComponent("item.hearthstone.canceled");
+	public final TranslationTextComponent TEXT_COOLDOWN = new TranslationTextComponent("item.hearthstone.cooldown");
+	public final TranslationTextComponent TEXT_MINUTES = new TranslationTextComponent("item.hearthstone.minutes");
+	public final TranslationTextComponent TEXT_SECONDS = new TranslationTextComponent("item.hearthstone.seconds");
+	
+	public final IFormattableTextComponent TEXT_HOME_SET = new TranslationTextComponent("item.hearthstone.home_set");
 	
 	private Method getOrCreateKeyMethod = ObfuscationReflectionHelper.findMethod(RegistryKey.class, "func_240905_a_", ResourceLocation.class, ResourceLocation.class);
 	
@@ -169,39 +175,38 @@ public class ItemHearthstone extends Item
 						// find open spaces around bed
 						boolean north = player.world.getBlockState(bedPos.north()).getBlock().canSpawnInBlock();
 						boolean northUp = player.world.getBlockState(bedPos.north().up()).getBlock().canSpawnInBlock();
-						boolean northDown = player.world.getBlockState(bedPos.north().down()).isAir();
+						boolean northDown = player.world.getBlockState(bedPos.north().down()).isSolid();
 						
 						boolean east = player.world.getBlockState(bedPos.east()).getBlock().canSpawnInBlock();
 						boolean eastUp = player.world.getBlockState(bedPos.east().up()).getBlock().canSpawnInBlock();
-						boolean eastDown = player.world.getBlockState(bedPos.east().down()).isAir();
+						boolean eastDown = player.world.getBlockState(bedPos.east().down()).isSolid();
 						
 						boolean south = player.world.getBlockState(bedPos.south()).getBlock().canSpawnInBlock();
 						boolean southUp = player.world.getBlockState(bedPos.south().up()).getBlock().canSpawnInBlock();
-						boolean southDown = player.world.getBlockState(bedPos.south().down()).isAir();
+						boolean southDown = player.world.getBlockState(bedPos.south().down()).isSolid();
 						
 						boolean west = player.world.getBlockState(bedPos.west()).getBlock().canSpawnInBlock();
 						boolean westUp = player.world.getBlockState(bedPos.west().up()).getBlock().canSpawnInBlock();
-						boolean westDown = player.world.getBlockState(bedPos.west().down()).isAir();
+						boolean westDown = player.world.getBlockState(bedPos.west().down()).isSolid();
 						
 						// tp player next to bed
-						if(north && northUp && !northDown)
+						if(north && northUp && northDown)
 						{
 							player.setPositionAndUpdate(bedPos.north().getX() + 0.5, bedPos.north().getY(), bedPos.north().getZ() + 0.5);
 						}
-						else if(east && eastUp && !eastDown)
+						else if(east && eastUp && eastDown)
 						{
 							player.setPositionAndUpdate(bedPos.east().getX() + 0.5, bedPos.east().getY(), bedPos.east().getZ() + 0.5);
 						}
-						else if(south && southUp && !southDown)
+						else if(south && southUp && southDown)
 						{
 							player.setPositionAndUpdate(bedPos.south().getX() + 0.5, bedPos.south().getY(), bedPos.south().getZ() + 0.5);
 						}
-						else if(west && westUp && !westDown)
+						else if(west && westUp && westDown)
 						{
 							player.setPositionAndUpdate(bedPos.west().getX() + 0.5, bedPos.west().getY(), bedPos.west().getZ() + 0.5);
 						}
-						// if no open space, tp player on top of bed
-						else
+						else // if no open space, tp player on top of bed
 						{
 							player.setPositionAndUpdate(bedX + 0.5, bedY + 1, bedZ + 0.5);
 						}
@@ -362,13 +367,15 @@ public class ItemHearthstone extends Item
 	@OnlyIn(Dist.CLIENT)
 	public void addInformation(ItemStack itemStack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn)
 	{
-		CompoundNBT tagCompound = itemStack.getTag();
-		if(tagCompound != null)
+		CompoundNBT tag = itemStack.getTag();
+		if(tag != null)
 		{
+			// display if hearthstone is linked to a bed
+			if(tag.getString("dimensionResourceLocation") != "")
+				tooltip.add(TEXT_HOME_SET.mergeStyle(TextFormatting.GRAY));
+			
 			// calculates and displays cooldown in minutes and seconds
-			DecimalFormat df = new DecimalFormat();
-			df.setMaximumFractionDigits(3);
-			int cooldown = tagCompound.getInt("cooldown");
+			int cooldown = tag.getInt("cooldown");
 			if(cooldown != 0)
 			{
 				cooldown += 20; // more intuitive cooldown timer
@@ -378,7 +385,9 @@ public class ItemHearthstone extends Item
 				minutes = (int) minutesExact;
 				secondsExact = cooldown / 20;
 				seconds = (int) (secondsExact - (minutes * 60));
-				tooltip.add(new StringTextComponent("Cooldown: " + minutes + " minutes " + seconds + " seconds"));
+				
+				IFormattableTextComponent iformattabletextcomponent = new StringTextComponent("").append(TEXT_COOLDOWN).appendString(Integer.toString(minutes)).append(TEXT_MINUTES).appendString(Integer.toString(seconds)).append(TEXT_SECONDS);
+				tooltip.add(iformattabletextcomponent.mergeStyle(TextFormatting.GRAY));
 			}
 		}
 	}

@@ -378,7 +378,7 @@ public class ItemHearthstone extends Item
 			int cooldown = tag.getInt("cooldown");
 			if(cooldown != 0)
 			{
-				cooldown += 20; // more intuitive cooldown timer
+				cooldown += 19; // more intuitive cooldown timer
 				float minutesExact, secondsExact;
 				int minutes, seconds;
 				minutesExact = cooldown / 1200;

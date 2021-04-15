@@ -236,7 +236,7 @@ public class ItemHearthstone extends Item
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
 	{
-		if(!world.isRemote)
+		if(!world.isRemote && hand == Hand.MAIN_HAND)
 		{
 			ItemStack itemStack = player.getHeldItem(hand);
 			CompoundNBT tagCompound = itemStack.getTag();
@@ -282,7 +282,13 @@ public class ItemHearthstone extends Item
 	{
 		if(!context.getWorld().isRemote())
 		{
-			ItemStack itemStack = context.getPlayer().getHeldItem(context.getPlayer().getActiveHand());
+			ItemStack itemStack = context.getPlayer().getHeldItem(Hand.MAIN_HAND);
+			// if main hand is not a hearthstone, return
+			if(itemStack.getItem() != HearthstoneMod.hearthstone)
+			{
+				return ActionResultType.FAIL;
+			}
+			
 			CompoundNBT tagCompound = itemStack.getTag();
 			
 			// if sneaking
@@ -306,7 +312,7 @@ public class ItemHearthstone extends Item
 			}
 			else
 			{
-				onItemRightClick(context.getWorld(), context.getPlayer(), context.getPlayer().getActiveHand());
+				onItemRightClick(context.getWorld(), context.getPlayer(), Hand.MAIN_HAND);
 			}
 		}
 		return ActionResultType.FAIL;

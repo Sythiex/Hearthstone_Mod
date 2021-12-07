@@ -6,9 +6,9 @@ import org.apache.logging.log4j.Logger;
 import com.sythiex.hearthstonemod.proxy.ClientProxy;
 import com.sythiex.hearthstonemod.proxy.CommonProxy;
 
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

@@ -8,66 +8,66 @@ import javax.annotation.Nullable;
 
 import com.sythiex.hearthstonemod.HearthstoneConfig.HearthstoneSettings;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 public class ItemHearthstone extends Item
 {
 	public static final String NAME = "hearthstone";
 	
-	public final TranslationTextComponent TEXT_ON_COOLDOWN = new TranslationTextComponent("item.hearthstone.on_cooldown");
-	public final TranslationTextComponent TEXT_NO_BED = new TranslationTextComponent("item.hearthstone.no_bed");
-	public final TranslationTextComponent TEXT_MISSING_BED = new TranslationTextComponent("item.hearthstone.missing_bed");
-	public final TranslationTextComponent TEXT_LINKED = new TranslationTextComponent("item.hearthstone.linked");
-	public final TranslationTextComponent TEXT_CANCELED = new TranslationTextComponent("item.hearthstone.canceled");
-	public final TranslationTextComponent TEXT_COOLDOWN = new TranslationTextComponent("item.hearthstone.cooldown");
-	public final TranslationTextComponent TEXT_MINUTES = new TranslationTextComponent("item.hearthstone.minutes");
-	public final TranslationTextComponent TEXT_SECONDS = new TranslationTextComponent("item.hearthstone.seconds");
+	public final TranslatableComponent TEXT_ON_COOLDOWN = new TranslatableComponent("item.hearthstone.on_cooldown");
+	public final TranslatableComponent TEXT_NO_BED = new TranslatableComponent("item.hearthstone.no_bed");
+	public final TranslatableComponent TEXT_MISSING_BED = new TranslatableComponent("item.hearthstone.missing_bed");
+	public final TranslatableComponent TEXT_LINKED = new TranslatableComponent("item.hearthstone.linked");
+	public final TranslatableComponent TEXT_CANCELED = new TranslatableComponent("item.hearthstone.canceled");
+	public final TranslatableComponent TEXT_COOLDOWN = new TranslatableComponent("item.hearthstone.cooldown");
+	public final TranslatableComponent TEXT_MINUTES = new TranslatableComponent("item.hearthstone.minutes");
+	public final TranslatableComponent TEXT_SECONDS = new TranslatableComponent("item.hearthstone.seconds");
 	
-	public final IFormattableTextComponent TEXT_HOME_SET = new TranslationTextComponent("item.hearthstone.home_set");
+	public final MutableComponent TEXT_HOME_SET = new TranslatableComponent("item.hearthstone.home_set");
 	
-	private Method getOrCreateKeyMethod = ObfuscationReflectionHelper.findMethod(RegistryKey.class, "func_240905_a_", ResourceLocation.class, ResourceLocation.class);
+	private Method createResourceKeyMethod = ObfuscationReflectionHelper.findMethod(ResourceKey.class, "m_135790_", ResourceLocation.class, ResourceLocation.class);
 	
 	public ItemHearthstone()
 	{
-		super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+		super(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
 		setRegistryName(NAME);
 	}
 	
 	@Override
-	public void inventoryTick(ItemStack itemStack, World world, Entity entity, int itemSlot, boolean isSelected)
+	public void inventoryTick(ItemStack itemStack, Level world, Entity entity, int itemSlot, boolean isSelected)
 	{
 		// server side
-		if(!world.isRemote)
+		if(!world.isClientSide)
 		{
-			CompoundNBT tag = itemStack.getTag();
+			CompoundTag tag = itemStack.getTag();
 			
 			// if item has tag, decrement cooldown
 			if(tag != null)
@@ -82,7 +82,7 @@ public class ItemHearthstone extends Item
 			// if no tag, add a tag
 			else
 			{
-				tag = new CompoundNBT();
+				tag = new CompoundTag();
 				tag.putInt("cooldown", 0);
 				tag.putInt("castTime", 0);
 				tag.putInt("bedX", 0);
@@ -98,12 +98,12 @@ public class ItemHearthstone extends Item
 			}
 			
 			// if player is casting
-			if(tag.getBoolean("isCasting") && entity instanceof PlayerEntity)
+			if(tag.getBoolean("isCasting") && entity instanceof Player)
 			{
-				PlayerEntity player = (PlayerEntity) entity;
+				Player player = (Player) entity;
 				
 				// check if player is holding hearthstone
-				ItemStack heldItem = player.getHeldItemMainhand();
+				ItemStack heldItem = player.getMainHandItem();
 				if(heldItem != null)
 				{
 					if(heldItem != itemStack)
@@ -115,16 +115,16 @@ public class ItemHearthstone extends Item
 					tag.putBoolean("stopCasting", true);
 				
 				// detect player movement
-				double diffX = Math.abs(tag.getDouble("prevX") - player.getPosX());
-				double diffY = Math.abs(tag.getDouble("prevY") - player.getPosY());
-				double diffZ = Math.abs(tag.getDouble("prevZ") - player.getPosZ());
+				double diffX = Math.abs(tag.getDouble("prevX") - player.getX());
+				double diffY = Math.abs(tag.getDouble("prevY") - player.getY());
+				double diffZ = Math.abs(tag.getDouble("prevZ") - player.getZ());
 				// if player moves or swaps items cancel cast
 				if(((diffX > 0.05 || diffY > 0.05 || diffZ > 0.05) && tag.getDouble("prevY") != -1) || tag.getBoolean("stopCasting"))
 				{
 					tag.putInt("castTime", 0);
 					tag.putBoolean("isCasting", false);
 					tag.putBoolean("stopCasting", false);
-					player.sendStatusMessage(TEXT_CANCELED, true);
+					player.displayClientMessage(TEXT_CANCELED, true);
 				}
 				else
 				{
@@ -139,7 +139,7 @@ public class ItemHearthstone extends Item
 					tag.putInt("castTime", 0);
 					tag.putBoolean("isCasting", false);
 					
-					world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.castSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+					world.playSound(null, player.getX(), player.getY(), player.getZ(), HearthstoneMod.castSoundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
 					
 					// get bed location
 					int bedX = tag.getInt("bedX");
@@ -147,20 +147,20 @@ public class ItemHearthstone extends Item
 					int bedZ = tag.getInt("bedZ");
 					
 					// create dimension registry key from NBT
-					RegistryKey<World> savedDimensionKey = getWorldRegistryKey(tag.getString("dimensionResourceLocationParent"), tag.getString("dimensionResourceLocation"));
-					RegistryKey<World> playerDimensionKey = player.getEntityWorld().getDimensionKey();
+					ResourceKey<Level> savedDimensionKey = getWorldResourceKey(tag.getString("dimensionResourceLocationParent"), tag.getString("dimensionResourceLocation"));
+					ResourceKey<Level> playerDimensionKey = player.level.dimension();
 					
 					// if player is not in same dimension as bed, travel to that dimension
 					if(savedDimensionKey != null)
 					{
 						if(playerDimensionKey.compareTo(savedDimensionKey) != 0)
 						{
-							MinecraftServer server = player.getEntityWorld().getServer();
-							ServerWorld destinationServerWorld = server.getWorld(savedDimensionKey);
-							ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-							player = (PlayerEntity) serverPlayer.changeDimension(destinationServerWorld, new HearthstoneTeleporter(destinationServerWorld));
-							player.setLocationAndAngles(bedX, bedY, bedZ, player.rotationYaw, player.rotationPitch);
-							world = player.getEntityWorld();
+							MinecraftServer server = player.level.getServer();
+							ServerLevel destinationServerLevel = server.getLevel(savedDimensionKey);
+							ServerPlayer serverPlayer = (ServerPlayer) player;
+							player = (Player) serverPlayer.changeDimension(destinationServerLevel, new HearthstoneTeleporter(destinationServerLevel));
+							player.moveTo(bedX, bedY, bedZ); // , player.rotationYaw, player.rotationPitch);
+							world = player.level;
 						}
 					}
 					
@@ -173,45 +173,45 @@ public class ItemHearthstone extends Item
 					if(block.isBed(state, world, bedPos, player))
 					{
 						// find open spaces around bed
-						boolean north = player.world.getBlockState(bedPos.north()).getBlock().canSpawnInBlock();
-						boolean northUp = player.world.getBlockState(bedPos.north().up()).getBlock().canSpawnInBlock();
-						boolean northDown = player.world.getBlockState(bedPos.north().down()).isSolid();
+						boolean north = player.level.getBlockState(bedPos.north()).getBlock().isPossibleToRespawnInThis();
+						boolean northUp = player.level.getBlockState(bedPos.north().above()).getBlock().isPossibleToRespawnInThis();
+						boolean northDown = player.level.getBlockState(bedPos.north().below()).getMaterial().isSolid();
 						
-						boolean east = player.world.getBlockState(bedPos.east()).getBlock().canSpawnInBlock();
-						boolean eastUp = player.world.getBlockState(bedPos.east().up()).getBlock().canSpawnInBlock();
-						boolean eastDown = player.world.getBlockState(bedPos.east().down()).isSolid();
+						boolean east = player.level.getBlockState(bedPos.east()).getBlock().isPossibleToRespawnInThis();
+						boolean eastUp = player.level.getBlockState(bedPos.east().above()).getBlock().isPossibleToRespawnInThis();
+						boolean eastDown = player.level.getBlockState(bedPos.east().below()).getMaterial().isSolid();
 						
-						boolean south = player.world.getBlockState(bedPos.south()).getBlock().canSpawnInBlock();
-						boolean southUp = player.world.getBlockState(bedPos.south().up()).getBlock().canSpawnInBlock();
-						boolean southDown = player.world.getBlockState(bedPos.south().down()).isSolid();
+						boolean south = player.level.getBlockState(bedPos.south()).getBlock().isPossibleToRespawnInThis();
+						boolean southUp = player.level.getBlockState(bedPos.south().above()).getBlock().isPossibleToRespawnInThis();
+						boolean southDown = player.level.getBlockState(bedPos.south().below()).getMaterial().isSolid();
 						
-						boolean west = player.world.getBlockState(bedPos.west()).getBlock().canSpawnInBlock();
-						boolean westUp = player.world.getBlockState(bedPos.west().up()).getBlock().canSpawnInBlock();
-						boolean westDown = player.world.getBlockState(bedPos.west().down()).isSolid();
+						boolean west = player.level.getBlockState(bedPos.west()).getBlock().isPossibleToRespawnInThis();
+						boolean westUp = player.level.getBlockState(bedPos.west().above()).getBlock().isPossibleToRespawnInThis();
+						boolean westDown = player.level.getBlockState(bedPos.west().below()).getMaterial().isSolid();
 						
 						// tp player next to bed
 						if(north && northUp && northDown)
 						{
-							player.setPositionAndUpdate(bedPos.north().getX() + 0.5, bedPos.north().getY(), bedPos.north().getZ() + 0.5);
+							player.teleportTo(bedPos.north().getX() + 0.5, bedPos.north().getY(), bedPos.north().getZ() + 0.5);
 						}
 						else if(east && eastUp && eastDown)
 						{
-							player.setPositionAndUpdate(bedPos.east().getX() + 0.5, bedPos.east().getY(), bedPos.east().getZ() + 0.5);
+							player.teleportTo(bedPos.east().getX() + 0.5, bedPos.east().getY(), bedPos.east().getZ() + 0.5);
 						}
 						else if(south && southUp && southDown)
 						{
-							player.setPositionAndUpdate(bedPos.south().getX() + 0.5, bedPos.south().getY(), bedPos.south().getZ() + 0.5);
+							player.teleportTo(bedPos.south().getX() + 0.5, bedPos.south().getY(), bedPos.south().getZ() + 0.5);
 						}
 						else if(west && westUp && westDown)
 						{
-							player.setPositionAndUpdate(bedPos.west().getX() + 0.5, bedPos.west().getY(), bedPos.west().getZ() + 0.5);
+							player.teleportTo(bedPos.west().getX() + 0.5, bedPos.west().getY(), bedPos.west().getZ() + 0.5);
 						}
 						else // if no open space, tp player on top of bed
 						{
-							player.setPositionAndUpdate(bedX + 0.5, bedY + 1, bedZ + 0.5);
+							player.teleportTo(bedX + 0.5, bedY + 1, bedZ + 0.5);
 						}
 						
-						world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+						world.playSound(null, player.getX(), player.getY(), player.getZ(), HearthstoneMod.impactSoundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
 						
 						// sets hearthstone on cooldown
 						tag.putInt("cooldown", HearthstoneSettings.cooldown.get());
@@ -219,22 +219,22 @@ public class ItemHearthstone extends Item
 					// tps player to where bed was, then breaks link
 					else
 					{
-						player.setPositionAndUpdate(bedX + 0.5, bedY + 1, bedZ + 0.5);
-						world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.impactSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+						player.teleportTo(bedX + 0.5, bedY + 1, bedZ + 0.5);
+						world.playSound(null, player.getX(), player.getY(), player.getZ(), HearthstoneMod.impactSoundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
 						// sets hearthstone on cooldown
 						tag.putInt("cooldown", HearthstoneSettings.cooldown.get());
 						// clears the saved dimension
 						tag.putString("dimensionResourceLocationParent", "");
 						tag.putString("dimensionResourceLocation", "");
 						// informs player of broken link
-						player.sendStatusMessage(TEXT_MISSING_BED, true);
+						player.displayClientMessage(TEXT_MISSING_BED, true);
 					}
 				}
 			}
 			// record position of player for detecting movement
-			tag.putDouble("prevX", entity.getPosX());
-			tag.putDouble("prevY", entity.getPosY());
-			tag.putDouble("prevZ", entity.getPosZ());
+			tag.putDouble("prevX", entity.getX());
+			tag.putDouble("prevY", entity.getY());
+			tag.putDouble("prevZ", entity.getZ());
 			
 			// save tag
 			itemStack.setTag(tag);
@@ -242,12 +242,12 @@ public class ItemHearthstone extends Item
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
 	{
-		if(!world.isRemote && hand == Hand.MAIN_HAND)
+		if(!world.isClientSide && hand == InteractionHand.MAIN_HAND)
 		{
-			ItemStack itemStack = player.getHeldItem(hand);
-			CompoundNBT tagCompound = itemStack.getTag();
+			ItemStack itemStack = player.getItemInHand(hand);
+			CompoundTag tagCompound = itemStack.getTag();
 			
 			// if not sneaking
 			if(!player.isCrouching())
@@ -264,68 +264,68 @@ public class ItemHearthstone extends Item
 						if(!tagCompound.getBoolean("isCasting"))
 						{
 							tagCompound.putBoolean("isCasting", true);
-							world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), HearthstoneMod.channelSoundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+							world.playSound(player, player.getX(), player.getY(), player.getZ(), HearthstoneMod.channelSoundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
 						}
 					}
 					// if on cooldown
 					else
 					{
-						player.sendStatusMessage(TEXT_ON_COOLDOWN, true);
+						player.displayClientMessage(TEXT_ON_COOLDOWN, true);
 					}
 				}
 				// if location is not set
 				else
 				{
-					player.sendStatusMessage(TEXT_NO_BED, true);
+					player.displayClientMessage(TEXT_NO_BED, true);
 				}
 			}
 			// save tag
 			itemStack.setTag(tagCompound);
 		}
-		return new ActionResult(ActionResultType.PASS, player.getHeldItem(hand));
+		return new InteractionResultHolder(InteractionResult.PASS, player.getItemInHand(hand));
 	}
 	
 	@Override
-	public ActionResultType onItemUse(ItemUseContext context)
+	public InteractionResult useOn(UseOnContext context)
 	{
-		if(!context.getWorld().isRemote())
+		if(!context.getLevel().isClientSide())
 		{
-			ItemStack itemStack = context.getPlayer().getHeldItem(Hand.MAIN_HAND);
+			ItemStack itemStack = context.getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
 			// if main hand is not a hearthstone, return
 			if(itemStack.getItem() != HearthstoneMod.hearthstone)
 			{
-				return ActionResultType.FAIL;
+				return InteractionResult.FAIL;
 			}
-
-			CompoundNBT tagCompound = itemStack.getTag();
+			
+			CompoundTag tagCompound = itemStack.getTag();
 			
 			// if sneaking
 			if(context.getPlayer().isCrouching())
 			{
 				// checks if block right clicked is bed
-				BlockState state = context.getWorld().getBlockState(context.getPos());
-				if(context.getWorld().getBlockState(context.getPos()).getBlock().isBed(state, context.getWorld(), context.getPos(), context.getPlayer()))
+				BlockState state = context.getLevel().getBlockState(context.getClickedPos());
+				if(context.getLevel().getBlockState(context.getClickedPos()).getBlock().isBed(state, context.getLevel(), context.getClickedPos(), context.getPlayer()))
 				{
 					// links bed to hearthstone
-					RegistryKey<World> dimensionKey = context.getPlayer().getEntityWorld().getDimensionKey();
+					ResourceKey<Level> dimensionKey = context.getPlayer().level.dimension();
 					
-					tagCompound.putInt("bedX", context.getPos().getX());
-					tagCompound.putInt("bedY", context.getPos().getY());
-					tagCompound.putInt("bedZ", context.getPos().getZ());
+					tagCompound.putInt("bedX", context.getClickedPos().getX());
+					tagCompound.putInt("bedY", context.getClickedPos().getY());
+					tagCompound.putInt("bedZ", context.getClickedPos().getZ());
 					tagCompound.putString("dimensionResourceLocationParent", dimensionKey.getRegistryName().toString());
-					tagCompound.putString("dimensionResourceLocation", dimensionKey.getLocation().toString());
-					context.getPlayer().sendStatusMessage(TEXT_LINKED, true);
+					tagCompound.putString("dimensionResourceLocation", dimensionKey.location().toString());
+					context.getPlayer().displayClientMessage(TEXT_LINKED, true);
 				}
 				// save tag
 				itemStack.setTag(tagCompound);
-				return ActionResultType.SUCCESS;
+				return InteractionResult.SUCCESS;
 			}
 			else
 			{
-				onItemRightClick(context.getWorld(), context.getPlayer(), Hand.MAIN_HAND);
+				use(context.getLevel(), context.getPlayer(), InteractionHand.MAIN_HAND);
 			}
 		}
-		return ActionResultType.FAIL;
+		return InteractionResult.FAIL;
 	}
 	
 	@Override
@@ -333,8 +333,8 @@ public class ItemHearthstone extends Item
 	{
 		if(oldStack.getItem() == newStack.getItem())
 		{
-			CompoundNBT oldTag = oldStack.getTag();
-			CompoundNBT newTag = newStack.getTag();
+			CompoundTag oldTag = oldStack.getTag();
+			CompoundTag newTag = newStack.getTag();
 			if(oldTag != null && newTag != null)
 			{
 				if(oldTag.getInt("bedX") == newTag.getInt("bedX") && oldTag.getInt("bedY") == newTag.getInt("bedY") && oldTag.getInt("bedZ") == newTag.getInt("bedZ"))
@@ -350,7 +350,7 @@ public class ItemHearthstone extends Item
 	@Override
 	public boolean showDurabilityBar(ItemStack itemStack)
 	{
-		CompoundNBT tagCompound = itemStack.getTag();
+		CompoundTag tagCompound = itemStack.getTag();
 		if(tagCompound != null)
 		{
 			return tagCompound.getInt("cooldown") > 0 || tagCompound.getInt("castTime") > 0;
@@ -362,7 +362,7 @@ public class ItemHearthstone extends Item
 	@Override
 	public double getDurabilityForDisplay(ItemStack itemStack)
 	{
-		CompoundNBT tagCompound = itemStack.getTag();
+		CompoundTag tagCompound = itemStack.getTag();
 		if(tagCompound.getInt("cooldown") > 0)
 			return (double) tagCompound.getInt("cooldown") / (double) HearthstoneSettings.cooldown.get();
 		else
@@ -371,14 +371,14 @@ public class ItemHearthstone extends Item
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+	public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn)
 	{
-		CompoundNBT tag = itemStack.getTag();
+		CompoundTag tag = itemStack.getTag();
 		if(tag != null)
 		{
 			// display if hearthstone is linked to a bed
 			if(tag.getString("dimensionResourceLocation") != "")
-				tooltip.add(TEXT_HOME_SET.mergeStyle(TextFormatting.GRAY));
+				tooltip.add(TEXT_HOME_SET.withStyle(ChatFormatting.GRAY));
 			
 			// calculates and displays cooldown in minutes and seconds
 			int cooldown = tag.getInt("cooldown");
@@ -392,17 +392,17 @@ public class ItemHearthstone extends Item
 				secondsExact = cooldown / 20;
 				seconds = (int) (secondsExact - (minutes * 60));
 				
-				IFormattableTextComponent iformattabletextcomponent = new StringTextComponent("").append(TEXT_COOLDOWN).appendString(Integer.toString(minutes)).append(TEXT_MINUTES).appendString(Integer.toString(seconds)).append(TEXT_SECONDS);
-				tooltip.add(iformattabletextcomponent.mergeStyle(TextFormatting.GRAY));
+				MutableComponent MutableComponent = new TextComponent("").append(TEXT_COOLDOWN).append(Integer.toString(minutes)).append(TEXT_MINUTES).append(Integer.toString(seconds)).append(TEXT_SECONDS);
+				tooltip.add(MutableComponent.withStyle(ChatFormatting.GRAY));
 			}
 		}
 	}
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public boolean hasEffect(ItemStack stack)
+	public boolean isFoil(ItemStack stack)
 	{
-		CompoundNBT tag = stack.getTag();
+		CompoundTag tag = stack.getTag();
 		if(tag != null)
 		{
 			return tag.getBoolean("isCasting");
@@ -411,13 +411,14 @@ public class ItemHearthstone extends Item
 	}
 	
 	/**
-	 * Gets {@code RegistryKey<World>} for a dimension using {@link RegistryKey<T>#getOrCreateKey(ResourceLocation parent, ResourceLocation location)}, but uses Strings instead of ResourceLocations
+	 * Gets {@code ResourceKey<Level>} for a dimension using {@link ResourceKey#create(ResourceLocation, ResourceLocation)}, but uses Strings instead of ResourceLocations
 	 * 
 	 * @param locationParent ResourceLocation parent represented as a String
 	 * @param location       ResourceLocation location represented as a String
-	 * @return {@code RegistryKey<World>}, or null if either String is empty
+	 * @return {@code ResourceKey<Level>}, or null if either String is empty
 	 */
-	private RegistryKey<World> getWorldRegistryKey(String locationParent, String location)
+	
+	private ResourceKey<Level> getWorldResourceKey(String locationParent, String location)
 	{
 		if(locationParent != "" && location != "")
 		{
@@ -425,7 +426,7 @@ public class ItemHearthstone extends Item
 			ResourceLocation dimensionResourceLocation = new ResourceLocation(location);
 			try
 			{
-				return (RegistryKey<World>) getOrCreateKeyMethod.invoke(null, dimensionResourceLocationParent, dimensionResourceLocation);
+				return (ResourceKey<Level>) createResourceKeyMethod.invoke(null, dimensionResourceLocationParent, dimensionResourceLocation);
 			}
 			catch(IllegalAccessException e)
 			{
@@ -442,4 +443,5 @@ public class ItemHearthstone extends Item
 		}
 		return null;
 	}
+	
 }

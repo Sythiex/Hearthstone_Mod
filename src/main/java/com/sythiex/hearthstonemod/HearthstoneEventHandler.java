@@ -1,9 +1,9 @@
 package com.sythiex.hearthstonemod;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
@@ -17,15 +17,15 @@ public class HearthstoneEventHandler
 	@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = false)
 	public void onLivingHurtEvent(LivingHurtEvent event)
 	{
-		if(event.getEntity() instanceof PlayerEntity)
+		if(event.getEntity() instanceof Player)
 		{
-			PlayerEntity player = (PlayerEntity) event.getEntity();
-			ItemStack currentItem = player.inventory.getCurrentItem();
+			Player player = (Player) event.getEntity();
+			ItemStack currentItem = player.getInventory().getSelected();
 			if(currentItem != null)
 			{
 				if(currentItem.getItem() instanceof ItemHearthstone)
 				{
-					CompoundNBT tagCompound = currentItem.getTag();
+					CompoundTag tagCompound = currentItem.getTag();
 					tagCompound.putBoolean("stopCasting", true);
 					currentItem.setTag(tagCompound);
 				}
@@ -40,7 +40,7 @@ public class HearthstoneEventHandler
 		if(event.getSound() == HearthstoneMod.channelSoundEvent)
 		{
 			event.setCanceled(true);
-			Minecraft.getInstance().getSoundHandler().play(new HearthstoneChannelSound(event.getEntity()));
+			Minecraft.getInstance().getSoundManager().play(new HearthstoneChannelSound(event.getEntity()));
 		}
 	}
 }

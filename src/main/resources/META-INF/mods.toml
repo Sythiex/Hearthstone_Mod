@@ -1,10 +1,9 @@
 modLoader="javafml"
-loaderVersion="[34,)"
+loaderVersion="[40,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Sythiex/Hearthstone_Mod/issues"
 [[mods]]
 modId="hearthstonemod"
-#version="1.0.1"
 version="${file.jarVersion}"
 displayName="Hearthstone Mod"
 displayURL="https://minecraft.curseforge.com/projects/hearthstone-mod"

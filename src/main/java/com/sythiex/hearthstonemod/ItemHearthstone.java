@@ -1,5 +1,6 @@
 package com.sythiex.hearthstonemod;
 
+import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -348,7 +349,7 @@ public class ItemHearthstone extends Item
 	}
 	
 	@Override
-	public boolean showDurabilityBar(ItemStack itemStack)
+	public boolean isBarVisible(ItemStack itemStack)
 	{
 		CompoundTag tagCompound = itemStack.getTag();
 		if(tagCompound != null)
@@ -360,13 +361,23 @@ public class ItemHearthstone extends Item
 	}
 	
 	@Override
-	public double getDurabilityForDisplay(ItemStack itemStack)
+	public int getBarWidth(ItemStack itemStack)
 	{
 		CompoundTag tagCompound = itemStack.getTag();
 		if(tagCompound.getInt("cooldown") > 0)
-			return (double) tagCompound.getInt("cooldown") / (double) HearthstoneSettings.cooldown.get();
+			return Math.round(13.0F - (float)tagCompound.getInt("cooldown") * 13.0F / (float)HearthstoneSettings.cooldown.get());
 		else
-			return (double) 1 - (tagCompound.getInt("castTime") / (double) HearthstoneSettings.channelTime.get());
+			return Math.round(13.0F - ((float)HearthstoneSettings.channelTime.get() - (float)tagCompound.getInt("castTime")) * 13.0F / (float)HearthstoneSettings.channelTime.get());
+	}
+	
+	@Override
+	public int getBarColor(ItemStack itemStack)
+	{
+		CompoundTag tagCompound = itemStack.getTag();
+		if(tagCompound.getInt("cooldown") > 0)
+			return Color.decode("#ff0000").hashCode(); // red
+		else
+			return Color.decode("#4bc1e3").hashCode(); // blue
 	}
 	
 	@Override

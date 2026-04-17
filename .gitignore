@@ -17,12 +17,13 @@ out
 build
 .gradle
 
-# other
-eclipse
-run
-
 # Files from Forge MDK
 forge*changelog.txt
 
 # vscode
 .vscode/
+
+# other
+eclipse
+run
+tests.md

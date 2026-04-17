@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "hearthstonemod:items/hearthstone"
+        "layer0": "hearthstonemod:item/hearthstone"
     }
 }

@@ -3,7 +3,6 @@ package com.sythiex.hearthstonemod;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import com.sythiex.hearthstonemod.client.HearthstoneClientBridge;
 import com.sythiex.hearthstonemod.config.HearthstoneConfigData;
 import com.sythiex.hearthstonemod.config.HearthstoneConfigStore;
 import com.sythiex.hearthstonemod.network.HearthstoneNetworkBridge;

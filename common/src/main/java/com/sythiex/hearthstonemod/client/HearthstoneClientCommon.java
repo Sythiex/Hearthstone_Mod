@@ -1,5 +1,6 @@
 package com.sythiex.hearthstonemod.client;
 
+import com.sythiex.hearthstonemod.HearthstoneClientBridge;
 import com.sythiex.hearthstonemod.HearthstoneCommon;
 
 public final class HearthstoneClientCommon {

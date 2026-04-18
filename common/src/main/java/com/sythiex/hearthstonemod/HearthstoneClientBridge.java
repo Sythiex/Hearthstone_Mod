@@ -1,4 +1,4 @@
-package com.sythiex.hearthstonemod.client;
+package com.sythiex.hearthstonemod;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;

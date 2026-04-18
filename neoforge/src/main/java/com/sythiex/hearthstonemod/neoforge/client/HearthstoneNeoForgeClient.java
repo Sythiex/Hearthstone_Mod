@@ -1,4 +1,4 @@
-package com.sythiex.hearthstonemod.neoforge;
+package com.sythiex.hearthstonemod.neoforge.client;
 
 import com.sythiex.hearthstonemod.HearthstoneConstants;
 import com.sythiex.hearthstonemod.client.HearthstoneClientCommon;

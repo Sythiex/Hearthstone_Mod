@@ -1,20 +1,17 @@
 package com.sythiex.hearthstonemod.content;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.sythiex.hearthstonemod.HearthstoneCasting;
+import com.sythiex.hearthstonemod.HearthstoneClientBridge;
 import com.sythiex.hearthstonemod.HearthstoneCommon;
-import com.sythiex.hearthstonemod.client.HearthstoneClientBridge;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +36,8 @@ import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class ItemHearthstone extends Item {
+public class ItemHearthstone extends Item
+{
     private static final int COOLDOWN_BAR_COLOR = 0xFF0000;
     private static final int CAST_BAR_COLOR = 0x4BC1E3;
 
@@ -58,32 +56,43 @@ public class ItemHearthstone extends Item {
     private static final String TEXT_SECONDS = "item.hearthstone.seconds";
     private static final String TEXT_HOME_SET = "item.hearthstone.home_set";
 
-    public ItemHearthstone(Properties properties) {
+    public ItemHearthstone(Properties properties)
+    {
         super(properties);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
+    {
         ItemStack stack = player.getItemInHand(hand);
-        if (hand != InteractionHand.MAIN_HAND) {
+        if (hand != InteractionHand.MAIN_HAND)
+        {
             return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
 
-        if (!level.isClientSide && !player.isCrouching()) {
+        if (!level.isClientSide && !player.isCrouching())
+        {
             HearthstoneItemData data = getData(stack);
-            if (HearthstoneCommon.isDimensionBlacklisted(level)) {
+            if (HearthstoneCommon.isDimensionBlacklisted(level))
+            {
                 player.displayClientMessage(translatable(TEXT_DIMENSION_BLACKLISTED), true);
-            } else if (!isLinkedHome(data)) {
+            } else if (!isLinkedHome(data))
+            {
                 player.displayClientMessage(translatable(TEXT_NO_HOME), true);
-            } else if (isRespawnAnchorLinkingDisabled(data)) {
+            } else if (isRespawnAnchorLinkingDisabled(data))
+            {
                 player.displayClientMessage(translatable(TEXT_RESPAWN_ANCHOR_DISABLED), true);
-            } else if (isCrossDimensionTravelBlocked(level, data)) {
+            } else if (isCrossDimensionTravelBlocked(level, data))
+            {
                 player.displayClientMessage(translatable(TEXT_CROSS_DIMENSION_DISABLED), true);
-            } else if (getCooldown(level, data) == 0) {
-                if (player instanceof ServerPlayer serverPlayer) {
+            } else if (getCooldown(level, data) == 0)
+            {
+                if (player instanceof ServerPlayer serverPlayer)
+                {
                     HearthstoneCasting.startCasting(serverPlayer);
                 }
-            } else {
+            } else
+            {
                 player.displayClientMessage(translatable(TEXT_ON_COOLDOWN), true);
             }
         }
@@ -92,45 +101,56 @@ public class ItemHearthstone extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult useOn(UseOnContext context)
+    {
         Player player = context.getPlayer();
-        if (player == null) {
+        if (player == null)
+        {
             return InteractionResult.PASS;
         }
 
         Level level = context.getLevel();
-        if (level.isClientSide()) {
+        if (level.isClientSide())
+        {
             return InteractionResult.FAIL;
         }
 
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!HearthstoneContentIds.isHearthstone(stack)) {
+        if (!HearthstoneContentIds.isHearthstone(stack))
+        {
             return InteractionResult.FAIL;
         }
 
-        if (player.isCrouching()) {
+        if (player.isCrouching())
+        {
             BlockPos clickedPos = context.getClickedPos();
             BlockState state = level.getBlockState(clickedPos);
-            if (state.is(BlockTags.BEDS)) {
-                if (HearthstoneCommon.isDimensionBlacklisted(level)) {
+            if (state.is(BlockTags.BEDS))
+            {
+                if (HearthstoneCommon.isDimensionBlacklisted(level))
+                {
                     player.displayClientMessage(translatable(TEXT_DIMENSION_BLACKLISTED), true);
                     return InteractionResult.SUCCESS;
                 }
 
                 linkHome(stack, clickedPos, level.dimension().location(), HearthstoneLinkType.BED);
                 player.displayClientMessage(translatable(TEXT_LINKED), true);
-            } else if (isRespawnAnchor(state)) {
-                if (HearthstoneCommon.isDimensionBlacklisted(level)) {
+            } else if (isRespawnAnchor(state))
+            {
+                if (HearthstoneCommon.isDimensionBlacklisted(level))
+                {
                     player.displayClientMessage(translatable(TEXT_DIMENSION_BLACKLISTED), true);
                     return InteractionResult.SUCCESS;
                 }
 
-                if (!HearthstoneCommon.config().allowRespawnAnchorLinking()) {
+                if (!HearthstoneCommon.config().allowRespawnAnchorLinking())
+                {
                     player.displayClientMessage(translatable(TEXT_RESPAWN_ANCHOR_DISABLED), true);
                     return InteractionResult.SUCCESS;
                 }
 
-                if (getRespawnAnchorCharge(state) == 0) {
+                if (getRespawnAnchorCharge(state) == 0)
+                {
                     player.displayClientMessage(translatable(TEXT_RESPAWN_ANCHOR_NO_CHARGE), true);
                     return InteractionResult.SUCCESS;
                 }
@@ -146,22 +166,26 @@ public class ItemHearthstone extends Item {
     }
 
     @Override
-    public boolean isBarVisible(ItemStack stack) {
+    public boolean isBarVisible(ItemStack stack)
+    {
         HearthstoneClientBridge clientBridge = HearthstoneCommon.clientBridge();
         return getCooldown(clientBridge.clientLevel(), getData(stack)) > 0 || clientBridge.isLocalStackCasting(stack);
     }
 
     @Override
-    public int getBarWidth(ItemStack stack) {
+    public int getBarWidth(ItemStack stack)
+    {
         HearthstoneClientBridge clientBridge = HearthstoneCommon.clientBridge();
         int cooldown = getCooldown(clientBridge.clientLevel(), getData(stack));
-        if (cooldown > 0) {
+        if (cooldown > 0)
+        {
             int maxCooldown = Math.max(1, HearthstoneCommon.config().cooldown());
             return Math.round(13.0F - (float) cooldown * 13.0F / (float) maxCooldown);
         }
 
         int castTime = clientBridge.getLocalCastTime(stack);
-        if (castTime > 0) {
+        if (castTime > 0)
+        {
             int channelTime = Math.max(1, HearthstoneCommon.config().channelTime());
             return Math.round(13.0F - ((float) channelTime - (float) castTime) * 13.0F / (float) channelTime);
         }
@@ -170,19 +194,23 @@ public class ItemHearthstone extends Item {
     }
 
     @Override
-    public int getBarColor(ItemStack stack) {
+    public int getBarColor(ItemStack stack)
+    {
         return getCooldown(HearthstoneCommon.clientBridge().clientLevel(), getData(stack)) > 0 ? COOLDOWN_BAR_COLOR : CAST_BAR_COLOR;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag tooltipFlag)
+    {
         HearthstoneItemData data = getData(stack);
-        if (isLinkedHome(data)) {
+        if (isLinkedHome(data))
+        {
             tooltip.add(translatable(TEXT_HOME_SET).withStyle(ChatFormatting.GRAY));
         }
 
         int cooldown = getCooldown(HearthstoneCommon.clientBridge().clientLevel(), data);
-        if (cooldown != 0) {
+        if (cooldown != 0)
+        {
             cooldown += 19;
             int minutes = cooldown / 1200;
             int seconds = cooldown / 20 - minutes * 60;
@@ -191,18 +219,22 @@ public class ItemHearthstone extends Item {
     }
 
     @Override
-    public boolean isFoil(ItemStack stack) {
+    public boolean isFoil(ItemStack stack)
+    {
         return HearthstoneCommon.clientBridge().isLocalStackCasting(stack);
     }
 
-    public static void finishCast(ServerPlayer player, ItemStack stack) {
+    public static void finishCast(ServerPlayer player, ItemStack stack)
+    {
         HearthstoneItemData data = getData(stack);
         Optional<HearthstoneHomeLink> homeLink = data.homeLink();
-        if (homeLink.isEmpty()) {
+        if (homeLink.isEmpty())
+        {
             return;
         }
 
-        if (isRespawnAnchorLinkingDisabled(data)) {
+        if (isRespawnAnchorLinkingDisabled(data))
+        {
             player.displayClientMessage(translatable(TEXT_RESPAWN_ANCHOR_DISABLED), true);
             return;
         }
@@ -212,16 +244,20 @@ public class ItemHearthstone extends Item {
 
         playPlayerSound(destinationLevel, player, HearthstoneContentIds.HEARTHSTONE_CAST_SOUND);
 
-        if (!player.level().dimension().location().equals(link.dimensionId())) {
-            if (!HearthstoneCommon.config().allowCrossDimensionTravel()) {
+        if (!player.level().dimension().location().equals(link.dimensionId()))
+        {
+            if (!HearthstoneCommon.config().allowCrossDimensionTravel())
+            {
                 player.displayClientMessage(translatable(TEXT_CROSS_DIMENSION_DISABLED), true);
                 return;
             }
 
             MinecraftServer server = player.getServer();
-            if (server != null) {
+            if (server != null)
+            {
                 ServerLevel linkedLevel = server.getLevel(link.dimensionKey());
-                if (linkedLevel != null) {
+                if (linkedLevel != null)
+                {
                     BlockPos homePos = link.homePos();
                     player.teleportTo(linkedLevel, homePos.getX() + 0.5D, homePos.getY() + 1.0D, homePos.getZ() + 0.5D, player.getYRot(), player.getXRot());
                     destinationLevel = linkedLevel;
@@ -231,28 +267,35 @@ public class ItemHearthstone extends Item {
 
         BlockPos homePos = link.homePos();
         BlockState state = destinationLevel.getBlockState(homePos);
-        if (link.linkType() == HearthstoneLinkType.RESPAWN_ANCHOR) {
+        if (link.linkType() == HearthstoneLinkType.RESPAWN_ANCHOR)
+        {
             finishRespawnAnchorCast(player, destinationLevel, stack, homePos, state);
-        } else {
+        } else
+        {
             finishBedCast(player, destinationLevel, stack, homePos, state);
         }
     }
 
-    private static HearthstoneItemData getData(ItemStack stack) {
+    private static HearthstoneItemData getData(ItemStack stack)
+    {
         HearthstoneItemData data = stack.get(HearthstoneDataComponents.hearthstoneData());
         return data == null ? HearthstoneItemData.DEFAULT : data;
     }
 
-    private static void setData(ItemStack stack, HearthstoneItemData data) {
+    private static void setData(ItemStack stack, HearthstoneItemData data)
+    {
         stack.set(HearthstoneDataComponents.hearthstoneData(), data);
     }
 
-    private static void linkHome(ItemStack stack, BlockPos homePos, ResourceLocation dimensionId, HearthstoneLinkType linkType) {
+    private static void linkHome(ItemStack stack, BlockPos homePos, ResourceLocation dimensionId, HearthstoneLinkType linkType)
+    {
         setData(stack, getData(stack).withHomeLink(new HearthstoneHomeLink(homePos.immutable(), dimensionId, linkType)));
     }
 
-    private static int getCooldown(Level level, HearthstoneItemData data) {
-        if (level == null || data.lastUsedGameTime() < 0L) {
+    private static int getCooldown(Level level, HearthstoneItemData data)
+    {
+        if (level == null || data.lastUsedGameTime() < 0L)
+        {
             return 0;
         }
 
@@ -261,33 +304,40 @@ public class ItemHearthstone extends Item {
         return (int) Math.max(0L, remainingCooldown);
     }
 
-    private static boolean isLinkedHome(HearthstoneItemData data) {
+    private static boolean isLinkedHome(HearthstoneItemData data)
+    {
         return data.homeLink().isPresent();
     }
 
-    private static boolean isCrossDimensionTravelBlocked(Level level, HearthstoneItemData data) {
-        if (HearthstoneCommon.config().allowCrossDimensionTravel() || data.homeLink().isEmpty()) {
+    private static boolean isCrossDimensionTravelBlocked(Level level, HearthstoneItemData data)
+    {
+        if (HearthstoneCommon.config().allowCrossDimensionTravel() || data.homeLink().isEmpty())
+        {
             return false;
         }
 
         return !data.homeLink().get().dimensionId().equals(level.dimension().location());
     }
 
-    private static boolean isRespawnAnchorLinkingDisabled(HearthstoneItemData data) {
-        return data.homeLink().map(HearthstoneHomeLink::linkType).orElse(HearthstoneLinkType.BED) == HearthstoneLinkType.RESPAWN_ANCHOR
-                && !HearthstoneCommon.config().allowRespawnAnchorLinking();
+    private static boolean isRespawnAnchorLinkingDisabled(HearthstoneItemData data)
+    {
+        return data.homeLink().map(HearthstoneHomeLink::linkType).orElse(HearthstoneLinkType.BED) == HearthstoneLinkType.RESPAWN_ANCHOR && !HearthstoneCommon.config().allowRespawnAnchorLinking();
     }
 
-    private static boolean isRespawnAnchor(BlockState state) {
+    private static boolean isRespawnAnchor(BlockState state)
+    {
         return state.is(Blocks.RESPAWN_ANCHOR);
     }
 
-    private static int getRespawnAnchorCharge(BlockState state) {
+    private static int getRespawnAnchorCharge(BlockState state)
+    {
         return state.getValue(RespawnAnchorBlock.CHARGE);
     }
 
-    private static void finishBedCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state) {
-        if (state.is(BlockTags.BEDS)) {
+    private static void finishBedCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state)
+    {
+        if (state.is(BlockTags.BEDS))
+        {
             Optional<Vec3> respawnPosition = BedBlock.findStandUpPosition(EntityType.PLAYER, level, homePos, state.getValue(BedBlock.FACING), player.getYRot());
             teleportToRespawnPosition(player, respawnPosition, homePos);
             completeTeleport(player, level, stack);
@@ -297,14 +347,17 @@ public class ItemHearthstone extends Item {
         breakLinkedHome(player, level, stack, homePos, TEXT_MISSING_BED);
     }
 
-    private static void finishRespawnAnchorCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state) {
-        if (!isRespawnAnchor(state)) {
+    private static void finishRespawnAnchorCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state)
+    {
+        if (!isRespawnAnchor(state))
+        {
             breakLinkedHome(player, level, stack, homePos, TEXT_MISSING_RESPAWN_ANCHOR);
             return;
         }
 
         int charge = getRespawnAnchorCharge(state);
-        if (charge == 0) {
+        if (charge == 0)
+        {
             breakLinkedHome(player, level, stack, homePos, TEXT_EMPTY_RESPAWN_ANCHOR);
             return;
         }
@@ -313,63 +366,72 @@ public class ItemHearthstone extends Item {
         teleportToRespawnPosition(player, respawnPosition, homePos);
         completeTeleport(player, level, stack);
 
-        if (HearthstoneCommon.config().consumeRespawnAnchorCharge()) {
+        if (HearthstoneCommon.config().consumeRespawnAnchorCharge())
+        {
             int remainingCharge = charge - 1;
             level.setBlock(homePos, state.setValue(RespawnAnchorBlock.CHARGE, remainingCharge), 3);
             level.playSound(null, homePos, SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
-            if (remainingCharge == 0) {
+            if (remainingCharge == 0)
+            {
                 clearLinkedHome(stack);
                 player.displayClientMessage(translatable(TEXT_EMPTY_RESPAWN_ANCHOR), true);
             }
         }
     }
 
-    private static void teleportToRespawnPosition(ServerPlayer player, Optional<Vec3> respawnPosition, BlockPos homePos) {
-        if (respawnPosition.isPresent()) {
+    private static void teleportToRespawnPosition(ServerPlayer player, Optional<Vec3> respawnPosition, BlockPos homePos)
+    {
+        if (respawnPosition.isPresent())
+        {
             Vec3 safePosition = respawnPosition.get();
             player.teleportTo(safePosition.x, safePosition.y, safePosition.z);
-        } else {
+        } else
+        {
             teleportToHomeTop(player, homePos);
         }
     }
 
-    private static void breakLinkedHome(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, String messageKey) {
+    private static void breakLinkedHome(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, String messageKey)
+    {
         teleportToHomeTop(player, homePos);
         completeTeleport(player, level, stack);
         clearLinkedHome(stack);
         player.displayClientMessage(translatable(messageKey), true);
     }
 
-    private static void teleportToHomeTop(ServerPlayer player, BlockPos homePos) {
+    private static void teleportToHomeTop(ServerPlayer player, BlockPos homePos)
+    {
         player.teleportTo(homePos.getX() + 0.5D, homePos.getY() + 1.0D, homePos.getZ() + 0.5D);
     }
 
-    private static void completeTeleport(ServerPlayer player, ServerLevel level, ItemStack stack) {
+    private static void completeTeleport(ServerPlayer player, ServerLevel level, ItemStack stack)
+    {
         playPlayerSound(level, player, HearthstoneContentIds.HEARTHSTONE_IMPACT_SOUND);
         setData(stack, getData(stack).withLastUsedGameTime(level.getGameTime()));
     }
 
-    private static void clearLinkedHome(ItemStack stack) {
+    private static void clearLinkedHome(ItemStack stack)
+    {
         setData(stack, getData(stack).clearHomeLink());
     }
 
-    private static void playPlayerSound(ServerLevel level, ServerPlayer player, ResourceLocation soundId) {
+    private static void playPlayerSound(ServerLevel level, ServerPlayer player, ResourceLocation soundId)
+    {
         SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(soundId);
-        if (soundEvent != null) {
+        if (soundEvent != null)
+        {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
     }
 
-    private static MutableComponent buildCooldownText(int minutes, int seconds) {
-        return Component.empty()
-                .append(translatable(TEXT_COOLDOWN))
-                .append(Component.literal(Integer.toString(minutes)))
-                .append(translatable(TEXT_MINUTES))
-                .append(Component.literal(Integer.toString(seconds)))
-                .append(translatable(TEXT_SECONDS));
+    private static MutableComponent buildCooldownText(int minutes, int seconds)
+    {
+        return Component.empty().append(translatable(TEXT_COOLDOWN)).append(Component.literal(Integer.toString(minutes))).append(translatable(TEXT_MINUTES))
+                .append(Component.literal(Integer.toString(seconds))).append(translatable(TEXT_SECONDS));
     }
 
-    private static MutableComponent translatable(String key) {
+    private static MutableComponent translatable(String key)
+    {
         return Component.translatable(key);
     }
 }

@@ -162,7 +162,6 @@ public final class HearthstoneConfigStore {
     private synchronized void persist() throws IOException {
         StringBuilder builder = new StringBuilder();
         builder.append("# Hearthstone shared gameplay settings").append(System.lineSeparator());
-        builder.append("# This file is used by both the NeoForge and Fabric builds.").append(System.lineSeparator()).append(System.lineSeparator());
         builder.append(HearthstoneConfigData.CHANNEL_TIME_KEY).append(" = ").append(currentData.channelTime()).append(System.lineSeparator());
         builder.append(HearthstoneConfigData.COOLDOWN_KEY).append(" = ").append(currentData.cooldown()).append(System.lineSeparator());
         builder.append(HearthstoneConfigData.ALLOW_CROSS_DIMENSION_TRAVEL_KEY).append(" = ").append(currentData.allowCrossDimensionTravel()).append(System.lineSeparator());

@@ -3,6 +3,8 @@ plugins {
     id 'java-library'
 }
 
+def clientPackagePattern = 'com/sythiex/hearthstonemod/client/**/*.java'
+
 base {
     archivesName = "${mod_id}-common"
 }
@@ -13,8 +15,15 @@ java {
 }
 
 sourceSets {
+    main {
+        java {
+            exclude clientPackagePattern
+        }
+    }
+
     client {
-        java.srcDir 'src/client/java'
+        java.srcDir 'src/main/java'
+        java.include clientPackagePattern
         resources.srcDir 'src/client/resources'
         compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
         runtimeClasspath += output + sourceSets.main.output + sourceSets.main.runtimeClasspath
@@ -40,6 +49,16 @@ dependencies {
 tasks.named('sourcesJar').configure {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from sourceSets.client.allSource
+}
+
+tasks.register('cleanClientCompileOutputs', Delete) {
+    delete sourceSets.client.output.classesDirs
+}
+
+tasks.named('compileClientJava', JavaCompile).configure {
+    dependsOn tasks.named('cleanClientCompileOutputs')
+    options.incremental = false
+    outputs.cacheIf { false }
 }
 
 tasks.named('jar', Jar).configure {

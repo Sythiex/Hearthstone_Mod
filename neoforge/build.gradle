@@ -23,9 +23,8 @@ configurations {
 }
 
 dependencies {
-    implementation project(path: ':common', configuration: 'namedElements')
+    compileOnly project(path: ':common', configuration: 'namedElements')
     compileOnly files(project(':common').sourceSets.client.output)
-    runtimeOnly files(project(':common').sourceSets.client.output)
 }
 
 neoForge {
@@ -62,6 +61,8 @@ neoForge {
     mods {
         "${project.mod_id}" {
             sourceSet(sourceSets.main)
+            sourceSet(project(':common').sourceSets.main)
+            sourceSet(project(':common').sourceSets.client)
         }
     }
 }

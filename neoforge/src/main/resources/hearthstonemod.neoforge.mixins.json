@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.sythiex.hearthstonemod.neoforge.mixin",
+  "package": "com.sythiex.hearthstonemod.neoforge.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [

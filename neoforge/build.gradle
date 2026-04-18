@@ -1,0 +1,89 @@
+plugins {
+    alias(libs.plugins.moddev)
+    id 'java-library'
+}
+
+base {
+    archivesName = "${mod_id}-neoforge"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(project.java_version))
+    withSourcesJar()
+}
+
+sourceSets {
+    main {
+        resources.srcDir 'src/generated/resources'
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    implementation project(path: ':common', configuration: 'namedElements')
+    compileOnly files(project(':common').sourceSets.client.output)
+    runtimeOnly files(project(':common').sourceSets.client.output)
+}
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources').absolutePath, '--existing',
+                    rootProject.project(':common').file('src/main/resources').absolutePath, '--existing', file('src/main/resources').absolutePath
+        }
+
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${project.mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    inputs.properties(rootProject.sharedMetadata + [version: project.version])
+
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand(rootProject.sharedMetadata + [version: project.version])
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    dependsOn ':common:classes', ':common:clientClasses'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from project(':common').sourceSets.main.output
+    from project(':common').sourceSets.client.output
+}
+
+tasks.named('sourcesJar').configure {
+    dependsOn ':common:classes', ':common:clientClasses'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from project(':common').sourceSets.main.allSource
+    from project(':common').sourceSets.client.allSource
+}

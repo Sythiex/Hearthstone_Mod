@@ -1,15 +1,64 @@
 ![Hearthstone Mod](docs/images/banner.png)
 
-A lightweight mod inspired by *World of Warcraft* that adds a craftable Hearthstone. Bind it to a bed (or a respawn anchor), channel for a few seconds, and teleport home from anywhere.
+A lightweight mod inspired by *World of Warcraft* that adds a craftable Hearthstone. This branch is now set up as a Minecraft `1.21.1` multiloader workspace targeting both NeoForge and Fabric, with the gameplay port still to come.
 
-### How It Works
+## Workspace Layout
 
-1. Sneak-right-click a bed or a charged respawn anchor with the Hearthstone to bind it
-2. Right-click with the Hearthstone to begin channeling
-3. Stay still and avoid taking damage until the cast completes
+- `common`: shared Minecraft code, shared resources, shared config/network/content scaffolding
+- `neoforge`: NeoForge bootstrap, registries, events, payload registration, config-screen hookup
+- `fabric`: Fabric bootstrap, registries, events, networking bridge, mixin scaffold, Mod Menu hookup
 
-The Hearthstone has a cooldown between uses. The config lets you adjust the channel time, cooldown, respawn anchor behavior, disable cross-dimensional travel, or block specific dimensions.
+The old `1.20.1-Forge` implementation is kept as the porting reference and is no longer part of the active build path in this workspace.
 
-This mod requires [Forge](https://files.minecraftforge.net/). Feel free to add this mod to your modpack, but please do not rehost the files.
+Reference sources:
 
-Supported versions: 1.20.1
+- Local backup: `B:\Minecraft Modding\Hearthstone_Mod backup`
+- GitHub branch: `https://github.com/Sythiex/Hearthstone_Mod/tree/1.20.1-Forge`
+
+## Requirements
+
+- Java `21`
+
+## Build Commands
+
+Windows:
+
+```powershell
+.\gradlew.bat :common:compileJava
+.\gradlew.bat build
+.\gradlew.bat buildFabric
+.\gradlew.bat buildNeoForge
+```
+
+macOS / Linux:
+
+```bash
+./gradlew :common:compileJava
+./gradlew build
+./gradlew buildFabric
+./gradlew buildNeoForge
+```
+
+## Run Commands
+
+Windows:
+
+```powershell
+.\gradlew.bat runFabricClient
+.\gradlew.bat runNeoForgeClient
+```
+
+macOS / Linux:
+
+```bash
+./gradlew runFabricClient
+./gradlew runNeoForgeClient
+```
+
+## Notes
+
+- Shared assets, lang files, recipes, models, sounds, and other common resources live under `common/src/main/resources`.
+- Loader-specific metadata stays local to each loader module:
+  - Fabric: `fabric.mod.json`, mixin config
+  - NeoForge: `META-INF/neoforge.mods.toml`
+- `common` is a build module, not a separately published mod artifact.

@@ -1,0 +1,55 @@
+plugins {
+    alias(libs.plugins.fabricloom)
+    id 'java-library'
+}
+
+base {
+    archivesName = "${mod_id}-common"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(project.java_version))
+    withSourcesJar()
+}
+
+sourceSets {
+    client {
+        java.srcDir 'src/client/java'
+        resources.srcDir 'src/client/resources'
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += output + sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
+configurations {
+    clientImplementation.extendsFrom implementation
+    clientCompileOnly.extendsFrom compileOnly
+    clientRuntimeOnly.extendsFrom runtimeOnly
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${project.parchment_minecraft_version}:${project.parchment_mappings_version}@zip")
+    }
+
+    compileOnly libs.fabricLoader
+}
+
+tasks.named('sourcesJar').configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from sourceSets.client.allSource
+}
+
+tasks.named('jar', Jar).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from sourceSets.client.output
+
+    manifest {
+        attributes(
+                'FMLModType': 'GAMELIBRARY',
+                'Automatic-Module-Name': "${project.group}.common"
+        )
+    }
+}

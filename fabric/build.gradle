@@ -1,0 +1,64 @@
+plugins {
+    alias(libs.plugins.fabricloom)
+    id 'java-library'
+}
+
+base {
+    archivesName = "${mod_id}-fabric"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(project.java_version))
+    withSourcesJar()
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "${project.mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+            sourceSet project(':common').sourceSets.main
+            sourceSet project(':common').sourceSets.client
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${project.parchment_minecraft_version}:${project.parchment_mappings_version}@zip")
+    }
+
+    implementation project(path: ':common', configuration: 'namedElements')
+    clientImplementation project(':common').sourceSets.client.output
+
+    modImplementation libs.fabricLoader
+    modImplementation libs.fabricApi
+    modCompileOnly libs.modmenu
+    modLocalRuntime libs.modmenu
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    inputs.properties(rootProject.sharedMetadata + [version: project.version])
+
+    filesMatching('fabric.mod.json') {
+        expand(rootProject.sharedMetadata + [version: project.version])
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    dependsOn ':common:classes', ':common:clientClasses'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from project(':common').sourceSets.main.output
+    from project(':common').sourceSets.client.output
+}
+
+tasks.named('sourcesJar').configure {
+    dependsOn ':common:classes', ':common:clientClasses'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from project(':common').sourceSets.main.allSource
+    from project(':common').sourceSets.client.allSource
+}

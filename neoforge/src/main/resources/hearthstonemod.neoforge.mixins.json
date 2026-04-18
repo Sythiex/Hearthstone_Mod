@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.sythiex.hearthstonemod.neoforge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "HumanoidModelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

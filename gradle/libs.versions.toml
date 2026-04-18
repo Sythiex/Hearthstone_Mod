@@ -1,0 +1,15 @@
+[versions]
+moddev = "2.0.141"
+fabricloom = "1.14.10"
+fabricloader = "0.16.7"
+fabricapi = "0.106.0+1.21.1"
+modmenu = "11.0.4"
+
+[plugins]
+moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
+fabricloom = { id = "net.fabricmc.fabric-loom-remap", version.ref = "fabricloom" }
+
+[libraries]
+fabricLoader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricloader" }
+fabricApi = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricapi" }
+modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }

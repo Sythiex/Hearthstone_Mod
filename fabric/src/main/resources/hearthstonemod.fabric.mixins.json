@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.sythiex.hearthstonemod.fabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "HumanoidModelMixin",
+    "ItemInHandRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

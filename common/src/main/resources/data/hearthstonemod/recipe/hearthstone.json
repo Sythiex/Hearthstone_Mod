@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "pattern": [
+        "SDS",
+        "DED",
+        "SDS"
+    ],
+    "key": {
+        "S": {
+            "tag": "c:stones"
+        },
+        "D": {
+            "tag": "c:gems/diamond"
+        },
+        "E": {
+            "tag": "c:ender_pearls"
+        }
+    },
+    "result": {
+        "count": 1,
+        "id": "hearthstonemod:hearthstone"
+    }
+}

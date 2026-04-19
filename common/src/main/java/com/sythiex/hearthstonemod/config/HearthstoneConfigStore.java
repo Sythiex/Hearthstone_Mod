@@ -9,16 +9,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class HearthstoneConfigStore {
+public final class HearthstoneConfigStore
+{
     private final Path path;
     private HearthstoneConfigData currentData;
 
-    private HearthstoneConfigStore(Path path, HearthstoneConfigData currentData) {
+    private HearthstoneConfigStore(Path path, HearthstoneConfigData currentData)
+    {
         this.path = path;
         this.currentData = currentData;
     }
 
-    public static HearthstoneConfigStore load(Path configDirectory) throws IOException {
+    public static HearthstoneConfigStore load(Path configDirectory) throws IOException
+    {
         Files.createDirectories(configDirectory);
 
         Path configPath = configDirectory.resolve(HearthstoneConfigData.FILE_NAME);
@@ -28,30 +31,37 @@ public final class HearthstoneConfigStore {
         return store;
     }
 
-    public synchronized HearthstoneConfigData get() {
+    public synchronized HearthstoneConfigData get()
+    {
         return currentData;
     }
 
-    public synchronized void save(HearthstoneConfigData updatedData) throws IOException {
+    public synchronized void save(HearthstoneConfigData updatedData) throws IOException
+    {
         currentData = updatedData.sanitize();
         persist();
     }
 
-    public Path path() {
+    public Path path()
+    {
         return path;
     }
 
-    private static HearthstoneConfigData read(Path configPath) throws IOException {
+    private static HearthstoneConfigData read(Path configPath) throws IOException
+    {
         Map<String, String> rawValues = new LinkedHashMap<>();
 
-        for (String line : Files.readAllLines(configPath, StandardCharsets.UTF_8)) {
+        for (String line : Files.readAllLines(configPath, StandardCharsets.UTF_8))
+        {
             String trimmedLine = line.trim();
-            if (trimmedLine.isEmpty() || trimmedLine.startsWith("#")) {
+            if (trimmedLine.isEmpty() || trimmedLine.startsWith("#"))
+            {
                 continue;
             }
 
             int separatorIndex = trimmedLine.indexOf('=');
-            if (separatorIndex < 0) {
+            if (separatorIndex < 0)
+            {
                 continue;
             }
 
@@ -69,56 +79,61 @@ public final class HearthstoneConfigStore {
         boolean consumeRespawnAnchorCharge = parseBoolean(rawValues.get(HearthstoneConfigData.CONSUME_RESPAWN_ANCHOR_CHARGE_KEY), defaults.consumeRespawnAnchorCharge());
         List<String> dimensionBlacklist = parseStringArray(rawValues.get(HearthstoneConfigData.DIMENSION_BLACKLIST_KEY));
 
-        return new HearthstoneConfigData(
-                channelTime,
-                cooldown,
-                allowCrossDimensionTravel,
-                allowRespawnAnchorLinking,
-                consumeRespawnAnchorCharge,
-                dimensionBlacklist
-        );
+        return new HearthstoneConfigData(channelTime, cooldown, allowCrossDimensionTravel, allowRespawnAnchorLinking, consumeRespawnAnchorCharge, dimensionBlacklist);
     }
 
-    private static int parseInt(String rawValue, int fallback) {
-        if (rawValue == null) {
+    private static int parseInt(String rawValue, int fallback)
+    {
+        if (rawValue == null)
+        {
             return fallback;
         }
 
-        try {
+        try
+        {
             return Integer.parseInt(rawValue);
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException exception)
+        {
             return fallback;
         }
     }
 
-    private static boolean parseBoolean(String rawValue, boolean fallback) {
-        if (rawValue == null) {
+    private static boolean parseBoolean(String rawValue, boolean fallback)
+    {
+        if (rawValue == null)
+        {
             return fallback;
         }
 
-        if ("true".equalsIgnoreCase(rawValue)) {
+        if ("true".equalsIgnoreCase(rawValue))
+        {
             return true;
         }
 
-        if ("false".equalsIgnoreCase(rawValue)) {
+        if ("false".equalsIgnoreCase(rawValue))
+        {
             return false;
         }
 
         return fallback;
     }
 
-    private static List<String> parseStringArray(String rawValue) {
-        if (rawValue == null || rawValue.isBlank()) {
+    private static List<String> parseStringArray(String rawValue)
+    {
+        if (rawValue == null || rawValue.isBlank())
+        {
             return List.of();
         }
 
         String trimmed = rawValue.trim();
-        if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
+        if (!trimmed.startsWith("[") || !trimmed.endsWith("]"))
+        {
             return List.of();
         }
 
         String contents = trimmed.substring(1, trimmed.length() - 1).trim();
-        if (contents.isEmpty()) {
+        if (contents.isEmpty())
+        {
             return List.of();
         }
 
@@ -127,22 +142,27 @@ public final class HearthstoneConfigStore {
         boolean inString = false;
         boolean escaping = false;
 
-        for (int i = 0; i < contents.length(); i++) {
+        for (int i = 0; i < contents.length(); i++)
+        {
             char currentChar = contents.charAt(i);
 
-            if (escaping) {
+            if (escaping)
+            {
                 currentValue.append(currentChar);
                 escaping = false;
                 continue;
             }
 
-            if (currentChar == '\\') {
+            if (currentChar == '\\')
+            {
                 escaping = true;
                 continue;
             }
 
-            if (currentChar == '"') {
-                if (inString) {
+            if (currentChar == '"')
+            {
+                if (inString)
+                {
                     values.add(currentValue.toString());
                     currentValue.setLength(0);
                 }
@@ -151,7 +171,8 @@ public final class HearthstoneConfigStore {
                 continue;
             }
 
-            if (inString) {
+            if (inString)
+            {
                 currentValue.append(currentChar);
             }
         }
@@ -159,27 +180,46 @@ public final class HearthstoneConfigStore {
         return List.copyOf(values);
     }
 
-    private synchronized void persist() throws IOException {
+    private synchronized void persist() throws IOException
+    {
         StringBuilder builder = new StringBuilder();
-        builder.append("# Hearthstone shared gameplay settings").append(System.lineSeparator());
-        builder.append(HearthstoneConfigData.CHANNEL_TIME_KEY).append(" = ").append(currentData.channelTime()).append(System.lineSeparator());
-        builder.append(HearthstoneConfigData.COOLDOWN_KEY).append(" = ").append(currentData.cooldown()).append(System.lineSeparator());
-        builder.append(HearthstoneConfigData.ALLOW_CROSS_DIMENSION_TRAVEL_KEY).append(" = ").append(currentData.allowCrossDimensionTravel()).append(System.lineSeparator());
-        builder.append(HearthstoneConfigData.ALLOW_RESPAWN_ANCHOR_LINKING_KEY).append(" = ").append(currentData.allowRespawnAnchorLinking()).append(System.lineSeparator());
-        builder.append(HearthstoneConfigData.CONSUME_RESPAWN_ANCHOR_CHARGE_KEY).append(" = ").append(currentData.consumeRespawnAnchorCharge()).append(System.lineSeparator());
-        builder.append(HearthstoneConfigData.DIMENSION_BLACKLIST_KEY).append(" = ").append(serializeStringArray(currentData.dimensionBlacklist())).append(System.lineSeparator());
+        String lineSeparator = System.lineSeparator();
+
+        appendCommentedEntry(builder, "How long it takes for the hearthstone to teleport you. Measured in ticks (20 ticks = 1 second). Default: 200 ticks (10 seconds)",
+                HearthstoneConfigData.CHANNEL_TIME_KEY, Integer.toString(currentData.channelTime()), lineSeparator);
+        appendCommentedEntry(builder, "How long you must wait between hearthstone uses. Measured in ticks (20 ticks = 1 second). Default: 36000 ticks (30 minutes)",
+                HearthstoneConfigData.COOLDOWN_KEY, Integer.toString(currentData.cooldown()), lineSeparator);
+        appendCommentedEntry(builder, "Whether the hearthstone can teleport you between dimensions. Default: true", HearthstoneConfigData.ALLOW_CROSS_DIMENSION_TRAVEL_KEY,
+                Boolean.toString(currentData.allowCrossDimensionTravel()), lineSeparator);
+        appendCommentedEntry(builder, "Whether the hearthstone can link to respawn anchors. Default: true", HearthstoneConfigData.ALLOW_RESPAWN_ANCHOR_LINKING_KEY,
+                Boolean.toString(currentData.allowRespawnAnchorLinking()), lineSeparator);
+        appendCommentedEntry(builder, "Whether successful hearthstone teleports should consume a charge from linked respawn anchors. Default: false",
+                HearthstoneConfigData.CONSUME_RESPAWN_ANCHOR_CHARGE_KEY, Boolean.toString(currentData.consumeRespawnAnchorCharge()), lineSeparator);
+        appendCommentedEntry(builder, "A list of dimension ids in which the hearthstone is disabled. Example: [\"minecraft:the_nether\", \"minecraft:the_end\"]",
+                HearthstoneConfigData.DIMENSION_BLACKLIST_KEY, serializeStringArray(currentData.dimensionBlacklist()), lineSeparator);
+        builder.append(lineSeparator);
 
         Files.writeString(path, builder.toString(), StandardCharsets.UTF_8);
     }
 
-    private static String serializeStringArray(List<String> values) {
-        if (values.isEmpty()) {
+    private static void appendCommentedEntry(StringBuilder builder, String comment, String key, String value, String lineSeparator)
+    {
+        builder.append('\t').append('#').append(comment).append(lineSeparator);
+        builder.append('\t').append(key).append(" = ").append(value).append(lineSeparator);
+    }
+
+    private static String serializeStringArray(List<String> values)
+    {
+        if (values.isEmpty())
+        {
             return "[]";
         }
 
         StringBuilder builder = new StringBuilder("[");
-        for (int i = 0; i < values.size(); i++) {
-            if (i > 0) {
+        for (int i = 0; i < values.size(); i++)
+        {
+            if (i > 0)
+            {
                 builder.append(", ");
             }
 

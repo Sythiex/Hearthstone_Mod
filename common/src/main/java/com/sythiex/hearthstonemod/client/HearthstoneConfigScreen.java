@@ -10,24 +10,32 @@ import com.sythiex.hearthstonemod.config.HearthstoneConfigData;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
-import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 
-public class HearthstoneConfigScreen extends Screen {
-    private static final int FORM_WIDTH = 310;
-    private static final int LABEL_WIDTH = 150;
-    private static final int CONTROL_WIDTH = FORM_WIDTH - LABEL_WIDTH - 10;
+public class HearthstoneConfigScreen extends Screen
+{
+    private static final int MAX_FORM_WIDTH = 310;
+    private static final int MAX_LABEL_WIDTH = 150;
     private static final int BUTTON_WIDTH = 150;
     private static final int BUTTON_HEIGHT = 20;
-    private static final int CONTENT_SPACING = 6;
+    private static final int BUTTON_SPACING = 8;
+    private static final int LIST_TOP = 32;
+    private static final int LIST_ENTRY_HEIGHT = 24;
+    private static final int SCREEN_MARGIN = 16;
+    private static final int FOOTER_MARGIN = 8;
+    private static final int FOOTER_GAP = 6;
+    private static final int TITLE_Y = 15;
 
     private static final Component TITLE = Component.translatable("text.hearthstonemod.config.title");
     private static final Component CHANNEL_TIME_LABEL = Component.translatable("config.hearthstone.channel_time");
@@ -49,7 +57,7 @@ public class HearthstoneConfigScreen extends Screen {
 
     private final Screen parentScreen;
 
-    private HeaderAndFooterLayout layout;
+    private ConfigOptionList optionList;
     private EditBox channelTimeBox;
     private EditBox cooldownBox;
     private CycleButton<Boolean> allowCrossDimensionTravelButton;
@@ -57,12 +65,15 @@ public class HearthstoneConfigScreen extends Screen {
     private CycleButton<Boolean> consumeRespawnAnchorChargeButton;
     private EditBox dimensionBlacklistBox;
     private Button saveButton;
+    private Button cancelButton;
     private boolean allowCrossDimensionTravel;
     private boolean allowRespawnAnchorLinking;
     private boolean consumeRespawnAnchorCharge;
     private Component validationMessage;
+    private List<FormattedCharSequence> wrappedValidationMessage = List.of();
 
-    public HearthstoneConfigScreen(Screen parentScreen) {
+    public HearthstoneConfigScreen(Screen parentScreen)
+    {
         super(TITLE);
         this.parentScreen = parentScreen;
         HearthstoneConfigData currentConfig = HearthstoneCommon.config();
@@ -72,167 +83,212 @@ public class HearthstoneConfigScreen extends Screen {
     }
 
     @Override
-    protected void init() {
+    protected void init()
+    {
         ConfigDraft draft = this.captureDraft();
-        this.layout = new HeaderAndFooterLayout(this);
-        this.layout.addTitleHeader(this.title, this.font);
+        double scrollAmount = this.optionList != null ? this.optionList.getScrollAmount() : 0.0D;
 
         this.allowCrossDimensionTravel = draft.allowCrossDimensionTravel();
         this.allowRespawnAnchorLinking = draft.allowRespawnAnchorLinking();
         this.consumeRespawnAnchorCharge = draft.consumeRespawnAnchorCharge();
 
-        LinearLayout content = this.layout.addToContents(LinearLayout.vertical().spacing(CONTENT_SPACING), settings -> settings.alignHorizontallyCenter());
-
         this.channelTimeBox = this.createNumericBox(CHANNEL_TIME_LABEL, draft.channelTime());
         this.channelTimeBox.setResponder(value -> this.updateValidation());
-        content.addChild(this.createLabeledRow(CHANNEL_TIME_LABEL, CHANNEL_TIME_HINT, this.channelTimeBox));
 
         this.cooldownBox = this.createNumericBox(COOLDOWN_LABEL, draft.cooldown());
         this.cooldownBox.setResponder(value -> this.updateValidation());
-        content.addChild(this.createLabeledRow(COOLDOWN_LABEL, COOLDOWN_HINT, this.cooldownBox));
 
-        this.allowCrossDimensionTravelButton = this.createToggle(
-                ALLOW_CROSS_DIMENSION_TRAVEL_LABEL,
-                ALLOW_CROSS_DIMENSION_TRAVEL_HINT,
-                this.allowCrossDimensionTravel,
-                value -> this.allowCrossDimensionTravel = value
-        );
-        content.addChild(this.allowCrossDimensionTravelButton);
+        this.allowCrossDimensionTravelButton = this.createToggle(ALLOW_CROSS_DIMENSION_TRAVEL_LABEL, ALLOW_CROSS_DIMENSION_TRAVEL_HINT, this.allowCrossDimensionTravel,
+                value -> this.allowCrossDimensionTravel = value);
 
-        this.allowRespawnAnchorLinkingButton = this.createToggle(
-                ALLOW_RESPAWN_ANCHOR_LINKING_LABEL,
-                ALLOW_RESPAWN_ANCHOR_LINKING_HINT,
-                this.allowRespawnAnchorLinking,
-                value -> this.allowRespawnAnchorLinking = value
-        );
-        content.addChild(this.allowRespawnAnchorLinkingButton);
+        this.allowRespawnAnchorLinkingButton = this.createToggle(ALLOW_RESPAWN_ANCHOR_LINKING_LABEL, ALLOW_RESPAWN_ANCHOR_LINKING_HINT, this.allowRespawnAnchorLinking,
+                value -> this.allowRespawnAnchorLinking = value);
 
-        this.consumeRespawnAnchorChargeButton = this.createToggle(
-                CONSUME_RESPAWN_ANCHOR_CHARGE_LABEL,
-                CONSUME_RESPAWN_ANCHOR_CHARGE_HINT,
-                this.consumeRespawnAnchorCharge,
-                value -> this.consumeRespawnAnchorCharge = value
-        );
-        content.addChild(this.consumeRespawnAnchorChargeButton);
+        this.consumeRespawnAnchorChargeButton = this.createToggle(CONSUME_RESPAWN_ANCHOR_CHARGE_LABEL, CONSUME_RESPAWN_ANCHOR_CHARGE_HINT, this.consumeRespawnAnchorCharge,
+                value -> this.consumeRespawnAnchorCharge = value);
 
-        LinearLayout blacklistSection = LinearLayout.vertical().spacing(4);
-        blacklistSection.addChild(this.createSectionLabel(DIMENSION_BLACKLIST_LABEL, DIMENSION_BLACKLIST_HINT));
-        this.dimensionBlacklistBox = new EditBox(this.font, 0, 0, FORM_WIDTH, BUTTON_HEIGHT, DIMENSION_BLACKLIST_LABEL);
+        this.dimensionBlacklistBox = new EditBox(this.font, 0, 0, MAX_FORM_WIDTH, BUTTON_HEIGHT, DIMENSION_BLACKLIST_LABEL);
         this.dimensionBlacklistBox.setMaxLength(512);
         this.dimensionBlacklistBox.setTooltip(Tooltip.create(DIMENSION_BLACKLIST_HINT));
         this.dimensionBlacklistBox.setValue(draft.dimensionBlacklist());
         this.dimensionBlacklistBox.setResponder(value -> this.updateValidation());
-        blacklistSection.addChild(this.dimensionBlacklistBox);
-        content.addChild(blacklistSection);
 
-        LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(8), settings -> settings.alignHorizontallyCenter());
-        this.saveButton = footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.saveAndClose()).width(BUTTON_WIDTH).build());
-        footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> this.onClose()).width(BUTTON_WIDTH).build());
+        this.clearWidgets();
+        this.optionList = this.addRenderableWidget(new ConfigOptionList());
+        this.optionList.addConfigEntry(new NumericEntry(CHANNEL_TIME_LABEL, CHANNEL_TIME_HINT, this.channelTimeBox));
+        this.optionList.addConfigEntry(new NumericEntry(COOLDOWN_LABEL, COOLDOWN_HINT, this.cooldownBox));
+        this.optionList.addConfigEntry(new ToggleEntry(this.allowCrossDimensionTravelButton));
+        this.optionList.addConfigEntry(new ToggleEntry(this.allowRespawnAnchorLinkingButton));
+        this.optionList.addConfigEntry(new ToggleEntry(this.consumeRespawnAnchorChargeButton));
+        this.optionList.addConfigEntry(new LabelEntry(DIMENSION_BLACKLIST_LABEL, DIMENSION_BLACKLIST_HINT));
+        this.optionList.addConfigEntry(new TextFieldEntry(this.dimensionBlacklistBox));
+        this.optionList.setScrollAmount(scrollAmount);
 
-        this.layout.visitWidgets(this::addRenderableWidget);
+        this.saveButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.saveAndClose()).bounds(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        this.cancelButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> this.onClose()).bounds(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+
+        this.updateValidation();
         this.repositionElements();
         this.setInitialFocus(this.channelTimeBox);
-        this.updateValidation();
     }
 
     @Override
-    protected void repositionElements() {
-        if (this.layout != null) {
-            this.layout.arrangeElements();
+    protected void repositionElements()
+    {
+        this.refreshValidationLines();
+
+        if (this.optionList != null)
+        {
+            int listBottom = this.height - this.getFooterHeight() - FOOTER_GAP;
+            int listHeight = Math.max(LIST_ENTRY_HEIGHT, listBottom - LIST_TOP);
+            this.optionList.updateSizeAndPosition(this.width, listHeight, LIST_TOP);
+        }
+
+        int buttonWidth = this.getButtonWidth();
+        int buttonsLeft = (this.width - (buttonWidth * 2 + BUTTON_SPACING)) / 2;
+        int buttonY = this.height - FOOTER_MARGIN - BUTTON_HEIGHT;
+
+        if (this.saveButton != null)
+        {
+            this.saveButton.setWidth(buttonWidth);
+            this.saveButton.setX(buttonsLeft);
+            this.saveButton.setY(buttonY);
+        }
+
+        if (this.cancelButton != null)
+        {
+            this.cancelButton.setWidth(buttonWidth);
+            this.cancelButton.setX(buttonsLeft + buttonWidth + BUTTON_SPACING);
+            this.cancelButton.setY(buttonY);
         }
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
+    {
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, TITLE_Y, 0xFFFFFF);
+        this.renderValidationMessage(guiGraphics);
+    }
 
-        if (this.validationMessage != null && this.layout != null) {
-            int messageY = this.height - this.layout.getFooterHeight() - this.font.lineHeight - 6;
-            guiGraphics.drawCenteredString(this.font, this.validationMessage, this.width / 2, messageY, 0xFF5555);
+    private void renderValidationMessage(GuiGraphics guiGraphics)
+    {
+        if (this.wrappedValidationMessage.isEmpty() || this.saveButton == null)
+        {
+            return;
+        }
+
+        int y = this.saveButton.getY() - FOOTER_GAP - this.wrappedValidationMessage.size() * this.font.lineHeight;
+        for (FormattedCharSequence line : this.wrappedValidationMessage)
+        {
+            guiGraphics.drawCenteredString(this.font, line, this.width / 2, y, 0xFF5555);
+            y += this.font.lineHeight;
         }
     }
 
     @Override
-    public void onClose() {
-        if (this.minecraft != null) {
+    public void onClose()
+    {
+        if (this.minecraft != null)
+        {
             this.minecraft.setScreen(this.parentScreen);
         }
     }
 
-    private void saveAndClose() {
+    private void saveAndClose()
+    {
         Integer channelTime = this.parseChannelTime();
         Integer cooldown = this.parseCooldown();
         List<String> dimensionBlacklist = this.parseDimensionBlacklist();
-        if (channelTime == null || cooldown == null || dimensionBlacklist == null) {
+        if (channelTime == null || cooldown == null || dimensionBlacklist == null)
+        {
             this.updateValidation();
             return;
         }
 
-        HearthstoneConfigData updatedConfig = new HearthstoneConfigData(
-                channelTime,
-                cooldown,
-                this.allowCrossDimensionTravel,
-                this.allowRespawnAnchorLinking,
-                this.consumeRespawnAnchorCharge,
-                dimensionBlacklist
-        );
+        HearthstoneConfigData updatedConfig = new HearthstoneConfigData(channelTime, cooldown, this.allowCrossDimensionTravel, this.allowRespawnAnchorLinking,
+                this.consumeRespawnAnchorCharge, dimensionBlacklist);
 
-        try {
+        try
+        {
             HearthstoneCommon.configStore().save(updatedConfig);
             this.onClose();
-        } catch (IOException exception) {
+        } catch (IOException exception)
+        {
             this.validationMessage = SAVE_ERROR;
-            if (this.saveButton != null) {
+            this.refreshValidationLines();
+            if (this.saveButton != null)
+            {
                 this.saveButton.active = true;
             }
+            this.repositionElements();
         }
     }
 
-    private void updateValidation() {
+    private void updateValidation()
+    {
         this.validationMessage = this.getValidationMessage();
-        if (this.saveButton != null) {
+        this.refreshValidationLines();
+        if (this.saveButton != null)
+        {
             this.saveButton.active = this.validationMessage == null;
         }
+        if (this.optionList != null && this.cancelButton != null)
+        {
+            this.repositionElements();
+        }
     }
 
-    private Component getValidationMessage() {
-        if (this.parseChannelTime() == null) {
+    private Component getValidationMessage()
+    {
+        if (this.parseChannelTime() == null)
+        {
             return CHANNEL_TIME_ERROR;
         }
 
-        if (this.parseCooldown() == null) {
+        if (this.parseCooldown() == null)
+        {
             return COOLDOWN_ERROR;
         }
 
-        if (this.parseDimensionBlacklist() == null) {
+        if (this.parseDimensionBlacklist() == null)
+        {
             return DIMENSION_BLACKLIST_ERROR;
         }
 
         return null;
     }
 
-    private Integer parseChannelTime() {
+    private Integer parseChannelTime()
+    {
         return this.parseInt(this.channelTimeBox, 1);
     }
 
-    private Integer parseCooldown() {
+    private Integer parseCooldown()
+    {
         return this.parseInt(this.cooldownBox, 0);
     }
 
-    private List<String> parseDimensionBlacklist() {
+    private List<String> parseDimensionBlacklist()
+    {
         String rawValue = this.dimensionBlacklistBox.getValue().trim();
-        if (rawValue.isEmpty()) {
+        if (rawValue.isEmpty())
+        {
             return List.of();
         }
 
         Set<String> parsedDimensions = new LinkedHashSet<>();
-        for (String rawDimensionId : rawValue.split(",")) {
+        for (String rawDimensionId : rawValue.split(","))
+        {
             String dimensionId = rawDimensionId.trim();
-            if (dimensionId.isEmpty()) {
+            if (dimensionId.isEmpty())
+            {
                 continue;
             }
 
-            if (ResourceLocation.tryParse(dimensionId) == null) {
+            if (ResourceLocation.tryParse(dimensionId) == null)
+            {
                 return null;
             }
 
@@ -242,66 +298,256 @@ public class HearthstoneConfigScreen extends Screen {
         return List.copyOf(parsedDimensions);
     }
 
-    private Integer parseInt(EditBox editBox, int minimumValue) {
-        try {
+    private Integer parseInt(EditBox editBox, int minimumValue)
+    {
+        try
+        {
             int parsedValue = Integer.parseInt(editBox.getValue());
             return parsedValue >= minimumValue ? parsedValue : null;
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException exception)
+        {
             return null;
         }
     }
 
-    private EditBox createNumericBox(Component label, String value) {
-        EditBox editBox = new EditBox(this.font, 0, 0, CONTROL_WIDTH, BUTTON_HEIGHT, label);
+    private EditBox createNumericBox(Component label, String value)
+    {
+        EditBox editBox = new EditBox(this.font, 0, 0, MAX_FORM_WIDTH, BUTTON_HEIGHT, label);
         editBox.setMaxLength(10);
         editBox.setValue(value);
         return editBox;
     }
 
-    private LinearLayout createLabeledRow(Component label, Component hint, EditBox editBox) {
-        LinearLayout row = LinearLayout.horizontal().spacing(10);
-        row.addChild(this.createFieldLabel(label, hint, LABEL_WIDTH));
-        editBox.setTooltip(Tooltip.create(hint));
-        row.addChild(editBox);
-        return row;
-    }
-
-    private StringWidget createFieldLabel(Component label, Component hint, int width) {
+    private StringWidget createFieldLabel(Component label, Component hint, int width)
+    {
         StringWidget stringWidget = new StringWidget(width, BUTTON_HEIGHT, label, this.font).alignLeft().setColor(0xA0A0A0);
         stringWidget.setTooltip(Tooltip.create(hint));
         return stringWidget;
     }
 
-    private StringWidget createSectionLabel(Component label, Component hint) {
-        return this.createFieldLabel(label, hint, FORM_WIDTH);
-    }
-
-    private CycleButton<Boolean> createToggle(Component label, Component hint, boolean value, java.util.function.Consumer<Boolean> consumer) {
-        CycleButton<Boolean> cycleButton = CycleButton.onOffBuilder(value)
-                .create(0, 0, FORM_WIDTH, BUTTON_HEIGHT, label, (button, newValue) -> consumer.accept(newValue));
+    private CycleButton<Boolean> createToggle(Component label, Component hint, boolean value, java.util.function.Consumer<Boolean> consumer)
+    {
+        CycleButton<Boolean> cycleButton = CycleButton.onOffBuilder(value).create(0, 0, MAX_FORM_WIDTH, BUTTON_HEIGHT, label, (button, newValue) -> consumer.accept(newValue));
         cycleButton.setTooltip(Tooltip.create(hint));
         return cycleButton;
     }
 
-    private ConfigDraft captureDraft() {
-        HearthstoneConfigData currentConfig = HearthstoneCommon.config();
-        return new ConfigDraft(
-                this.channelTimeBox != null ? this.channelTimeBox.getValue() : Integer.toString(currentConfig.channelTime()),
-                this.cooldownBox != null ? this.cooldownBox.getValue() : Integer.toString(currentConfig.cooldown()),
-                this.allowCrossDimensionTravel,
-                this.allowRespawnAnchorLinking,
-                this.consumeRespawnAnchorCharge,
-                this.dimensionBlacklistBox != null ? this.dimensionBlacklistBox.getValue() : String.join(", ", currentConfig.dimensionBlacklist())
-        );
+    private int getFormWidth()
+    {
+        return Math.max(180, Math.min(MAX_FORM_WIDTH, this.width - SCREEN_MARGIN * 2));
     }
 
-    private record ConfigDraft(
-            String channelTime,
-            String cooldown,
-            boolean allowCrossDimensionTravel,
-            boolean allowRespawnAnchorLinking,
-            boolean consumeRespawnAnchorCharge,
-            String dimensionBlacklist
-    ) {
+    private int getLabelWidth(int formWidth)
+    {
+        return Math.min(MAX_LABEL_WIDTH, Math.max(90, (formWidth - 10) / 2));
     }
+
+    private int getControlWidth(int formWidth)
+    {
+        return Math.max(80, formWidth - this.getLabelWidth(formWidth) - 10);
+    }
+
+    private int getButtonWidth()
+    {
+        return Math.min(BUTTON_WIDTH, Math.max(80, (this.width - SCREEN_MARGIN * 2 - BUTTON_SPACING) / 2));
+    }
+
+    private int getValidationWrapWidth()
+    {
+        return Math.max(120, this.width - SCREEN_MARGIN * 2);
+    }
+
+    private void refreshValidationLines()
+    {
+        this.wrappedValidationMessage = this.validationMessage == null ? List.of() : this.font.split(this.validationMessage, this.getValidationWrapWidth());
+    }
+
+    private int getFooterHeight()
+    {
+        int validationHeight = this.wrappedValidationMessage.isEmpty() ? 0 : this.wrappedValidationMessage.size() * this.font.lineHeight + FOOTER_GAP;
+        return FOOTER_MARGIN * 2 + BUTTON_HEIGHT + validationHeight;
+    }
+
+    private final class ConfigOptionList extends ContainerObjectSelectionList<ConfigEntry>
+    {
+        private ConfigOptionList()
+        {
+            super(HearthstoneConfigScreen.this.minecraft, HearthstoneConfigScreen.this.width, HearthstoneConfigScreen.this.height, LIST_TOP, LIST_ENTRY_HEIGHT);
+            this.centerListVertically = false;
+        }
+
+        private void addConfigEntry(ConfigEntry entry)
+        {
+            this.addEntry(entry);
+        }
+
+        @Override
+        public int getRowWidth()
+        {
+            return HearthstoneConfigScreen.this.getFormWidth();
+        }
+
+        @Override
+        protected int getScrollbarPosition()
+        {
+            return this.getRowRight() + 6;
+        }
+    }
+
+    private abstract static class ConfigEntry extends ContainerObjectSelectionList.Entry<ConfigEntry>
+    {}
+
+    private final class NumericEntry extends ConfigEntry
+    {
+        private final StringWidget label;
+        private final EditBox editBox;
+
+        private NumericEntry(Component labelText, Component hint, EditBox editBox)
+        {
+            this.label = HearthstoneConfigScreen.this.createFieldLabel(labelText, hint, MAX_LABEL_WIDTH);
+            this.editBox = editBox;
+            this.editBox.setTooltip(Tooltip.create(hint));
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick)
+        {
+            int formWidth = HearthstoneConfigScreen.this.getFormWidth();
+            int labelWidth = HearthstoneConfigScreen.this.getLabelWidth(formWidth);
+            int controlWidth = HearthstoneConfigScreen.this.getControlWidth(formWidth);
+            int y = top + (height - BUTTON_HEIGHT) / 2;
+
+            this.label.setWidth(labelWidth);
+            this.label.setX(left);
+            this.label.setY(y);
+
+            this.editBox.setWidth(controlWidth);
+            this.editBox.setX(left + labelWidth + 10);
+            this.editBox.setY(y);
+
+            this.label.render(guiGraphics, mouseX, mouseY, partialTick);
+            this.editBox.render(guiGraphics, mouseX, mouseY, partialTick);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children()
+        {
+            return List.of(this.label, this.editBox);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables()
+        {
+            return List.of(this.editBox);
+        }
+    }
+
+    private final class ToggleEntry extends ConfigEntry
+    {
+        private final CycleButton<Boolean> button;
+
+        private ToggleEntry(CycleButton<Boolean> button)
+        {
+            this.button = button;
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick)
+        {
+            int y = top + (height - BUTTON_HEIGHT) / 2;
+            this.button.setWidth(HearthstoneConfigScreen.this.getFormWidth());
+            this.button.setX(left);
+            this.button.setY(y);
+            this.button.render(guiGraphics, mouseX, mouseY, partialTick);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children()
+        {
+            return List.of(this.button);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables()
+        {
+            return List.of(this.button);
+        }
+    }
+
+    private final class LabelEntry extends ConfigEntry
+    {
+        private final StringWidget label;
+
+        private LabelEntry(Component labelText, Component hint)
+        {
+            this.label = HearthstoneConfigScreen.this.createFieldLabel(labelText, hint, MAX_FORM_WIDTH);
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick)
+        {
+            int y = top + (height - BUTTON_HEIGHT) / 2;
+            this.label.setWidth(HearthstoneConfigScreen.this.getFormWidth());
+            this.label.setX(left);
+            this.label.setY(y);
+            this.label.render(guiGraphics, mouseX, mouseY, partialTick);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children()
+        {
+            return List.of(this.label);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables()
+        {
+            return List.of(this.label);
+        }
+    }
+
+    private final class TextFieldEntry extends ConfigEntry
+    {
+        private final EditBox editBox;
+
+        private TextFieldEntry(EditBox editBox)
+        {
+            this.editBox = editBox;
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick)
+        {
+            int y = top + (height - BUTTON_HEIGHT) / 2;
+            this.editBox.setWidth(HearthstoneConfigScreen.this.getFormWidth());
+            this.editBox.setX(left);
+            this.editBox.setY(y);
+            this.editBox.render(guiGraphics, mouseX, mouseY, partialTick);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children()
+        {
+            return List.of(this.editBox);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables()
+        {
+            return List.of(this.editBox);
+        }
+    }
+
+    private ConfigDraft captureDraft()
+    {
+        HearthstoneConfigData currentConfig = HearthstoneCommon.config();
+        return new ConfigDraft(this.channelTimeBox != null ? this.channelTimeBox.getValue() : Integer.toString(currentConfig.channelTime()),
+                this.cooldownBox != null ? this.cooldownBox.getValue() : Integer.toString(currentConfig.cooldown()), this.allowCrossDimensionTravel,
+                this.allowRespawnAnchorLinking, this.consumeRespawnAnchorCharge,
+                this.dimensionBlacklistBox != null ? this.dimensionBlacklistBox.getValue() : String.join(", ", currentConfig.dimensionBlacklist()));
+    }
+
+    private record ConfigDraft(String channelTime, String cooldown, boolean allowCrossDimensionTravel, boolean allowRespawnAnchorLinking, boolean consumeRespawnAnchorCharge,
+            String dimensionBlacklist)
+    {}
 }

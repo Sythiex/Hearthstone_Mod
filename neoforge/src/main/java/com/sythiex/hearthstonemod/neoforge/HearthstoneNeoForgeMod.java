@@ -9,9 +9,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 
+/**
+ * NeoForge bootstrap for the shared Hearthstone mod code.
+ */
 @Mod(HearthstoneConstants.MOD_ID)
-public final class HearthstoneNeoForgeMod {
-    public HearthstoneNeoForgeMod(IEventBus modEventBus, ModContainer modContainer) {
+public final class HearthstoneNeoForgeMod
+{
+    public HearthstoneNeoForgeMod(IEventBus modEventBus, ModContainer modContainer)
+    {
         HearthstoneCommon.bootstrap(FMLPaths.CONFIGDIR.get(), HearthstoneNeoForgeNetworking.createBridge());
         HearthstoneNeoForgeRegistries.register(modEventBus);
         modEventBus.addListener(HearthstoneNeoForgeRegistries::buildCreativeTabContents);

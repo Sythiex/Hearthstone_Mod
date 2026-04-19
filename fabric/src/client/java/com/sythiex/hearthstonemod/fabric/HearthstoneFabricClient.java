@@ -4,9 +4,14 @@ import com.sythiex.hearthstonemod.client.HearthstoneClientCommon;
 
 import net.fabricmc.api.ClientModInitializer;
 
-public final class HearthstoneFabricClient implements ClientModInitializer {
+/**
+ * Fabric client bootstrap for shared client logic and client-only hooks.
+ */
+public final class HearthstoneFabricClient implements ClientModInitializer
+{
     @Override
-    public void onInitializeClient() {
+    public void onInitializeClient()
+    {
         HearthstoneClientCommon.bootstrap();
         HearthstoneFabricClientEvents.register();
         HearthstoneFabricClientNetworking.register();

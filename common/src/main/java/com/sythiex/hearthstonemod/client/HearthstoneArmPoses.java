@@ -12,7 +12,11 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-public final class HearthstoneArmPoses {
+/**
+ * Shared first-person and third-person pose helpers for Hearthstone channeling.
+ */
+public final class HearthstoneArmPoses
+{
     private static final float BASE_ARM_PITCH = -1.55F;
     private static final float BASE_ARM_YAW = 0.25F;
     private static final float BASE_ARM_ROLL = 0.12F;
@@ -30,18 +34,31 @@ public final class HearthstoneArmPoses {
     private static final float FIRST_PERSON_SWAY_ROLL_DEGREES = 16.0F;
     private static final float FIRST_PERSON_SWAY_TRANSLATE_Y = 0.12F;
 
-    private HearthstoneArmPoses() {
-    }
+    private HearthstoneArmPoses()
+    {}
 
-    public static void initialize() {
-    }
+    /**
+     * Placeholder bootstrap hook kept for parity with the original mod structure.
+     */
+    public static void initialize()
+    {}
 
-    public static boolean shouldPoseMainArm(LivingEntity entity) {
+    /**
+     * Returns whether the entity's main arm should use the channeling pose.
+     */
+    public static boolean shouldPoseMainArm(LivingEntity entity)
+    {
         return HearthstoneClientCasting.isEntityCasting(entity.getId()) && HearthstoneContentIds.isHearthstone(entity.getMainHandItem());
     }
 
-    public static boolean applyFirstPersonChannelingTransform(PoseStack poseStack, AbstractClientPlayer player, HumanoidArm arm, ItemStack itemStack, float partialTick) {
-        if (!HearthstoneClientCasting.isLocalStackCasting(itemStack) || arm != player.getMainArm()) {
+    /**
+     * Applies the centered first-person transform used while the local player
+     * channels.
+     */
+    public static boolean applyFirstPersonChannelingTransform(PoseStack poseStack, AbstractClientPlayer player, HumanoidArm arm, ItemStack itemStack, float partialTick)
+    {
+        if (!HearthstoneClientCasting.isLocalStackCasting(itemStack) || arm != player.getMainArm())
+        {
             return false;
         }
 
@@ -57,8 +74,14 @@ public final class HearthstoneArmPoses {
         return false;
     }
 
-    public static void applyThirdPersonChannelingTransform(ModelPart armPart, LivingEntity entity, HumanoidArm arm) {
-        if (!shouldPoseMainArm(entity) || arm != entity.getMainArm()) {
+    /**
+     * Applies the shared third-person arm pose for remote and local channeling
+     * players.
+     */
+    public static void applyThirdPersonChannelingTransform(ModelPart armPart, LivingEntity entity, HumanoidArm arm)
+    {
+        if (!shouldPoseMainArm(entity) || arm != entity.getMainArm())
+        {
             return;
         }
 

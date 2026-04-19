@@ -5,13 +5,19 @@ import com.sythiex.hearthstonemod.network.SyncHearthstoneCastingPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-public final class HearthstoneFabricClientNetworking {
-    private HearthstoneFabricClientNetworking() {
-    }
+/**
+ * Fabric client networking hookup for shared Hearthstone payloads.
+ */
+public final class HearthstoneFabricClientNetworking
+{
+    private HearthstoneFabricClientNetworking()
+    {}
 
-    public static void register() {
-        ClientPlayNetworking.registerGlobalReceiver(SyncHearthstoneCastingPayload.TYPE, (payload, context) ->
-                HearthstoneClientCasting.handleSync(payload)
-        );
+    /**
+     * Registers the client receiver for cast-state sync packets.
+     */
+    public static void register()
+    {
+        ClientPlayNetworking.registerGlobalReceiver(SyncHearthstoneCastingPayload.TYPE, (payload, context) -> HearthstoneClientCasting.handleSync(payload));
     }
 }

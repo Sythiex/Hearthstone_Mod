@@ -8,23 +8,32 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraft.server.level.ServerPlayer;
 
-public final class HearthstoneNeoForgeEvents {
+/**
+ * NeoForge gameplay events that drive cast ticking, interruption, and cleanup.
+ */
+public final class HearthstoneNeoForgeEvents
+{
     @SubscribeEvent
-    public void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
+    public void onPlayerTick(PlayerTickEvent.Post event)
+    {
+        if (event.getEntity() instanceof ServerPlayer player)
+        {
             HearthstoneCasting.tick(player);
         }
     }
 
     @SubscribeEvent
-    public void onPlayerDamaged(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
+    public void onPlayerDamaged(LivingIncomingDamageEvent event)
+    {
+        if (event.getEntity() instanceof ServerPlayer player)
+        {
             HearthstoneCasting.requestStop(player);
         }
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
+    {
         HearthstoneCasting.clear(event.getEntity());
     }
 }

@@ -8,14 +8,12 @@ import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-public record HearthstoneConfigData(
-        int channelTime,
-        int cooldown,
-        boolean allowCrossDimensionTravel,
-        boolean allowRespawnAnchorLinking,
-        boolean consumeRespawnAnchorCharge,
-        List<String> dimensionBlacklist
-) {
+/**
+ * Shared Hearthstone gameplay settings loaded from the common TOML file.
+ */
+public record HearthstoneConfigData(int channelTime, int cooldown, boolean allowCrossDimensionTravel, boolean allowRespawnAnchorLinking, boolean consumeRespawnAnchorCharge,
+        List<String> dimensionBlacklist)
+{
     public static final String FILE_NAME = "hearthstonemod-common.toml";
     public static final String CHANNEL_TIME_KEY = "ChannelTime";
     public static final String COOLDOWN_KEY = "Cooldown";
@@ -24,50 +22,66 @@ public record HearthstoneConfigData(
     public static final String CONSUME_RESPAWN_ANCHOR_CHARGE_KEY = "ConsumeRespawnAnchorCharge";
     public static final String DIMENSION_BLACKLIST_KEY = "DimensionBlacklist";
 
-    public static HearthstoneConfigData defaults() {
+    /**
+     * Default values used when the config file is missing or invalid.
+     */
+    public static HearthstoneConfigData defaults()
+    {
         return new HearthstoneConfigData(200, 36000, true, true, false, List.of());
     }
 
-    public HearthstoneConfigData sanitize() {
+    /**
+     * Clamps numeric values and removes invalid or duplicate dimension ids.
+     */
+    public HearthstoneConfigData sanitize()
+    {
         int sanitizedChannelTime = Math.max(1, channelTime);
         int sanitizedCooldown = Math.max(0, cooldown);
         Set<String> sanitizedDimensions = new LinkedHashSet<>();
 
-        for (String dimensionId : dimensionBlacklist) {
+        for (String dimensionId : dimensionBlacklist)
+        {
             String trimmed = dimensionId.trim();
-            if (!trimmed.isEmpty() && isValidDimensionId(trimmed)) {
+            if (!trimmed.isEmpty() && isValidDimensionId(trimmed))
+            {
                 sanitizedDimensions.add(trimmed);
             }
         }
 
-        return new HearthstoneConfigData(
-                sanitizedChannelTime,
-                sanitizedCooldown,
-                allowCrossDimensionTravel,
-                allowRespawnAnchorLinking,
-                consumeRespawnAnchorCharge,
-                List.copyOf(sanitizedDimensions)
-        );
+        return new HearthstoneConfigData(sanitizedChannelTime, sanitizedCooldown, allowCrossDimensionTravel, allowRespawnAnchorLinking, consumeRespawnAnchorCharge,
+                List.copyOf(sanitizedDimensions));
     }
 
-    public static boolean isValidDimensionId(String value) {
+    /**
+     * Returns whether the value can be parsed as a valid resource location.
+     */
+    public static boolean isValidDimensionId(String value)
+    {
         return ResourceLocation.tryParse(value) != null;
     }
 
-    public boolean isDimensionBlacklisted(Level level) {
+    public boolean isDimensionBlacklisted(Level level)
+    {
         return dimensionBlacklist.contains(level.dimension().location().toString());
     }
 
-    public static List<String> parseDimensionList(String rawValue) {
+    /**
+     * Parses a comma-delimited list as used by the config screen text field.
+     */
+    public static List<String> parseDimensionList(String rawValue)
+    {
         String trimmed = rawValue.trim();
-        if (trimmed.isEmpty()) {
+        if (trimmed.isEmpty())
+        {
             return List.of();
         }
 
         List<String> parsedValues = new ArrayList<>();
-        for (String part : rawValue.split(",")) {
+        for (String part : rawValue.split(","))
+        {
             String dimensionId = part.trim();
-            if (!dimensionId.isEmpty()) {
+            if (!dimensionId.isEmpty())
+            {
                 parsedValues.add(dimensionId);
             }
         }

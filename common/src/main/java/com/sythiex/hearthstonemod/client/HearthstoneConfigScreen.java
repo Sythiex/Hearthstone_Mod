@@ -23,6 +23,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
+/**
+ * Shared config screen used by both loader integrations.
+ *
+ * The layout mirrors vanilla's options screens: fixed title, scrollable center
+ * content, and a fixed footer for validation text plus Done/Cancel actions.
+ */
 public class HearthstoneConfigScreen extends Screen
 {
     private static final int MAX_FORM_WIDTH = 310;
@@ -82,6 +88,10 @@ public class HearthstoneConfigScreen extends Screen
         this.consumeRespawnAnchorCharge = currentConfig.consumeRespawnAnchorCharge();
     }
 
+    /**
+     * Rebuilds the scrollable option list so resize events keep the current draft
+     * values.
+     */
     @Override
     protected void init()
     {
@@ -196,6 +206,10 @@ public class HearthstoneConfigScreen extends Screen
         }
     }
 
+    /**
+     * Validates the draft, saves it through the shared config store, and returns to
+     * the parent screen.
+     */
     private void saveAndClose()
     {
         Integer channelTime = this.parseChannelTime();
@@ -226,6 +240,10 @@ public class HearthstoneConfigScreen extends Screen
         }
     }
 
+    /**
+     * Keeps the footer message and Done button state in sync with the current
+     * draft.
+     */
     private void updateValidation()
     {
         this.validationMessage = this.getValidationMessage();
@@ -362,12 +380,20 @@ public class HearthstoneConfigScreen extends Screen
         this.wrappedValidationMessage = this.validationMessage == null ? List.of() : this.font.split(this.validationMessage, this.getValidationWrapWidth());
     }
 
+    /**
+     * Footer height grows with wrapped validation text so the scrolling list stays
+     * clear of it.
+     */
     private int getFooterHeight()
     {
         int validationHeight = this.wrappedValidationMessage.isEmpty() ? 0 : this.wrappedValidationMessage.size() * this.font.lineHeight + FOOTER_GAP;
         return FOOTER_MARGIN * 2 + BUTTON_HEIGHT + validationHeight;
     }
 
+    /**
+     * Scrollable list container for the config controls in the center of the
+     * screen.
+     */
     private final class ConfigOptionList extends ContainerObjectSelectionList<ConfigEntry>
     {
         private ConfigOptionList()

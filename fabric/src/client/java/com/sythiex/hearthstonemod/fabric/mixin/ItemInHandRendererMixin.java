@@ -15,26 +15,18 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * Applies the shared first-person Hearthstone hand transform on Fabric.
+ */
 @Mixin(ItemInHandRenderer.class)
-abstract class ItemInHandRendererMixin {
+abstract class ItemInHandRendererMixin
+{
     @Inject(method = "renderArmWithItem", at = @At("HEAD"))
-    private void hearthstone$applyChannelingTransform(
-            AbstractClientPlayer player,
-            float partialTick,
-            float interpolatedPitch,
-            InteractionHand hand,
-            float swingProgress,
-            ItemStack itemStack,
-            float equipProgress,
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            int combinedLight,
-            CallbackInfo callbackInfo
-    ) {
+    private void hearthstone$applyChannelingTransform(AbstractClientPlayer player, float partialTick, float interpolatedPitch, InteractionHand hand, float swingProgress,
+            ItemStack itemStack, float equipProgress, PoseStack poseStack, MultiBufferSource multiBufferSource, int combinedLight, CallbackInfo callbackInfo)
+    {
         HumanoidArm mainArm = player.getMainArm();
-        HumanoidArm arm = hand == InteractionHand.MAIN_HAND
-                ? mainArm
-                : (mainArm == HumanoidArm.RIGHT ? HumanoidArm.LEFT : HumanoidArm.RIGHT);
+        HumanoidArm arm = hand == InteractionHand.MAIN_HAND ? mainArm : (mainArm == HumanoidArm.RIGHT ? HumanoidArm.LEFT : HumanoidArm.RIGHT);
         HearthstoneArmPoses.applyFirstPersonChannelingTransform(poseStack, player, arm, itemStack, partialTick);
     }
 }

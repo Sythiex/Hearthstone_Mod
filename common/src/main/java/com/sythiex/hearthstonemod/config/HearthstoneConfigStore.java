@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Shared config loader/writer for the loader-neutral Hearthstone TOML file.
+ */
 public final class HearthstoneConfigStore
 {
     private final Path path;
@@ -20,6 +23,9 @@ public final class HearthstoneConfigStore
         this.currentData = currentData;
     }
 
+    /**
+     * Loads the config from disk, creating and normalizing it if needed.
+     */
     public static HearthstoneConfigStore load(Path configDirectory) throws IOException
     {
         Files.createDirectories(configDirectory);
@@ -31,11 +37,17 @@ public final class HearthstoneConfigStore
         return store;
     }
 
+    /**
+     * Returns the current in-memory config snapshot.
+     */
     public synchronized HearthstoneConfigData get()
     {
         return currentData;
     }
 
+    /**
+     * Sanitizes and persists updated settings back to disk.
+     */
     public synchronized void save(HearthstoneConfigData updatedData) throws IOException
     {
         currentData = updatedData.sanitize();
@@ -47,6 +59,9 @@ public final class HearthstoneConfigStore
         return path;
     }
 
+    /**
+     * Reads the flat comment-friendly TOML format used by the mod.
+     */
     private static HearthstoneConfigData read(Path configPath) throws IOException
     {
         Map<String, String> rawValues = new LinkedHashMap<>();
@@ -202,12 +217,18 @@ public final class HearthstoneConfigStore
         Files.writeString(path, builder.toString(), StandardCharsets.UTF_8);
     }
 
+    /**
+     * Writes one commented config line in the same order as the old Forge config.
+     */
     private static void appendCommentedEntry(StringBuilder builder, String comment, String key, String value, String lineSeparator)
     {
         builder.append('\t').append('#').append(comment).append(lineSeparator);
         builder.append('\t').append(key).append(" = ").append(value).append(lineSeparator);
     }
 
+    /**
+     * Serializes the dimension blacklist as a TOML-style quoted string array.
+     */
     private static String serializeStringArray(List<String> values)
     {
         if (values.isEmpty())

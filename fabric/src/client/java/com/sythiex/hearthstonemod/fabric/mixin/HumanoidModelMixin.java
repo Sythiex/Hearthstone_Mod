@@ -13,8 +13,12 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * Applies the shared third-person channeling arm pose on Fabric.
+ */
 @Mixin(HumanoidModel.class)
-abstract class HumanoidModelMixin<T extends LivingEntity> {
+abstract class HumanoidModelMixin<T extends LivingEntity>
+{
     @Shadow
     public ModelPart rightArm;
 
@@ -22,12 +26,14 @@ abstract class HumanoidModelMixin<T extends LivingEntity> {
     public ModelPart leftArm;
 
     @Inject(method = "poseRightArm", at = @At("TAIL"))
-    private void hearthstone$poseRightArm(T entity, CallbackInfo callbackInfo) {
+    private void hearthstone$poseRightArm(T entity, CallbackInfo callbackInfo)
+    {
         HearthstoneArmPoses.applyThirdPersonChannelingTransform(this.rightArm, entity, HumanoidArm.RIGHT);
     }
 
     @Inject(method = "poseLeftArm", at = @At("TAIL"))
-    private void hearthstone$poseLeftArm(T entity, CallbackInfo callbackInfo) {
+    private void hearthstone$poseLeftArm(T entity, CallbackInfo callbackInfo)
+    {
         HearthstoneArmPoses.applyThirdPersonChannelingTransform(this.leftArm, entity, HumanoidArm.LEFT);
     }
 }

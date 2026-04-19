@@ -2,11 +2,17 @@ package com.sythiex.hearthstonemod.client;
 
 import net.minecraft.client.gui.screens.Screen;
 
-public final class HearthstoneConfigScreens {
-    private HearthstoneConfigScreens() {
-    }
+/**
+ * Shared factory for opening the Hearthstone config screen from loader
+ * integrations.
+ */
+public final class HearthstoneConfigScreens
+{
+    private HearthstoneConfigScreens()
+    {}
 
-    public static Screen create(Screen parentScreen) {
+    public static Screen create(Screen parentScreen)
+    {
         return new HearthstoneConfigScreen(parentScreen);
     }
 }

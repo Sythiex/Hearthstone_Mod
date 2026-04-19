@@ -9,19 +9,30 @@ import com.sythiex.hearthstonemod.network.HearthstoneNetworkBridge;
 
 import net.minecraft.world.level.Level;
 
-public final class HearthstoneCommon {
+/**
+ * Shared bootstrap state for configuration, networking, and client hooks.
+ */
+public final class HearthstoneCommon
+{
     private static HearthstoneConfigStore configStore;
     private static HearthstoneNetworkBridge networkBridge = HearthstoneNetworkBridge.noop();
     private static HearthstoneClientBridge clientBridge = HearthstoneClientBridge.noop();
 
-    private HearthstoneCommon() {
-    }
+    private HearthstoneCommon()
+    {}
 
-    public static synchronized void bootstrap(Path configDirectory, HearthstoneNetworkBridge bridge) {
-        if (configStore == null) {
-            try {
+    /**
+     * Initializes the shared config store and installs the active network bridge.
+     */
+    public static synchronized void bootstrap(Path configDirectory, HearthstoneNetworkBridge bridge)
+    {
+        if (configStore == null)
+        {
+            try
+            {
                 configStore = HearthstoneConfigStore.load(configDirectory);
-            } catch (IOException exception) {
+            } catch (IOException exception)
+            {
                 throw new IllegalStateException("Unable to initialize Hearthstone config store", exception);
             }
         }
@@ -29,31 +40,47 @@ public final class HearthstoneCommon {
         networkBridge = bridge == null ? HearthstoneNetworkBridge.noop() : bridge;
     }
 
-    public static synchronized HearthstoneConfigStore configStore() {
-        if (configStore == null) {
+    public static synchronized HearthstoneConfigStore configStore()
+    {
+        if (configStore == null)
+        {
             throw new IllegalStateException("HearthstoneCommon.bootstrap must be called before accessing the config store.");
         }
 
         return configStore;
     }
 
-    public static HearthstoneConfigData config() {
+    public static HearthstoneConfigData config()
+    {
         return configStore().get();
     }
 
-    public static synchronized HearthstoneNetworkBridge networkBridge() {
+    /**
+     * Returns the loader bridge used to broadcast cast-state updates.
+     */
+    public static synchronized HearthstoneNetworkBridge networkBridge()
+    {
         return networkBridge;
     }
 
-    public static synchronized void setClientBridge(HearthstoneClientBridge bridge) {
+    /**
+     * Installs the client bridge after client bootstrap completes.
+     */
+    public static synchronized void setClientBridge(HearthstoneClientBridge bridge)
+    {
         clientBridge = bridge == null ? HearthstoneClientBridge.noop() : bridge;
     }
 
-    public static synchronized HearthstoneClientBridge clientBridge() {
+    public static synchronized HearthstoneClientBridge clientBridge()
+    {
         return clientBridge;
     }
 
-    public static boolean isDimensionBlacklisted(Level level) {
+    /**
+     * Shared convenience check used by item logic and config UI.
+     */
+    public static boolean isDimensionBlacklisted(Level level)
+    {
         return config().dimensionBlacklist().contains(level.dimension().location().toString());
     }
 }

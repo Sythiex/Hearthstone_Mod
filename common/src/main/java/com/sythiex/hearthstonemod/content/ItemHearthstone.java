@@ -36,6 +36,12 @@ import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * Main shared item implementation for the Hearthstone.
+ *
+ * Persistent stack state stores the linked home and cooldown timestamp, while
+ * active channeling is managed separately by {@link HearthstoneCasting}.
+ */
 public class ItemHearthstone extends Item
 {
     private static final int COOLDOWN_BAR_COLOR = 0xFF0000;
@@ -61,6 +67,9 @@ public class ItemHearthstone extends Item
         super(properties);
     }
 
+    /**
+     * Main-hand use starts channeling when the item is linked and not on cooldown.
+     */
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
@@ -100,6 +109,9 @@ public class ItemHearthstone extends Item
         return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
+    /**
+     * Sneak-using on a bed or respawn anchor links the stack to that block.
+     */
     @Override
     public InteractionResult useOn(UseOnContext context)
     {
@@ -224,6 +236,9 @@ public class ItemHearthstone extends Item
         return HearthstoneCommon.clientBridge().isLocalStackCasting(stack);
     }
 
+    /**
+     * Resolves the stored destination and finishes a completed server-side cast.
+     */
     public static void finishCast(ServerPlayer player, ItemStack stack)
     {
         HearthstoneItemData data = getData(stack);
@@ -246,6 +261,7 @@ public class ItemHearthstone extends Item
 
         if (!player.level().dimension().location().equals(link.dimensionId()))
         {
+            // Cross-dimension teleports are resolved before destination safety checks run.
             if (!HearthstoneCommon.config().allowCrossDimensionTravel())
             {
                 player.displayClientMessage(translatable(TEXT_CROSS_DIMENSION_DISABLED), true);
@@ -321,7 +337,8 @@ public class ItemHearthstone extends Item
 
     private static boolean isRespawnAnchorLinkingDisabled(HearthstoneItemData data)
     {
-        return data.homeLink().map(HearthstoneHomeLink::linkType).orElse(HearthstoneLinkType.BED) == HearthstoneLinkType.RESPAWN_ANCHOR && !HearthstoneCommon.config().allowRespawnAnchorLinking();
+        return data.homeLink().map(HearthstoneHomeLink::linkType).orElse(HearthstoneLinkType.BED) == HearthstoneLinkType.RESPAWN_ANCHOR
+                && !HearthstoneCommon.config().allowRespawnAnchorLinking();
     }
 
     private static boolean isRespawnAnchor(BlockState state)
@@ -334,6 +351,10 @@ public class ItemHearthstone extends Item
         return state.getValue(RespawnAnchorBlock.CHARGE);
     }
 
+    /**
+     * Bed links try the vanilla stand-up position first and fall back to the block
+     * top if needed.
+     */
     private static void finishBedCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state)
     {
         if (state.is(BlockTags.BEDS))
@@ -347,6 +368,10 @@ public class ItemHearthstone extends Item
         breakLinkedHome(player, level, stack, homePos, TEXT_MISSING_BED);
     }
 
+    /**
+     * Respawn anchor links validate the block, charge, and optional charge
+     * consumption.
+     */
     private static void finishRespawnAnchorCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state)
     {
         if (!isRespawnAnchor(state))
@@ -387,10 +412,16 @@ public class ItemHearthstone extends Item
             player.teleportTo(safePosition.x, safePosition.y, safePosition.z);
         } else
         {
+            // If the linked block no longer has a valid stand-up spot, use the simple
+            // block-top fallback.
             teleportToHomeTop(player, homePos);
         }
     }
 
+    /**
+     * Handles broken or depleted links by teleporting once, clearing the link, and
+     * warning the player.
+     */
     private static void breakLinkedHome(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, String messageKey)
     {
         teleportToHomeTop(player, homePos);
@@ -404,6 +435,10 @@ public class ItemHearthstone extends Item
         player.teleportTo(homePos.getX() + 0.5D, homePos.getY() + 1.0D, homePos.getZ() + 0.5D);
     }
 
+    /**
+     * Plays the arrival sound and stamps the stack with its new cooldown start
+     * time.
+     */
     private static void completeTeleport(ServerPlayer player, ServerLevel level, ItemStack stack)
     {
         playPlayerSound(level, player, HearthstoneContentIds.HEARTHSTONE_IMPACT_SOUND);

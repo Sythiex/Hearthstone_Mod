@@ -3,6 +3,10 @@ plugins {
     id 'java-library'
 }
 
+def legacyArchiveBaseName = rootProject.mod_name.replace(' ', '')
+def finalJarName = "${legacyArchiveBaseName}-${project.minecraft_version}-${project.mod_version}-Fabric.jar"
+def finalSourcesJarName = "${legacyArchiveBaseName}-${project.minecraft_version}-${project.mod_version}-Fabric-sources.jar"
+
 base {
     archivesName = "${mod_id}-fabric"
 }
@@ -61,4 +65,12 @@ tasks.named('sourcesJar').configure {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':common').sourceSets.main.allSource
     from project(':common').sourceSets.client.allSource
+}
+
+tasks.named('remapJar').configure {
+    archiveFileName = finalJarName
+}
+
+tasks.named('remapSourcesJar').configure {
+    archiveFileName = finalSourcesJarName
 }

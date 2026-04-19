@@ -64,6 +64,16 @@ subprojects {
     }
 }
 
+gradle.projectsEvaluated {
+    project(':neoforge').tasks.named('runServer', JavaExec).configure {
+        standardInput = System.in
+    }
+
+    project(':fabric').tasks.named('runServer', JavaExec).configure {
+        standardInput = System.in
+    }
+}
+
 tasks.named('build').configure {
     dependsOn ':neoforge:build', ':fabric:build'
 }

@@ -15,7 +15,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -33,6 +33,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -83,7 +84,7 @@ public class ItemHearthstone extends Item
 
     public ItemHearthstone()
     {
-        super(new Item.Properties().stacksTo(1));
+        super(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
     }
 
     @Override
@@ -182,7 +183,7 @@ public class ItemHearthstone extends Item
                         return InteractionResult.SUCCESS;
                     }
 
-                    linkHome(itemStack, context.getClickedPos(), player.level().dimension(), LINK_TYPE_BED);
+                    linkHome(itemStack, context.getClickedPos(), player.level.dimension(), LINK_TYPE_BED);
                     player.displayClientMessage(translatable(TEXT_LINKED), true);
                 } else if (isRespawnAnchor(state))
                 {
@@ -204,7 +205,7 @@ public class ItemHearthstone extends Item
                         return InteractionResult.SUCCESS;
                     }
 
-                    linkHome(itemStack, context.getClickedPos(), player.level().dimension(), LINK_TYPE_RESPAWN_ANCHOR);
+                    linkHome(itemStack, context.getClickedPos(), player.level.dimension(), LINK_TYPE_RESPAWN_ANCHOR);
                     player.displayClientMessage(translatable(TEXT_LINKED), true);
                 }
                 return InteractionResult.SUCCESS;
@@ -315,7 +316,7 @@ public class ItemHearthstone extends Item
             return;
         }
 
-        ServerLevel world = player.serverLevel();
+        ServerLevel world = player.getLevel();
         int homeX = tag.getInt(TAG_HOME_X);
         int homeY = tag.getInt(TAG_HOME_Y);
         int homeZ = tag.getInt(TAG_HOME_Z);
@@ -323,7 +324,7 @@ public class ItemHearthstone extends Item
         world.playSound(null, player.getX(), player.getY(), player.getZ(), ModSoundEvents.HEARTHSTONE_CAST.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
 
         ResourceKey<Level> savedDimensionKey = getWorldResourceKey(tag.getString(TAG_DIMENSION_LOCATION));
-        ResourceKey<Level> playerDimensionKey = player.level().dimension();
+        ResourceKey<Level> playerDimensionKey = player.level.dimension();
         if (savedDimensionKey != null && !playerDimensionKey.equals(savedDimensionKey))
         {
             if (!HearthstoneSettings.allowCrossDimensionTravel.get())
@@ -332,7 +333,7 @@ public class ItemHearthstone extends Item
                 return;
             }
 
-            MinecraftServer server = player.level().getServer();
+            MinecraftServer server = player.level.getServer();
             ServerLevel destinationServerLevel = server == null ? null : server.getLevel(savedDimensionKey);
             if (destinationServerLevel != null)
             {
@@ -366,7 +367,7 @@ public class ItemHearthstone extends Item
         }
 
         ResourceLocation dimensionResourceLocation = ResourceLocation.tryParse(location);
-        return dimensionResourceLocation == null ? null : ResourceKey.create(Registries.DIMENSION, dimensionResourceLocation);
+        return dimensionResourceLocation == null ? null : ResourceKey.create(Registry.DIMENSION_REGISTRY, dimensionResourceLocation);
     }
 
     /**
@@ -581,7 +582,7 @@ public class ItemHearthstone extends Item
         {
             int remainingCharge = charge - 1;
             world.setBlock(homePos, state.setValue(RespawnAnchorBlock.CHARGE, remainingCharge), 3);
-            world.playSound(null, homePos, SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            world.playSound(null, homePos, SoundEvents.RESPAWN_ANCHOR_DEPLETE, SoundSource.BLOCKS, 1.0F, 1.0F);
             if (remainingCharge == 0)
             {
                 clearLinkedHome(tag);

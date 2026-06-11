@@ -3,7 +3,7 @@ package com.sythiex.hearthstonemod.client;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -91,9 +91,9 @@ public final class HearthstoneArmPoses
         // Nudge and tilt the item closer to screen center, then add a subtle sway so
         // the first-person presentation matches the third-person channeling pose.
         poseStack.translate(-armSide * FIRST_PERSON_CENTER_SHIFT_X, FIRST_PERSON_CENTER_SHIFT_Y + bob * FIRST_PERSON_SWAY_TRANSLATE_Y, 0.0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(-armSide * FIRST_PERSON_BASE_YAW_DEGREES + tilt * FIRST_PERSON_SWAY_YAW_DEGREES * armSide));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(armSide * (FIRST_PERSON_BASE_ROLL_DEGREES + bob * FIRST_PERSON_SWAY_ROLL_DEGREES)));
-        poseStack.mulPose(Axis.XP.rotationDegrees(FIRST_PERSON_BASE_PITCH_DEGREES + bob * FIRST_PERSON_SWAY_PITCH_DEGREES));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(-armSide * FIRST_PERSON_BASE_YAW_DEGREES + tilt * FIRST_PERSON_SWAY_YAW_DEGREES * armSide));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(armSide * (FIRST_PERSON_BASE_ROLL_DEGREES + bob * FIRST_PERSON_SWAY_ROLL_DEGREES)));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(FIRST_PERSON_BASE_PITCH_DEGREES + bob * FIRST_PERSON_SWAY_PITCH_DEGREES));
         return false;
     }
 

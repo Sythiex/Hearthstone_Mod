@@ -1,5 +1,6 @@
 package com.sythiex.hearthstonemod.client;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,7 +10,6 @@ import javax.annotation.Nullable;
 import com.sythiex.hearthstonemod.HearthstoneConfig;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -21,6 +21,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 /**
  * Vanilla-style config screen backed by a scrolling option list.
@@ -121,8 +122,8 @@ public class HearthstoneConfigScreen extends Screen
         int buttonLeft = this.width / 2 - totalButtonWidth / 2;
         int buttonY = this.height - 27;
 
-        this.saveButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.saveAndClose()).bounds(buttonLeft, buttonY, buttonWidth, BUTTON_HEIGHT).build());
-        this.addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> this.onClose()).bounds(buttonLeft + buttonWidth + BUTTON_GAP, buttonY, buttonWidth, BUTTON_HEIGHT).build());
+        this.saveButton = this.addRenderableWidget(new Button(buttonLeft, buttonY, buttonWidth, BUTTON_HEIGHT, CommonComponents.GUI_DONE, button -> this.saveAndClose()));
+        this.addRenderableWidget(new Button(buttonLeft + buttonWidth + BUTTON_GAP, buttonY, buttonWidth, BUTTON_HEIGHT, CommonComponents.GUI_CANCEL, button -> this.onClose()));
 
         this.setInitialFocus(this.channelTimeBox);
         this.updateValidation();
@@ -137,23 +138,34 @@ public class HearthstoneConfigScreen extends Screen
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    {
+        if (button == 0)
+        {
+            this.clearTextBoxFocus();
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick)
     {
         this.hoveredTooltip = null;
-        this.renderBackground(guiGraphics);
-        this.optionList.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
+        this.renderBackground(poseStack);
+        this.optionList.render(poseStack, mouseX, mouseY, partialTick);
+        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 20, 0xFFFFFF);
 
         if (this.validationMessage != null)
         {
-            guiGraphics.drawCenteredString(this.font, this.validationMessage, this.width / 2, this.height - 45, 0xFF5555);
+            drawCenteredString(poseStack, this.font, this.validationMessage, this.width / 2, this.height - 45, 0xFF5555);
         }
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.render(poseStack, mouseX, mouseY, partialTick);
 
         if (this.hoveredTooltip != null)
         {
-            guiGraphics.renderTooltip(this.font, this.hoveredTooltip, mouseX, mouseY);
+            this.renderTooltip(poseStack, this.hoveredTooltip, mouseX, mouseY);
         }
     }
 
@@ -315,6 +327,13 @@ public class HearthstoneConfigScreen extends Screen
         return Math.max(80, Math.min(BUTTON_WIDTH, (this.width - BUTTON_GAP - 20) / 2));
     }
 
+    private void clearTextBoxFocus()
+    {
+        this.channelTimeBox.setFocus(false);
+        this.cooldownBox.setFocus(false);
+        this.dimensionBlacklistBox.setFocus(false);
+    }
+
     private class HearthstoneOptionList extends ContainerObjectSelectionList<HearthstoneOptionList.Entry>
     {
         private final int rowWidth;
@@ -359,21 +378,21 @@ public class HearthstoneConfigScreen extends Screen
             this.label = label;
             this.hint = hint;
             this.widget = widget;
-            this.children = List.of(widget);
+            this.children = Collections.singletonList(widget);
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean hovered, float partialTick)
+        public void render(PoseStack poseStack, int index, int top, int left, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean hovered, float partialTick)
         {
             int labelX = left;
             int labelY = top + 1;
             int widgetY = top + 14;
 
-            guiGraphics.drawString(HearthstoneConfigScreen.this.font, this.label, labelX, labelY, 0xA0A0A0, false);
+            HearthstoneConfigScreen.this.font.draw(poseStack, this.label, labelX, labelY, 0xA0A0A0);
 
-            this.widget.setX(left);
-            this.widget.setY(widgetY);
-            this.widget.render(guiGraphics, mouseX, mouseY, partialTick);
+            this.widget.x = left;
+            this.widget.y = widgetY;
+            this.widget.render(poseStack, mouseX, mouseY, partialTick);
 
             if (mouseX >= labelX && mouseX < labelX + HearthstoneConfigScreen.this.font.width(this.label) && mouseY >= labelY && mouseY < labelY + HearthstoneConfigScreen.this.font.lineHeight)
             {

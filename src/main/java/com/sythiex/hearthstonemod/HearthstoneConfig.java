@@ -44,7 +44,7 @@ public class HearthstoneConfig
             consumeRespawnAnchorCharge = builder.comment("Whether successful hearthstone teleports should consume a charge from linked respawn anchors. Default: false")
                     .translation("config.hearthstone.consume_respawn_anchor_charge").define("ConsumeRespawnAnchorCharge", false);
             dimensionBlacklist = builder.comment("A list of dimension ids in which the hearthstone is disabled. Example: [\"minecraft:the_nether\", \"minecraft:the_end\"]")
-                    .translation("config.hearthstone.dimBlacklist").defineListAllowEmpty("DimensionBlacklist", List.of(), HearthstoneConfig::isValidDimensionId);
+                    .translation("config.hearthstone.dimBlacklist").defineListAllowEmpty(List.of("DimensionBlacklist"), () -> List.<String>of(), HearthstoneConfig::isValidDimensionId);
 
             builder.pop();
         }

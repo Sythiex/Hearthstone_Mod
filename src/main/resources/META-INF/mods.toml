@@ -10,4 +10,4 @@ displayURL="https://github.com/Sythiex/Hearthstone_Mod"
 logoFile="logo.png"
 credits="Element_31 for the idea"
 authors="Sythiex"
-description='''Adds an item that allows the player to teleport to their bed.'''
+description='''${mod_description}'''

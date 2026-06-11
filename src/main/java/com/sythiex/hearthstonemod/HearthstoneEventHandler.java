@@ -29,7 +29,7 @@ public class HearthstoneEventHandler
         if (event.getEntity() instanceof Player)
         {
             Player player = (Player) event.getEntity();
-            if (!player.level().isClientSide())
+            if (!player.level.isClientSide())
             {
                 HearthstoneCasting.requestStop(player);
             }
@@ -44,7 +44,7 @@ public class HearthstoneEventHandler
      */
     public void onPlayerTickEvent(TickEvent.PlayerTickEvent event)
     {
-        if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide() && event.player instanceof ServerPlayer)
+        if (event.phase == TickEvent.Phase.END && !event.player.level.isClientSide() && event.player instanceof ServerPlayer)
         {
             HearthstoneCasting.tick((ServerPlayer) event.player);
         }

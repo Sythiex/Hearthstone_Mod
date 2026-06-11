@@ -14,9 +14,9 @@ public final class ModSoundEvents
 {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, HearthstoneMod.MODID);
 
-    public static final RegistryObject<SoundEvent> HEARTHSTONE_CAST = SOUND_EVENTS.register("hearthstonecast", () -> SoundEvent.createVariableRangeEvent(id("hearthstonecast")));
-    public static final RegistryObject<SoundEvent> HEARTHSTONE_IMPACT = SOUND_EVENTS.register("hearthstoneimpact", () -> SoundEvent.createVariableRangeEvent(id("hearthstoneimpact")));
-    public static final RegistryObject<SoundEvent> HEARTHSTONE_CHANNEL = SOUND_EVENTS.register("hearthstonechannel", () -> SoundEvent.createVariableRangeEvent(id("hearthstonechannel")));
+    public static final RegistryObject<SoundEvent> HEARTHSTONE_CAST = SOUND_EVENTS.register("hearthstonecast", () -> new SoundEvent(id("hearthstonecast")));
+    public static final RegistryObject<SoundEvent> HEARTHSTONE_IMPACT = SOUND_EVENTS.register("hearthstoneimpact", () -> new SoundEvent(id("hearthstoneimpact")));
+    public static final RegistryObject<SoundEvent> HEARTHSTONE_CHANNEL = SOUND_EVENTS.register("hearthstonechannel", () -> new SoundEvent(id("hearthstonechannel")));
 
     private ModSoundEvents()
     {}
@@ -39,6 +39,6 @@ public final class ModSoundEvents
      */
     private static ResourceLocation id(String path)
     {
-        return ResourceLocation.fromNamespaceAndPath(HearthstoneMod.MODID, path);
+        return new ResourceLocation(HearthstoneMod.MODID, path);
     }
 }

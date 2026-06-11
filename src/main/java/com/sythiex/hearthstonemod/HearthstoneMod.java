@@ -3,9 +3,7 @@ package com.sythiex.hearthstonemod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -29,25 +27,11 @@ public class HearthstoneMod
         ModItems.register(modEventBus);
         ModSoundEvents.register(modEventBus);
         HearthstoneNetwork.register();
-        modEventBus.addListener(this::buildCreativeTabContents);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.sythiex.hearthstonemod.client.HearthstoneClientConfig.register());
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, com.sythiex.hearthstonemod.HearthstoneConfig.SPEC);
 
         MinecraftForge.EVENT_BUS.register(new HearthstoneEventHandler());
-    }
-
-    /**
-     * Adds the Hearthstone to the vanilla tools and utilities tab.
-     *
-     * @param event creative-tab population event
-     */
-    private void buildCreativeTabContents(BuildCreativeModeTabContentsEvent event)
-    {
-        if (CreativeModeTabs.TOOLS_AND_UTILITIES.equals(event.getTabKey()))
-        {
-            event.accept(ModItems.HEARTHSTONE);
-        }
     }
 }

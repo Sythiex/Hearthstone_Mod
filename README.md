@@ -10,6 +10,14 @@ A lightweight mod inspired by *World of Warcraft* that adds a craftable Hearthst
 
 The Hearthstone has a cooldown between uses. The config lets you adjust the channel time, cooldown, respawn anchor behavior, disable cross-dimensional travel, or block specific dimensions.
 
-This mod requires [Forge](https://files.minecraftforge.net/). Feel free to add this mod to your modpack, but please do not rehost the files.
+### Dependencies
+#### Fabric
+- Fabric API ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/fabric-api), [Modrinth](https://modrinth.com/mod/fabric-api))
+- Optional: Mod Menu for in-game config ([CurseForge](https://www.curseforge.com/minecraft/mc-mods/modmenu), [Modrinth](https://modrinth.com/mod/modmenu))
 
-Supported versions: 1.20.1
+#### Forge/NeoForge
+- No dependencies
+
+Feel free to add this mod to your modpack, but please do not rehost the files.
+
+Supported versions: 1.21.1 (NeoForge/Fabric), 1.20.1 (Forge)

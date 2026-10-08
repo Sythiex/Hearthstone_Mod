@@ -2,10 +2,14 @@ package com.sythiex.hearthstonemod.content;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.sythiex.hearthstonemod.HearthstoneCasting;
 import com.sythiex.hearthstonemod.HearthstoneClientBridge;
 import com.sythiex.hearthstonemod.HearthstoneCommon;
+import com.sythiex.hearthstonemod.compat.HearthstoneDestination;
+import com.sythiex.hearthstonemod.compat.HearthstoneDestinationBridge;
+import com.sythiex.hearthstonemod.compat.HearthstoneDestinationResolution;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -13,7 +17,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -145,8 +148,7 @@ public class ItemHearthstone extends Item
                     return InteractionResult.SUCCESS;
                 }
 
-                linkHome(stack, clickedPos, level.dimension().location(), HearthstoneLinkType.BED);
-                player.displayClientMessage(translatable(TEXT_LINKED), true);
+                linkHome(player, stack, (ServerLevel) level, clickedPos, HearthstoneLinkType.BED);
             } else if (isRespawnAnchor(state))
             {
                 if (HearthstoneCommon.isDimensionBlacklisted(level))
@@ -167,8 +169,7 @@ public class ItemHearthstone extends Item
                     return InteractionResult.SUCCESS;
                 }
 
-                linkHome(stack, clickedPos, level.dimension().location(), HearthstoneLinkType.RESPAWN_ANCHOR);
-                player.displayClientMessage(translatable(TEXT_LINKED), true);
+                linkHome(player, stack, (ServerLevel) level, clickedPos, HearthstoneLinkType.RESPAWN_ANCHOR);
             }
 
             return InteractionResult.SUCCESS;
@@ -237,58 +238,53 @@ public class ItemHearthstone extends Item
     }
 
     /**
-     * Resolves the stored destination and finishes a completed server-side cast.
+     * Starts destination preparation without moving the player or consuming the item.
      */
-    public static void finishCast(ServerPlayer player, ItemStack stack)
+    public static HearthstoneDestinationResolution prepareCast(ServerPlayer player, ItemStack stack)
     {
         HearthstoneItemData data = getData(stack);
         Optional<HearthstoneHomeLink> homeLink = data.homeLink();
         if (homeLink.isEmpty())
         {
-            return;
+            return HearthstoneDestinationResolution.unavailable(TEXT_NO_HOME);
         }
 
         if (isRespawnAnchorLinkingDisabled(data))
         {
-            player.displayClientMessage(translatable(TEXT_RESPAWN_ANCHOR_DISABLED), true);
-            return;
+            return HearthstoneDestinationResolution.unavailable(TEXT_RESPAWN_ANCHOR_DISABLED);
         }
 
-        ServerLevel destinationLevel = player.serverLevel();
-        HearthstoneHomeLink link = homeLink.get();
-
-        playPlayerSound(destinationLevel, player, HearthstoneContentIds.HEARTHSTONE_CAST_SOUND);
-
-        if (!player.level().dimension().location().equals(link.dimensionId()))
+        if (HearthstoneCommon.isDimensionBlacklisted(player.level()))
         {
-            // Cross-dimension teleports are resolved before destination safety checks run.
-            if (!HearthstoneCommon.config().allowCrossDimensionTravel())
-            {
-                player.displayClientMessage(translatable(TEXT_CROSS_DIMENSION_DISABLED), true);
-                return;
-            }
-
-            MinecraftServer server = player.getServer();
-            if (server != null)
-            {
-                ServerLevel linkedLevel = server.getLevel(link.dimensionKey());
-                if (linkedLevel != null)
-                {
-                    BlockPos homePos = link.homePos();
-                    player.teleportTo(linkedLevel, homePos.getX() + 0.5D, homePos.getY() + 1.0D, homePos.getZ() + 0.5D, player.getYRot(), player.getXRot());
-                    destinationLevel = linkedLevel;
-                }
-            }
+            return HearthstoneDestinationResolution.unavailable(TEXT_DIMENSION_BLACKLISTED);
         }
+        if (isCrossDimensionTravelBlocked(player.level(), data))
+        {
+            return HearthstoneDestinationResolution.unavailable(TEXT_CROSS_DIMENSION_DISABLED);
+        }
+        return HearthstoneCommon.destinationBridge().prepare(player, homeLink.get());
+    }
 
-        BlockPos homePos = link.homePos();
+    /**
+     * Validates the resolved block and commits one teleport, followed by item side effects.
+     */
+    public static boolean finishCast(ServerPlayer player, ItemStack stack, HearthstoneDestination destination)
+    {
+        HearthstoneItemData data = getData(stack);
+        if (data.homeLink().isEmpty() || isRespawnAnchorLinkingDisabled(data) || isCrossDimensionTravelBlocked(player.level(), data)
+                || HearthstoneCommon.isDimensionBlacklisted(player.level()))
+        {
+            return false;
+        }
+        ServerLevel destinationLevel = destination.level();
+        BlockPos homePos = destination.homePos();
         BlockState state = destinationLevel.getBlockState(homePos);
-        if (link.linkType() == HearthstoneLinkType.RESPAWN_ANCHOR)
+        if (data.homeLink().get().linkType() == HearthstoneLinkType.RESPAWN_ANCHOR)
         {
-            finishRespawnAnchorCast(player, destinationLevel, stack, homePos, state);
+            return finishRespawnAnchorCast(player, destination, stack, state);
         } else
         {
-            finishBedCast(player, destinationLevel, stack, homePos, state);
+            return finishBedCast(player, destination, stack, state);
         }
     }
 
@@ -303,9 +299,17 @@ public class ItemHearthstone extends Item
         stack.set(HearthstoneDataComponents.hearthstoneData(), data);
     }
 
-    private static void linkHome(ItemStack stack, BlockPos homePos, ResourceLocation dimensionId, HearthstoneLinkType linkType)
+    private static void linkHome(Player player, ItemStack stack, ServerLevel level, BlockPos homePos, HearthstoneLinkType linkType)
     {
-        setData(stack, getData(stack).withHomeLink(new HearthstoneHomeLink(homePos.immutable(), dimensionId, linkType)));
+        HearthstoneDestinationBridge.Capture capture = HearthstoneCommon.destinationBridge().capture(level, homePos, linkType);
+        if (capture.link() != null)
+        {
+            setData(stack, getData(stack).withHomeLink(capture.link()));
+            player.displayClientMessage(translatable(TEXT_LINKED), true);
+        } else
+        {
+            player.displayClientMessage(capture.message(), true);
+        }
     }
 
     private static int getCooldown(Level level, HearthstoneItemData data)
@@ -355,40 +359,42 @@ public class ItemHearthstone extends Item
      * Bed links try the vanilla stand-up position first and fall back to the block
      * top if needed.
      */
-    private static void finishBedCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state)
+    private static boolean finishBedCast(ServerPlayer player, HearthstoneDestination destination, ItemStack stack, BlockState state)
     {
+        ServerLevel level = destination.level();
+        BlockPos homePos = destination.homePos();
         if (state.is(BlockTags.BEDS))
         {
             Optional<Vec3> respawnPosition = BedBlock.findStandUpPosition(EntityType.PLAYER, level, homePos, state.getValue(BedBlock.FACING), player.getYRot());
-            teleportToRespawnPosition(player, respawnPosition, homePos);
+            if (!teleportToRespawnPosition(player, destination, respawnPosition)) return false;
             completeTeleport(player, level, stack);
-            return;
+            return true;
         }
 
-        breakLinkedHome(player, level, stack, homePos, TEXT_MISSING_BED);
+        return breakLinkedHome(player, destination, stack, TEXT_MISSING_BED);
     }
 
     /**
      * Respawn anchor links validate the block, charge, and optional charge
      * consumption.
      */
-    private static void finishRespawnAnchorCast(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, BlockState state)
+    private static boolean finishRespawnAnchorCast(ServerPlayer player, HearthstoneDestination destination, ItemStack stack, BlockState state)
     {
+        ServerLevel level = destination.level();
+        BlockPos homePos = destination.homePos();
         if (!isRespawnAnchor(state))
         {
-            breakLinkedHome(player, level, stack, homePos, TEXT_MISSING_RESPAWN_ANCHOR);
-            return;
+            return breakLinkedHome(player, destination, stack, TEXT_MISSING_RESPAWN_ANCHOR);
         }
 
         int charge = getRespawnAnchorCharge(state);
         if (charge == 0)
         {
-            breakLinkedHome(player, level, stack, homePos, TEXT_EMPTY_RESPAWN_ANCHOR);
-            return;
+            return breakLinkedHome(player, destination, stack, TEXT_EMPTY_RESPAWN_ANCHOR);
         }
 
         Optional<Vec3> respawnPosition = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, homePos);
-        teleportToRespawnPosition(player, respawnPosition, homePos);
+        if (!teleportToRespawnPosition(player, destination, respawnPosition)) return false;
         completeTeleport(player, level, stack);
 
         if (HearthstoneCommon.config().consumeRespawnAnchorCharge())
@@ -402,37 +408,34 @@ public class ItemHearthstone extends Item
                 player.displayClientMessage(translatable(TEXT_EMPTY_RESPAWN_ANCHOR), true);
             }
         }
+        return true;
     }
 
-    private static void teleportToRespawnPosition(ServerPlayer player, Optional<Vec3> respawnPosition, BlockPos homePos)
+    private static boolean teleportToRespawnPosition(ServerPlayer player, HearthstoneDestination destination, Optional<Vec3> respawnPosition)
     {
-        if (respawnPosition.isPresent())
+        BlockPos homePos = destination.homePos();
+        Vec3 localPosition = respawnPosition.orElseGet(() -> Vec3.atBottomCenterOf(homePos).add(0, 1, 0));
+        Vec3 worldPosition = destination.toWorld().apply(localPosition);
+        if (worldPosition == null || !Double.isFinite(worldPosition.x) || !Double.isFinite(worldPosition.y) || !Double.isFinite(worldPosition.z))
         {
-            Vec3 safePosition = respawnPosition.get();
-            player.teleportTo(safePosition.x, safePosition.y, safePosition.z);
-        } else
-        {
-            // If the linked block no longer has a valid stand-up spot, use the simple
-            // block-top fallback.
-            teleportToHomeTop(player, homePos);
+            player.displayClientMessage(translatable(HearthstoneDestinationResolution.UNAVAILABLE_MESSAGE), true);
+            return false;
         }
+        playPlayerSound(player.serverLevel(), player, HearthstoneContentIds.HEARTHSTONE_CAST_SOUND);
+        return player.teleportTo(destination.level(), worldPosition.x, worldPosition.y, worldPosition.z, Set.of(), player.getYRot(), player.getXRot());
     }
 
     /**
      * Handles broken or depleted links by teleporting once, clearing the link, and
      * warning the player.
      */
-    private static void breakLinkedHome(ServerPlayer player, ServerLevel level, ItemStack stack, BlockPos homePos, String messageKey)
+    private static boolean breakLinkedHome(ServerPlayer player, HearthstoneDestination destination, ItemStack stack, String messageKey)
     {
-        teleportToHomeTop(player, homePos);
-        completeTeleport(player, level, stack);
+        if (!teleportToRespawnPosition(player, destination, Optional.empty())) return false;
+        completeTeleport(player, destination.level(), stack);
         clearLinkedHome(stack);
         player.displayClientMessage(translatable(messageKey), true);
-    }
-
-    private static void teleportToHomeTop(ServerPlayer player, BlockPos homePos)
-    {
-        player.teleportTo(homePos.getX() + 0.5D, homePos.getY() + 1.0D, homePos.getZ() + 0.5D);
+        return true;
     }
 
     /**

@@ -4,6 +4,8 @@ import com.sythiex.hearthstonemod.HearthstoneCasting;
 
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,5 +37,17 @@ public final class HearthstoneNeoForgeEvents
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
     {
         HearthstoneCasting.clear(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onPlayerDied(LivingDeathEvent event)
+    {
+        if (event.getEntity() instanceof ServerPlayer player) HearthstoneCasting.clear(player);
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event)
+    {
+        HearthstoneCasting.clearAll();
     }
 }

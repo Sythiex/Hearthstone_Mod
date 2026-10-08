@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import com.sythiex.hearthstonemod.config.HearthstoneConfigData;
 import com.sythiex.hearthstonemod.config.HearthstoneConfigStore;
 import com.sythiex.hearthstonemod.network.HearthstoneNetworkBridge;
+import com.sythiex.hearthstonemod.compat.HearthstoneDestinationBridge;
 
 import net.minecraft.world.level.Level;
 
@@ -17,6 +18,7 @@ public final class HearthstoneCommon
     private static HearthstoneConfigStore configStore;
     private static HearthstoneNetworkBridge networkBridge = HearthstoneNetworkBridge.noop();
     private static HearthstoneClientBridge clientBridge = HearthstoneClientBridge.noop();
+    private static HearthstoneDestinationBridge destinationBridge = HearthstoneDestinationBridge.DEFAULT;
 
     private HearthstoneCommon()
     {}
@@ -74,6 +76,19 @@ public final class HearthstoneCommon
     public static synchronized HearthstoneClientBridge clientBridge()
     {
         return clientBridge;
+    }
+
+    /**
+     * Installs an optional loader-specific destination provider at common setup.
+     */
+    public static void setDestinationBridge(HearthstoneDestinationBridge bridge)
+    {
+        destinationBridge = bridge == null ? HearthstoneDestinationBridge.DEFAULT : bridge;
+    }
+
+    public static HearthstoneDestinationBridge destinationBridge()
+    {
+        return destinationBridge;
     }
 
     /**

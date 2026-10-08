@@ -18,7 +18,9 @@ java {
 
 sourceSets {
     main {
+        java.srcDir 'src/gametest/java'
         resources.srcDir 'src/generated/resources'
+        resources.srcDir 'src/gametest/resources'
     }
 }
 
@@ -26,9 +28,19 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+repositories {
+    maven { url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
+    maven { url = 'https://maven.ryanhcode.dev/releases'; content { includeGroup 'dev.ryanhcode.sable-companion' } }
+}
+
 dependencies {
     compileOnly project(path: ':common', configuration: 'namedElements')
     compileOnly files(project(':common').sourceSets.client.output)
+    compileOnly 'maven.modrinth:sable:U678xqle' // NeoForge 1.21.1, Sable 2.0.5
+    compileOnly 'dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:1.6.0'
+    if (providers.gradleProperty('sableCompat').isPresent()) {
+        localRuntime 'maven.modrinth:sable:U678xqle'
+    }
 }
 
 neoForge {
@@ -51,6 +63,14 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        gameTestServer {
+            type = 'gameTestServer'
+            gameDirectory = project.file('build/run-gametest')
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'hearthstonemod_tests'
+            systemProperty 'hearthstonemod.gametest', 'true'
+            systemProperty 'hearthstonemod.restartTest', providers.gradleProperty('restartTest').getOrElse('')
+        }
+
         data {
             data()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources').absolutePath, '--existing',
@@ -58,7 +78,7 @@ neoForge {
         }
 
         configureEach {
-            logLevel = org.slf4j.event.Level.DEBUG
+            logLevel = name == 'gameTestServer' ? org.slf4j.event.Level.INFO : org.slf4j.event.Level.DEBUG
         }
     }
 
@@ -85,6 +105,8 @@ tasks.named('jar', Jar).configure {
     archiveFileName = finalJarName
     from project(':common').sourceSets.main.output
     from project(':common').sourceSets.client.output
+    exclude 'com/sythiex/hearthstonemod/neoforge/gametest/**'
+    exclude 'data/hearthstonemod_tests/**'
 }
 
 tasks.named('sourcesJar').configure {
@@ -93,4 +115,5 @@ tasks.named('sourcesJar').configure {
     archiveFileName = finalSourcesJarName
     from project(':common').sourceSets.main.allSource
     from project(':common').sourceSets.client.allSource
+    exclude 'com/sythiex/hearthstonemod/neoforge/gametest/**'
 }

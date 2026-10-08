@@ -4,6 +4,7 @@ import com.sythiex.hearthstonemod.HearthstoneCasting;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -29,5 +30,7 @@ public final class HearthstoneFabricEvents
             }
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> HearthstoneCasting.clear(handler.player));
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> { if (entity instanceof ServerPlayer player) HearthstoneCasting.clear(player); });
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> HearthstoneCasting.clearAll());
     }
 }

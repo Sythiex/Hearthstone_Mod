@@ -29,3 +29,9 @@ type="required"
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="sable"
+type="optional"
+ordering="AFTER"
+side="BOTH"
